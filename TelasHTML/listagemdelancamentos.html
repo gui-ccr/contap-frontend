@@ -1,0 +1,315 @@
+<!DOCTYPE html><html class="dark" lang="pt-BR" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ContaUp - Razão/Extrato</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#e5e2e1",
+                        "tertiary-container": "#9699ff",
+                        "secondary": "#ffb3b0",
+                        "on-tertiary-fixed-variant": "#2f2ebe",
+                        "outline": "#86948a",
+                        "primary-container": "#10b981",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#1000a9",
+                        "on-primary-fixed": "#002113",
+                        "background": "#131313",
+                        "inverse-primary": "#006c49",
+                        "surface-container": "#201f1f",
+                        "on-secondary-container": "#ff9996",
+                        "secondary-fixed-dim": "#ffb3b0",
+                        "tertiary-fixed-dim": "#c0c1ff",
+                        "on-secondary-fixed-variant": "#881d24",
+                        "on-secondary-fixed": "#410006",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-fixed": "#e1e0ff",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-bright": "#393939",
+                        "error": "#ffb4ab",
+                        "surface": "#131313",
+                        "on-secondary": "#670211",
+                        "on-primary": "#003824",
+                        "surface-dim": "#131313",
+                        "surface-variant": "#353534",
+                        "on-surface": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#00422b",
+                        "primary": "#4edea3",
+                        "on-tertiary-fixed": "#07006c",
+                        "on-surface-variant": "#bbcabf",
+                        "on-primary-fixed-variant": "#005236",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary-container": "#1d17b2",
+                        "outline-variant": "#3c4a42",
+                        "surface-tint": "#4edea3",
+                        "secondary-fixed": "#ffdad8",
+                        "secondary-container": "#881d24",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary": "#c0c1ff",
+                        "surface-container-highest": "#353534",
+                        "primary-fixed-dim": "#4edea3",
+                        "primary-fixed": "#6ffbbe",
+                        "surface-container-lowest": "#0e0e0e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "lg": "40px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "xl": "64px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e5e2e1;
+        }
+        .glass-card {
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .input-glass {
+            background-color: #181818;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased font-body-sm bg-background text-on-background">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-surface-container dark:bg-surface-container border-r border-white/5 backdrop-blur-lg border-t border-t-white/10 z-50 pt-base shadow-[0_-1px_0_rgba(255,255,255,0.1)_inset]">
+<div class="px-md py-md border-b border-white/5">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Play Pizza</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Suite</p>
+</div>
+<div class="flex-1 overflow-y-auto py-sm">
+<div class="px-md py-md"><button class="w-full bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded hover:bg-primary/90 transition-colors">Gerar Relatório</button></div>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="dashboard.html">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="novolancamento.html">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">Novo Lançamento</span>
+</a>
+<a class="bg-primary-container/10 text-primary border-r-4 border-primary flex items-center gap-3 px-4 py-3 scale-[0.98] transition-transform" href="listagemdelancamentos.html">
+<span class="material-symbols-outlined" data-icon="menu_book" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">menu_book</span>
+<span class="font-label-md text-label-md">Listagem de Lançamentos</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="balancopatrimonial.html">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-md text-label-md">Balanço Patrimonial</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="dre.html">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-md text-label-md">DRE</span>
+</a>
+</div>
+
+<div class="border-t border-white/5 py-sm">
+
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Configurações</span>
+</a><a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-200" href="login.html">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sair</span>
+</a>
+</div>
+</nav>
+<div class="flex-1 flex flex-col md:ml-64 relative">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-40 bg-surface/70 dark:bg-surface/70 border-b border-white/10 backdrop-blur-xl shadow-sm">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md text-primary font-bold tracking-tight md:hidden">Lumina Finance</h1>
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="input-glass rounded-full pl-10 pr-4 py-1.5 font-body-sm text-body-sm text-on-surface w-64 placeholder-on-surface-variant/50" placeholder="Search accounts, entries..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-md text-body-md text-on-surface-variant hidden md:block">19 de maio de 2026</span>
+<div class="flex items-center gap-2 text-primary dark:text-primary">
+<button class="p-2 hover:bg-white/5 rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full border border-white/20" data-alt="A small, circular avatar image of a professional individual in a corporate setting. The avatar is framed with a thin, subtle translucent border, fitting a minimalist dark mode aesthetic. The lighting on the face is soft and neutral, conveying trust and competence suitable for a high-end financial SaaS platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqqQEt7pGqds9xm_jDYSLKwSwWJOeEnKglESHBgYOgXvu5m1HnPXZJdsjYOtrCEtVOXWXpWx7drP8wBdgLMi5WvI_oDJJxkkO_i1F2jSYoN2DGZDOvtPQnkq14CVNiWSx0DAXMr9F-yZa8dRhFZRdle39SEwu6AZo-WoJVlgjfjMs7QdxdKhPn5lDQ_jRE2exmN6AdLFR6-4-1QRTUvtZjSX5Mv8EoEXpzmbYAuGbToHWsv4pxLLeDghb3gTtUu2bVvJ81adUo4fjp">
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
+<div class="max-w-7xl mx-auto space-y-gutter">
+<header class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Listagem de Lançamentos</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Análise detalhada de movimentações por conta.</p>
+</header>
+<!-- Filters -->
+<section class="glass-card rounded-lg p-md">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="startDate">Data Inicial</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-sm" data-icon="calendar_today">calendar_today</span>
+<input class="input-glass rounded w-full pl-10 pr-3 py-2 font-body-sm text-body-sm text-on-surface" id="startDate" type="date" value="2023-10-01">
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="endDate">Data Final</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-sm" data-icon="calendar_today">calendar_today</span>
+<input class="input-glass rounded w-full pl-10 pr-3 py-2 font-body-sm text-body-sm text-on-surface" id="endDate" type="date" value="2023-10-31">
+</div>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="accountSelect">Conta</label>
+<select class="input-glass rounded w-full px-3 py-2 font-body-sm text-body-sm text-on-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bbcabf%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_8px_center]" id="accountSelect">
+<option value="all">Todas as Contas</option>
+<option value="1">1.1.01.01 - Banco Itaú C/C</option>
+<option value="2">3.1.01.01 - Receitas de Serviços</option>
+<option value="3">4.1.01.02 - Despesas Administrativas</option>
+</select>
+</div>
+</div>
+<div class="mt-4 flex justify-end gap-3">
+<button class="bg-transparent border border-white/10 text-on-surface font-label-md text-label-md py-2 px-4 rounded hover:bg-white/5 transition-colors">Limpar</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                            Aplicar Filtros
+                        </button>
+</div>
+</section>
+<!-- Data Table -->
+<section class="glass-card rounded-lg overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/10 bg-surface-container-low/50">
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Data</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Descrição</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Conta Débito</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Conta Crédito</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant text-right">Valor (R$)</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm divide-y divide-white/5">
+<tr class="hover:bg-white/[0.03] transition-colors cursor-default">
+<td class="py-sm px-4 whitespace-nowrap text-on-surface font-mono-data text-mono-data">10/10/2023</td>
+<td class="py-sm px-4 text-on-surface">Pagamento Fornecedor XYZ</td>
+<td class="py-sm px-4 text-on-surface-variant">2.1.01.01 - Fornecedores Nacionais</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.01.01 - Banco Itaú C/C</td>
+<td class="py-sm px-4 text-right font-mono-data text-mono-data text-on-surface">1.500,00</td>
+</tr>
+<tr class="hover:bg-white/[0.03] transition-colors cursor-default">
+<td class="py-sm px-4 whitespace-nowrap text-on-surface font-mono-data text-mono-data">12/10/2023</td>
+<td class="py-sm px-4 text-on-surface">Recebimento NF 1024</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.01.01 - Banco Itaú C/C</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.02.01 - Clientes Nacionais</td>
+<td class="py-sm px-4 text-right font-mono-data text-mono-data text-on-surface">4.250,00</td>
+</tr>
+<tr class="hover:bg-white/[0.03] transition-colors cursor-default">
+<td class="py-sm px-4 whitespace-nowrap text-on-surface font-mono-data text-mono-data">15/10/2023</td>
+<td class="py-sm px-4 text-on-surface">Aquisição de Licenças Software</td>
+<td class="py-sm px-4 text-on-surface-variant">4.1.01.02 - Despesas Administrativas</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.01.01 - Banco Itaú C/C</td>
+<td class="py-sm px-4 text-right font-mono-data text-mono-data text-on-surface">890,00</td>
+</tr>
+<tr class="hover:bg-white/[0.03] transition-colors cursor-default">
+<td class="py-sm px-4 whitespace-nowrap text-on-surface font-mono-data text-mono-data">18/10/2023</td>
+<td class="py-sm px-4 text-on-surface">Aporte de Capital Sócios</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.01.01 - Banco Itaú C/C</td>
+<td class="py-sm px-4 text-on-surface-variant">2.3.01.01 - Capital Social Integralizado</td>
+<td class="py-sm px-4 text-right font-mono-data text-mono-data text-on-surface">50.000,00</td>
+</tr>
+<tr class="hover:bg-white/[0.03] transition-colors cursor-default">
+<td class="py-sm px-4 whitespace-nowrap text-on-surface font-mono-data text-mono-data">20/10/2023</td>
+<td class="py-sm px-4 text-on-surface">Tarifa Bancária Manutenção</td>
+<td class="py-sm px-4 text-on-surface-variant">4.1.02.01 - Despesas Financeiras</td>
+<td class="py-sm px-4 text-on-surface-variant">1.1.01.01 - Banco Itaú C/C</td>
+<td class="py-sm px-4 text-right font-mono-data text-mono-data text-on-surface">125,50</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="border-t border-white/10 p-4 flex items-center justify-between bg-surface-container-lowest/30">
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+                            Mostrando <span class="text-on-surface font-medium">1</span> a <span class="text-on-surface font-medium">5</span> de <span class="text-on-surface font-medium">142</span> registros
+                        </div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-white/10 text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary/20 text-primary border border-primary/30 font-label-sm text-label-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-white/10 text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-sm text-label-sm transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-white/10 text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-sm text-label-sm transition-colors">3</button>
+<span class="text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-white/10 text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+
+
+</body></html>
