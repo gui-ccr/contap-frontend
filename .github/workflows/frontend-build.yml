@@ -1,0 +1,35 @@
+name: 🏗️ Front-end CI (Build & Tipagem)
+
+# 1. O GATILHO: quando o gitflow vai rodar
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. AS TAREFAS
+jobs:
+  testar-build:
+    # 3. A MÁQUINA: Pede ao GitHub um computador Linux 
+    runs-on: ubuntu-latest
+
+    # 4. OS PASSOS 
+    steps:
+      # Passo A: O computador do GitHub nasce vazio. Essa ação "baixa" o seu código para ele.
+      - name: 📥 Clonando o repositório
+        uses: actions/checkout@v4
+
+      # Passo B: Instala o Node.js na máquina do GitHub.
+      - name: ⚙️ Configurando o Node.js (Versão 20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Isso deixa as próximas execuções muito mais rápidas
+
+      # Passo C: Instala as dependências do package.json (Igual você faz na sua máquina)
+      - name: 📦 Instalando as dependências
+        run: npm install
+
+      # Passo D: A Prova de Fogo! Tenta gerar a versão final do Next.js
+      - name: 🚀 Rodando o Build do Next.js
+        run: npm run build
