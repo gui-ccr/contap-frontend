@@ -1,301 +1,492 @@
-<!DOCTYPE html><html class="dark" lang="pt-BR" style="width: 1280px; height: 1024px; overflow: hidden; position: relative;"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Novo Lançamento - ContaUp</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
+<!doctype html>
+<html
+  class="dark"
+  lang="pt-BR"
+  style="width: 1280px; height: 1024px; overflow: hidden; position: relative"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Novo Lançamento - ContaUp</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
-            "colors": {
-                    "on-background": "#e5e2e1",
-                    "tertiary-container": "#9699ff",
-                    "secondary": "#ffb3b0",
-                    "on-tertiary-fixed-variant": "#2f2ebe",
-                    "outline": "#86948a",
-                    "primary-container": "#10b981",
-                    "on-error": "#690005",
-                    "on-error-container": "#ffdad6",
-                    "on-tertiary": "#1000a9",
-                    "on-primary-fixed": "#002113",
-                    "background": "#131313",
-                    "inverse-primary": "#006c49",
-                    "surface-container": "#201f1f",
-                    "on-secondary-container": "#ff9996",
-                    "secondary-fixed-dim": "#ffb3b0",
-                    "tertiary-fixed-dim": "#c0c1ff",
-                    "on-secondary-fixed-variant": "#881d24",
-                    "on-secondary-fixed": "#410006",
-                    "inverse-on-surface": "#313030",
-                    "tertiary-fixed": "#e1e0ff",
-                    "surface-container-low": "#1c1b1b",
-                    "surface-bright": "#393939",
-                    "error": "#ffb4ab",
-                    "surface": "#131313",
-                    "on-secondary": "#670211",
-                    "on-primary": "#003824",
-                    "surface-dim": "#131313",
-                    "surface-variant": "#353534",
-                    "on-surface": "#e5e2e1",
-                    "error-container": "#93000a",
-                    "on-primary-container": "#00422b",
-                    "primary": "#4edea3",
-                    "on-tertiary-fixed": "#07006c",
-                    "on-surface-variant": "#bbcabf",
-                    "on-primary-fixed-variant": "#005236",
-                    "inverse-surface": "#e5e2e1",
-                    "on-tertiary-container": "#1d17b2",
-                    "outline-variant": "#3c4a42",
-                    "surface-tint": "#4edea3",
-                    "secondary-fixed": "#ffdad8",
-                    "secondary-container": "#881d24",
-                    "surface-container-high": "#2a2a2a",
-                    "tertiary": "#c0c1ff",
-                    "surface-container-highest": "#353534",
-                    "primary-fixed-dim": "#4edea3",
-                    "primary-fixed": "#6ffbbe",
-                    "surface-container-lowest": "#0e0e0e"
+            colors: {
+              "on-background": "#e5e2e1",
+              "tertiary-container": "#9699ff",
+              secondary: "#ffb3b0",
+              "on-tertiary-fixed-variant": "#2f2ebe",
+              outline: "#86948a",
+              "primary-container": "#10b981",
+              "on-error": "#690005",
+              "on-error-container": "#ffdad6",
+              "on-tertiary": "#1000a9",
+              "on-primary-fixed": "#002113",
+              background: "#131313",
+              "inverse-primary": "#006c49",
+              "surface-container": "#201f1f",
+              "on-secondary-container": "#ff9996",
+              "secondary-fixed-dim": "#ffb3b0",
+              "tertiary-fixed-dim": "#c0c1ff",
+              "on-secondary-fixed-variant": "#881d24",
+              "on-secondary-fixed": "#410006",
+              "inverse-on-surface": "#313030",
+              "tertiary-fixed": "#e1e0ff",
+              "surface-container-low": "#1c1b1b",
+              "surface-bright": "#393939",
+              error: "#ffb4ab",
+              surface: "#131313",
+              "on-secondary": "#670211",
+              "on-primary": "#003824",
+              "surface-dim": "#131313",
+              "surface-variant": "#353534",
+              "on-surface": "#e5e2e1",
+              "error-container": "#93000a",
+              "on-primary-container": "#00422b",
+              primary: "#4edea3",
+              "on-tertiary-fixed": "#07006c",
+              "on-surface-variant": "#bbcabf",
+              "on-primary-fixed-variant": "#005236",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary-container": "#1d17b2",
+              "outline-variant": "#3c4a42",
+              "surface-tint": "#4edea3",
+              "secondary-fixed": "#ffdad8",
+              "secondary-container": "#881d24",
+              "surface-container-high": "#2a2a2a",
+              tertiary: "#c0c1ff",
+              "surface-container-highest": "#353534",
+              "primary-fixed-dim": "#4edea3",
+              "primary-fixed": "#6ffbbe",
+              "surface-container-lowest": "#0e0e0e",
             },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
             },
-            "spacing": {
-                    "base": "8px",
-                    "margin-mobile": "16px",
-                    "margin-desktop": "32px",
-                    "gutter": "24px",
-                    "sm": "12px",
-                    "lg": "40px",
-                    "md": "24px",
-                    "xs": "4px",
-                    "xl": "64px"
+            spacing: {
+              base: "8px",
+              "margin-mobile": "16px",
+              "margin-desktop": "32px",
+              gutter: "24px",
+              sm: "12px",
+              lg: "40px",
+              md: "24px",
+              xs: "4px",
+              xl: "64px",
             },
-            "fontFamily": {
-                    "body-sm": ["Inter"],
-                    "headline-lg-mobile": ["Inter"],
-                    "label-md": ["Inter"],
-                    "headline-md": ["Inter"],
-                    "body-md": ["Inter"],
-                    "headline-xl": ["Inter"],
-                    "body-lg": ["Inter"],
-                    "mono-data": ["Inter"],
-                    "headline-lg": ["Inter"],
-                    "label-sm": ["Inter"]
+            fontFamily: {
+              "body-sm": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "label-md": ["Inter"],
+              "headline-md": ["Inter"],
+              "body-md": ["Inter"],
+              "headline-xl": ["Inter"],
+              "body-lg": ["Inter"],
+              "mono-data": ["Inter"],
+              "headline-lg": ["Inter"],
+              "label-sm": ["Inter"],
             },
-            "fontSize": {
-                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
-                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
-            }
-          }
-        }
-      }
+            fontSize: {
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-xl": [
+                "40px",
+                {
+                  lineHeight: "48px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "mono-data": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "500",
+                },
+              ],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+            },
+          },
+        },
+      };
     </script>
-<style>
-        .glass-panel {
-            background-color: rgba(30, 30, 30, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Rim light */
-        }
-        .form-input-dark {
-            background-color: #181818;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #e5e2e1;
-        }
-        .form-input-dark:focus {
-            outline: none;
-            border-color: #10b981;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-        }
+    <style>
+      .glass-panel {
+        background-color: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.15); /* Rim light */
+      }
+      .form-input-dark {
+        background-color: #181818;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e5e2e1;
+      }
+      .form-input-dark:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+      }
     </style>
-</head>
-<body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden">
-<!-- SideNavBar -->
-<aside class="hidden md:flex bg-surface-container text-primary font-body-sm h-screen w-64 border-r border-white/5 border-r border-white/10 backdrop-blur-lg fixed left-0 top-0 h-full z-50 flex-col pt-base">
-<div class="px-4 py-6">
-<div class="flex items-center gap-3 mb-8">
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md h-screen flex overflow-hidden"
+  >
+    <!-- SideNavBar -->
+    <aside
+      class="hidden md:flex bg-surface-container text-primary font-body-sm h-screen w-64 border-r border-white/5 border-r border-white/10 backdrop-blur-lg fixed left-0 top-0 h-full z-50 flex-col pt-base"
+    >
+      <div class="px-4 py-6">
+        <div class="flex items-center gap-3 mb-8">
+          <div>
+            <h1
+              class="font-headline-md text-headline-md text-primary font-bold"
+            >
+              Play Pizza
+            </h1>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              Enterprise Suite
+            </p>
+          </div>
+        </div>
+        <nav class="flex flex-col gap-2">
+          <button
+            class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg mb-4 hover:opacity-90 transition-opacity"
+          >
+            Gerar Relatório
+          </button>
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="dashboard.html"
+          >
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-label-md text-label-md">Dashboard</span>
+          </a>
+          <a
+            class="bg-primary-container/10 text-primary border-r-4 border-primary flex items-center gap-3 px-4 py-3 rounded-l-lg scale-[0.98] transition-transform"
+            href="novolancamento.html"
+          >
+            <span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >add_circle</span
+            >
+            <span class="font-label-md text-label-md">Novo Lanqamento</span>
+          </a>
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="listagemdelancamentos.html"
+          >
+            <span class="material-symbols-outlined">menu_book</span>
+            <span class="font-label-md text-label-md"
+              >Listagem de Lançamentos</span
+            >
+          </a>
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="balancopatrimonial.html"
+          >
+            <span class="material-symbols-outlined">account_balance</span>
+            <span class="font-label-md text-label-md">Balanqo Patrimonial</span>
+          </a>
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="dre.html"
+          >
+            <span class="material-symbols-outlined">query_stats</span>
+            <span class="font-label-md text-label-md">DRE</span>
+          </a>
+        </nav>
+      </div>
+      <div class="mt-auto px-4 pb-6">
+        <nav class="flex flex-col gap-2">
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="#"
+          >
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-label-md text-label-md">Configurações</span>
+          </a>
+          <a
+            class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+            href="login.html"
+          >
+            <span class="material-symbols-outlined">logout</span>
+            <span class="font-label-md text-label-md">Sair</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col md:ml-64 h-full relative">
+      <!-- TopAppBar -->
+      <header
+        class="bg-surface/70 text-primary font-body-md border-b border-white/10 backdrop-blur-xl flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-40"
+      >
+        <div class="flex items-center gap-4">
+          <div class="md:hidden">
+            <span
+              class="material-symbols-outlined cursor-pointer hover:text-on-surface transition-colors"
+              >menu</span
+            >
+          </div>
+          <h2
+            class="font-headline-md text-headline-md text-primary font-bold tracking-tight"
+          >
+            ContaUp
+          </h2>
+        </div>
+        <div class="flex items-center gap-6">
+          <span
+            class="font-label-md text-label-md text-on-surface-variant hidden sm:block"
+            >19 de maio de 2026</span
+          >
+          <div class="flex items-center gap-4">
+            <button
+              class="text-on-surface-variant hover:text-primary transition-colors duration-200"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+              class="text-on-surface-variant hover:text-primary transition-colors duration-200"
+            >
+              <span class="material-symbols-outlined">help</span>
+            </button>
+            <img
+              alt="User Profile Avatar"
+              class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              data-alt="A professional headshot of a business executive used as a profile avatar. Deep dark theme, high contrast lighting emphasizing institutional rigor."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4kFLtbILKa9aDYij1ZOd844vHhyHqqBItp9KcaEWtzkCzqQ12cHb0ckPW94M2xoIS6qaBaO_gnblqfSDeyp1VSkbseoQSoEL0H7RN3f_QKAW9i2e1YmaLm1e4L9wHt8y41stg8tLRPdpqKk2RbgY5JTrwJ3nIYptcRufmSoMl9eKht-3y6rSMp5Ksj_uEUdAGFFUeGh11ERyC-sSY7Do9wFxYkkKaF3NofiZ03n-tA6guLBZqh5OgMvYPPYvRLfdma0zIdBYvr1zu"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main
+        class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop relative"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div class="mb-8">
+            <h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">
+              Novo Lançamento Contábil
+            </h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">
+              Registre partidas dobradas com precisão e segurança.
+            </p>
+          </div>
+          <!-- Toast Area (Mocking a validation error) -->
 
-<div>
-<h1 class="font-headline-md text-headline-md text-primary font-bold">Play Pizza</h1>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Suite</p>
-</div>
-</div>
-<nav class="flex flex-col gap-2"><button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg mb-4 hover:opacity-90 transition-opacity">Gerar Relatório</button>
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="dashboard.html">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-label-md text-label-md">Dashboard</span>
-</a>
-<a class="bg-primary-container/10 text-primary border-r-4 border-primary flex items-center gap-3 px-4 py-3 rounded-l-lg scale-[0.98] transition-transform" href="novolancamento.html">
-<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">add_circle</span>
-<span class="font-label-md text-label-md">Novo Lanqamento</span>
-</a>
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="listagemdelancamentos.html">
-<span class="material-symbols-outlined">menu_book</span>
-<span class="font-label-md text-label-md">Listagem de Lançamentos</span>
-</a>
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="balancopatrimonial.html">
-<span class="material-symbols-outlined">account_balance</span>
-<span class="font-label-md text-label-md">Balanqo Patrimonial</span>
-</a>
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="dre.html">
-<span class="material-symbols-outlined">query_stats</span>
-<span class="font-label-md text-label-md">DRE</span>
-</a>
-</nav>
-</div>
-<div class="mt-auto px-4 pb-6">
-
-<nav class="flex flex-col gap-2">
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="#">
-<span class="material-symbols-outlined">settings</span>
-<span class="font-label-md text-label-md">Configurações</span>
-</a>
-<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-200" href="login.html">
-<span class="material-symbols-outlined">logout</span>
-<span class="font-label-md text-label-md">Sair</span>
-</a>
-</nav>
-</div>
-</aside>
-<!-- Main Content Area -->
-<div class="flex-1 flex flex-col md:ml-64 h-full relative">
-<!-- TopAppBar -->
-<header class="bg-surface/70 text-primary font-body-md border-b border-white/10 backdrop-blur-xl flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-40">
-<div class="flex items-center gap-4">
-<div class="md:hidden">
-<span class="material-symbols-outlined cursor-pointer hover:text-on-surface transition-colors">menu</span>
-</div>
-<h2 class="font-headline-md text-headline-md text-primary font-bold tracking-tight">ContaUp</h2>
-</div>
-<div class="flex items-center gap-6">
-<span class="font-label-md text-label-md text-on-surface-variant hidden sm:block">19 de maio de 2026</span>
-<div class="flex items-center gap-4">
-<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
-<span class="material-symbols-outlined">help</span>
-</button>
-<img alt="User Profile Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer hover:opacity-80 transition-opacity" data-alt="A professional headshot of a business executive used as a profile avatar. Deep dark theme, high contrast lighting emphasizing institutional rigor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4kFLtbILKa9aDYij1ZOd844vHhyHqqBItp9KcaEWtzkCzqQ12cHb0ckPW94M2xoIS6qaBaO_gnblqfSDeyp1VSkbseoQSoEL0H7RN3f_QKAW9i2e1YmaLm1e4L9wHt8y41stg8tLRPdpqKk2RbgY5JTrwJ3nIYptcRufmSoMl9eKht-3y6rSMp5Ksj_uEUdAGFFUeGh11ERyC-sSY7Do9wFxYkkKaF3NofiZ03n-tA6guLBZqh5OgMvYPPYvRLfdma0zIdBYvr1zu">
-</div>
-</div>
-</header>
-<!-- Canvas -->
-<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop relative">
-<div class="max-w-4xl mx-auto">
-<div class="mb-8">
-<h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">Novo Lançamento Contábil</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant">Registre partidas dobradas com precisão e segurança.</p>
-</div>
-<!-- Toast Area (Mocking a validation error) -->
-
-<!-- Form Card -->
-<div class="glass-panel rounded-xl p-md">
-<form class="space-y-gutter">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-<!-- Data -->
-<div class="space-y-2">
-<label class="block font-label-md text-label-md text-on-surface-variant" for="data-lancamento">Data do Lançamento</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">calendar_today</span>
-<input class="form-input-dark w-full pl-10 pr-4 py-2.5 rounded-lg font-body-md text-body-md" id="data-lancamento" type="date" value="2023-10-24">
-</div>
-</div>
-<!-- Valor -->
-<div class="space-y-2">
-<label class="block font-label-md text-label-md text-on-surface-variant" for="valor">Valor (R$)</label>
-<div class="relative">
-<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-data text-mono-data pointer-events-none">R$</span>
-<input class="form-input-dark w-full pl-10 pr-4 py-2.5 rounded-lg font-mono-data text-mono-data text-right" id="valor" placeholder="0,00" type="text">
-</div>
-</div>
-</div>
-<!-- Descrição -->
-<div class="space-y-2">
-<label class="block font-label-md text-label-md text-on-surface-variant" for="descricao">Histórico / Descrição</label>
-<textarea class="form-input-dark w-full px-4 py-3 rounded-lg font-body-md text-body-md" id="descricao" placeholder="Ex: Pagamento de fornecedor XYZ ref. NF 1234" rows="2"></textarea>
-</div>
-<div class="border-t border-white/5 my-6"></div>
-<!-- Partidas Dobradas -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter bg-surface-container-low/50 p-4 rounded-lg border border-white/5">
-<!-- Débito -->
-<div class="space-y-2">
-<label class="flex items-center gap-2 font-label-md text-label-md text-tertiary" for="conta-debito">
-<span class="material-symbols-outlined text-sm">arrow_upward</span> Conta de Débito
-                                </label>
-<select class="form-input-dark w-full px-4 py-2.5 rounded-lg font-body-md text-body-md appearance-none" id="conta-debito">
-<option disabled="" selected="" value="">Selecione a conta...</option>
-<optgroup label="Ativo">
-<option value="11101">1.1.1.01 - Caixa Geral</option>
-<option value="11102">1.1.1.02 - Bancos Conta Movimento</option>
-<option value="11201">1.1.2.01 - Clientes Nacionais</option>
-</optgroup>
-<optgroup label="Despesas">
-<option value="31101">3.1.1.01 - Despesas Administrativas</option>
-<option value="31102">3.1.1.02 - Salários e Encargos</option>
-</optgroup>
-</select>
-</div>
-<!-- Crédito -->
-<div class="space-y-2">
-<label class="flex items-center gap-2 font-label-md text-label-md text-secondary" for="conta-credito">
-<span class="material-symbols-outlined text-sm">arrow_downward</span> Conta de Crédito
-                                </label>
-<select class="form-input-dark w-full px-4 py-2.5 rounded-lg font-body-md text-body-md appearance-none" id="conta-credito">
-<option disabled="" selected="" value="">Selecione a conta...</option>
-<optgroup label="Passivo">
-<option value="21101">2.1.1.01 - Fornecedores Nacionais</option>
-<option value="21201">2.1.2.01 - Salários a Pagar</option>
-<option value="21202">2.1.2.02 - Impostos a Recolher</option>
-</optgroup>
-<optgroup label="Receitas">
-<option value="41101">4.1.1.01 - Receita de Vendas</option>
-<option value="41102">4.1.1.02 - Receita de Serviços</option>
-</optgroup>
-</select>
-</div>
-</div>
-<!-- Actions -->
-<div class="flex justify-end gap-4 pt-6">
-<button class="px-6 py-2.5 rounded-lg font-label-md text-label-md text-on-surface bg-transparent border border-white/10 hover:bg-white/5 transition-colors" type="button">
-                                Cancelar
-                            </button>
-<button class="px-6 py-2.5 rounded-lg font-label-md text-label-md text-on-primary bg-primary hover:bg-primary-fixed-dim transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]" type="button">
-<span class="material-symbols-outlined text-sm">save</span>
-                                Salvar Lançamento
-                            </button>
-</div>
-</form>
-</div>
-</div>
-</main>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-</body></html>
+          <!-- Form Card -->
+          <div class="glass-panel rounded-xl p-md">
+            <form class="space-y-gutter">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                <!-- Data -->
+                <div class="space-y-2">
+                  <label
+                    class="block font-label-md text-label-md text-on-surface-variant"
+                    for="data-lancamento"
+                    >Data do Lançamento</label
+                  >
+                  <div class="relative">
+                    <span
+                      class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none"
+                      >calendar_today</span
+                    >
+                    <input
+                      class="form-input-dark w-full pl-10 pr-4 py-2.5 rounded-lg font-body-md text-body-md"
+                      id="data-lancamento"
+                      type="date"
+                      value="2023-10-24"
+                    />
+                  </div>
+                </div>
+                <!-- Valor -->
+                <div class="space-y-2">
+                  <label
+                    class="block font-label-md text-label-md text-on-surface-variant"
+                    for="valor"
+                    >Valor (R$)</label
+                  >
+                  <div class="relative">
+                    <span
+                      class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-data text-mono-data pointer-events-none"
+                      >R$</span
+                    >
+                    <input
+                      class="form-input-dark w-full pl-10 pr-4 py-2.5 rounded-lg font-mono-data text-mono-data text-right"
+                      id="valor"
+                      placeholder="0,00"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Descrição -->
+              <div class="space-y-2">
+                <label
+                  class="block font-label-md text-label-md text-on-surface-variant"
+                  for="descricao"
+                  >Histórico / Descrição</label
+                >
+                <textarea
+                  class="form-input-dark w-full px-4 py-3 rounded-lg font-body-md text-body-md"
+                  id="descricao"
+                  placeholder="Ex: Pagamento de fornecedor XYZ ref. NF 1234"
+                  rows="2"
+                ></textarea>
+              </div>
+              <div class="border-t border-white/5 my-6"></div>
+              <!-- Partidas Dobradas -->
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-gutter bg-surface-container-low/50 p-4 rounded-lg border border-white/5"
+              >
+                <!-- Débito -->
+                <div class="space-y-2">
+                  <label
+                    class="flex items-center gap-2 font-label-md text-label-md text-tertiary"
+                    for="conta-debito"
+                  >
+                    <span class="material-symbols-outlined text-sm"
+                      >arrow_upward</span
+                    >
+                    Conta de Débito
+                  </label>
+                  <select
+                    class="form-input-dark w-full px-4 py-2.5 rounded-lg font-body-md text-body-md appearance-none"
+                    id="conta-debito"
+                  >
+                    <option disabled="" selected="" value="">
+                      Selecione a conta...
+                    </option>
+                    <optgroup label="Ativo">
+                      <option value="11101">1.1.1.01 - Caixa Geral</option>
+                      <option value="11102">
+                        1.1.1.02 - Bancos Conta Movimento
+                      </option>
+                      <option value="11201">
+                        1.1.2.01 - Clientes Nacionais
+                      </option>
+                    </optgroup>
+                    <optgroup label="Despesas">
+                      <option value="31101">
+                        3.1.1.01 - Despesas Administrativas
+                      </option>
+                      <option value="31102">
+                        3.1.1.02 - Salários e Encargos
+                      </option>
+                    </optgroup>
+                  </select>
+                </div>
+                <!-- Crédito -->
+                <div class="space-y-2">
+                  <label
+                    class="flex items-center gap-2 font-label-md text-label-md text-secondary"
+                    for="conta-credito"
+                  >
+                    <span class="material-symbols-outlined text-sm"
+                      >arrow_downward</span
+                    >
+                    Conta de Crédito
+                  </label>
+                  <select
+                    class="form-input-dark w-full px-4 py-2.5 rounded-lg font-body-md text-body-md appearance-none"
+                    id="conta-credito"
+                  >
+                    <option disabled="" selected="" value="">
+                      Selecione a conta...
+                    </option>
+                    <optgroup label="Passivo">
+                      <option value="21101">
+                        2.1.1.01 - Fornecedores Nacionais
+                      </option>
+                      <option value="21201">2.1.2.01 - Salários a Pagar</option>
+                      <option value="21202">
+                        2.1.2.02 - Impostos a Recolher
+                      </option>
+                    </optgroup>
+                    <optgroup label="Receitas">
+                      <option value="41101">
+                        4.1.1.01 - Receita de Vendas
+                      </option>
+                      <option value="41102">
+                        4.1.1.02 - Receita de Serviços
+                      </option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+              <!-- Actions -->
+              <div class="flex justify-end gap-4 pt-6">
+                <button
+                  class="px-6 py-2.5 rounded-lg font-label-md text-label-md text-on-surface bg-transparent border border-white/10 hover:bg-white/5 transition-colors"
+                  type="button"
+                >
+                  Cancelar
+                </button>
+                <button
+                  class="px-6 py-2.5 rounded-lg font-label-md text-label-md text-on-primary bg-primary hover:bg-primary-fixed-dim transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-sm">save</span>
+                  Salvar Lançamento
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
