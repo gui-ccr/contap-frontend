@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "echo 'Simulando o build do Next.js com sucesso! 🎉",
+    "build": "echo 'Simulando o build do Next.js com sucesso! 🎉'",
     "start": "next start",
     "lint": "eslint"
   },
