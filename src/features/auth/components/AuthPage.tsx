@@ -27,10 +27,10 @@ export function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background text-on-surface">
       {/* Ambient glow */}
-      <div className="absolute -top-[10%] -left-[10%] w-2/5 h-2/5 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-tertiary-container/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[10%] left-[10%] w-2/5 h-2/5 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[10%] w-[30%] h-[30%] bg-tertiary-container/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <main className="w-full max-w-[420px] px-margin-mobile md:px-0 relative z-10">
+      <main className="w-full max-w-105 px-margin-mobile md:px-0 relative z-10">
         <div className="bg-surface-container/70 glass-panel border border-white/5 rim-light rounded-3xl p-lg shadow-2xl flex flex-col gap-xl">
 
           {/* Header */}
