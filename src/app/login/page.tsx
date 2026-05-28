@@ -1,4 +1,4 @@
-import { AuthPage } from "@/features/auth/components/AuthPage";
+import { AuthPage } from "@/features/auth/AuthPage";
 
 export function Login() {
   return <AuthPage />;
