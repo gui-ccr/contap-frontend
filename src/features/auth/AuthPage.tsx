@@ -15,7 +15,7 @@ export function AuthPage() {
     <button
       type="button"
       onClick={() => setShowPassword((prev) => !prev)}
-      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none"
+      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
       <span className="material-symbols-outlined text-[20px]">
