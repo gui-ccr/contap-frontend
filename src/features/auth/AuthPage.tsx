@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { TextInput } from "@/ui/TextInput";
+import { useRouter } from "next/navigation";
 
 export function AuthPage() {
+  const router = useRouter();
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -91,12 +93,13 @@ export function AuthPage() {
                   Senha
                 </label>
                 {isLoginMode && (
-                  <a
-                    className="text-label-sm text-primary hover:text-primary-fixed transition-colors"
-                    href="#"
+                  <button
+                    type="button"
+                    onClick={() => router.push("/recuperar-senha")}
+                    className="text-label-sm text-primary hover:text-primary-fixed transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
                   >
-                    Esqueci minha senha
-                  </a>
+                    Esqueceu minha senha
+                  </button>
                 )}
               </div>
               <TextInput
