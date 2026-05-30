@@ -39,6 +39,19 @@ export function AuthPage() {
     </button>
   );
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (isLoginMode) {
+      // Aqui entraria a lógica de login com a API no futuro
+      // router.push("/dashboard");
+    } else {
+      // Lógica de cadastro (Sign Up) com a API
+      // Após sucesso, redireciona para o cadastro de empresa
+      router.push("/cadastro-empresa");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background text-on-surface">
       {/* Ambient glow */}
@@ -133,7 +146,8 @@ export function AuthPage() {
             <div className="pt-sm flex flex-col gap-base">
               <button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20"
+                className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
+                onClick={handleSubmit}
               >
                 {isLoginMode ? "Entrar no Sistema" : "Criar Conta"}
                 <span className="material-symbols-outlined text-[18px]">
