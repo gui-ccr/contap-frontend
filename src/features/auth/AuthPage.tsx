@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TextInput } from "@/ui/TextInput";
-import { useRouter } from "next/navigation";
 
 export function AuthPage() {
   const router = useRouter();
@@ -14,18 +13,15 @@ export function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoginMode) {
-      console.log("Logando com:", email);
-      router.push("/dashboard"); // Redireciona para o dashboard
+      router.push("/dashboard" as never);
     } else {
-      console.log("Criando conta para:", email);
-      setIsLoginMode(true); // Volta para o login após criar conta
+      router.push("/cadastro-empresa" as never);
     }
   };
-  
-  
+
   const passwordToggle = (
     <button
       type="button"
@@ -38,19 +34,6 @@ export function AuthPage() {
       </span>
     </button>
   );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (isLoginMode) {
-      // Aqui entraria a lógica de login com a API no futuro
-      // router.push("/dashboard");
-    } else {
-      // Lógica de cadastro (Sign Up) com a API
-      // Após sucesso, redireciona para o cadastro de empresa
-      router.push("/cadastro-empresa");
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background text-on-surface">
@@ -82,7 +65,7 @@ export function AuthPage() {
           {/* Form */}
           <form
             className="flex flex-col gap-gutter"
-            onSubmit={handleAuth}
+            onSubmit={handleSubmit}
           >
             {!isLoginMode && (
               <TextInput
@@ -121,7 +104,7 @@ export function AuthPage() {
                 {isLoginMode && (
                   <button
                     type="button"
-                    onClick={() => router.push("/recuperar-senha")}
+                    onClick={() => router.push("/recuperar-senha" as never)}
                     className="text-label-sm text-primary hover:text-primary-fixed transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
                   >
                     Esqueci minha senha
@@ -147,7 +130,6 @@ export function AuthPage() {
               <button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
-                onClick={handleSubmit}
               >
                 {isLoginMode ? "Entrar no Sistema" : "Criar Conta"}
                 <span className="material-symbols-outlined text-[18px]">

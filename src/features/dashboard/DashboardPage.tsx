@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import {
-  LayoutDashboard, ArrowLeftRight, TrendingUp, TrendingDown,
-  AlertCircle, DollarSign, LogOut, ChevronRight, Wallet,
+  TrendingUp, TrendingDown,
+  AlertCircle, Wallet,
   BarChart3, ArrowUpRight, ArrowDownRight, Bell, Plus,
   RefreshCw, Target, Zap, ShieldCheck, Clock, CheckCircle,
 } from "lucide-react";
@@ -15,13 +14,6 @@ import {
 // ─────────────────────────────────────────────
 // MOCK DATA
 // ─────────────────────────────────────────────
-
-const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: "Dashboard",      id: "dashboard"    },
-  { icon: TrendingUp,      label: "Fluxo de Caixa", id: "cashflow"     },
-  { icon: ArrowLeftRight,  label: "Movimentações",  id: "transactions" },
-  { icon: AlertCircle,     label: "Pendências",     id: "pending"      },
-];
 
 const KPI_DATA = [
   { id: 1, label: "Saldo Consolidado", value: "R$ 248.320,00", change: "+12,5%", positive: true,  icon: Wallet,    detail: "vs. mês anterior" },
@@ -121,74 +113,12 @@ function StatusBadge({ status }: { status: string }) {
 // ─────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [activeNav, setActiveNav] = useState("dashboard");
-  const [hoveredNav, setHoveredNav] = useState<string | null>(null);
-
   const today = new Date().toLocaleDateString("pt-BR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
   return (
-    <div className="min-h-screen flex text-white" style={{ background: "#131313" }}>
-
-      {/* ── SIDEBAR ─────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 h-screen sticky top-0  px-4 py-6 justify-between"
-        style={{ background: "#0f0f0f" }}>
-
-        {/* Logo */}
-        <div>
-          <div className="flex items-center gap-3 px-3 mb-10">
-            <div className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
-              style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}>
-              <DollarSign size={18} color="#fff" strokeWidth={2.5} />
-            </div>
-            <div>
-              <span className="text-white font-bold text-lg tracking-tight leading-none">
-                Conta<span style={{ color: "#10b981" }}>Up</span>
-              </span>
-              <p className="text-[10px] text-gray-600 mt-0.5 font-medium">Gestão Financeira</p>
-            </div>
-          </div>
-
-          {/* Nav items */}
-          <nav className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ icon: Icon, label, id }) => {
-              const isActive = activeNav === id;
-              return (
-                <button key={id} onClick={() => setActiveNav(id)}
-                  onMouseEnter={() => setHoveredNav(id)}
-                  onMouseLeave={() => setHoveredNav(null)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 w-full text-left"
-                  style={{
-                    background: isActive ? "#10b98118" : hoveredNav === id ? "#ffffff08" : "transparent",
-                    color: isActive ? "#10b981" : "#6b7280",
-                  }}>
-                  <Icon size={17} />
-                  <span className="flex-1">{label}</span>
-                  {isActive && <ChevronRight size={13} style={{ color: "#10b981" }} />}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Perfil do usuário */}
-        <div className="flex items-center gap-3 p-3 rounded-2xl  cursor-pointer  transition-all"
-          style={{ background: "#1a1a1a" }}>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            style={{ background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff" }}>
-            JD
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">João Dias</p>
-            <p className="text-[10px] text-gray-500 truncate">Administrador</p>
-          </div>
-          <LogOut size={14} className="text-gray-600 shrink-0" />
-        </div>
-      </aside>
-
-      {/* ── CONTEÚDO PRINCIPAL ──────────────────────── */}
-      <main className="flex-1 overflow-auto px-6 py-8">
+    <main className="flex-1 overflow-auto px-6 py-8 text-white">
 
         {/* HEADER */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -464,7 +394,6 @@ export default function DashboardPage() {
           </div>
 
         </section>
-      </main>
-    </div>
+    </main>
   );
 }
