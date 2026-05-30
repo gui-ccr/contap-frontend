@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { TextInput } from "@/ui/TextInput";
 
 export function AuthPage() {
+  const router = useRouter();
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -11,6 +13,18 @@ export function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleAuth = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoginMode) {
+      console.log("Logando com:", email);
+      router.push("/dashboard"); // Redireciona para o dashboard
+    } else {
+      console.log("Criando conta para:", email);
+      setIsLoginMode(true); // Volta para o login após criar conta
+    }
+  };
+  
+  
   const passwordToggle = (
     <button
       type="button"
@@ -54,7 +68,7 @@ export function AuthPage() {
           {/* Form */}
           <form
             className="flex flex-col gap-gutter"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleAuth}
           >
             {!isLoginMode && (
               <TextInput
