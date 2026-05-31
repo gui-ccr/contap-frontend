@@ -10,8 +10,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
+    process.env.NODE_ENV === "production"
+      ? "https://contaup-techbalance.vercel.app"
       : "http://localhost:3000"
   ),
   title: "ContaUp",
@@ -22,7 +22,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ContaUp",
     description: "Plataforma de contabilidade e gestão financeira.",
-    images: [{ url: "/contauplogo.png", width: 512, height: 512, alt: "ContaUp" }],
+    url: "https://contaup-techbalance.vercel.app",
+    siteName: "ContaUp",
+    images: [
+      {
+        url: "https://contaup-techbalance.vercel.app/contauplogo.png",
+        width: 512,
+        height: 512,
+        alt: "ContaUp - Gestão Financeira",
+      },
+    ],
+    type: "website",
   },
 };
 
