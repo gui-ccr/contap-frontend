@@ -47,11 +47,7 @@ export function AuthPage() {
           {/* Header */}
           <header className="flex flex-col items-center gap-sm text-center">
             <div className="w-14 h-14 bg-surface-container-high rounded-2xl flex items-center justify-center border border-white/5 rim-light mb-1">
-              <span
-                className="material-symbols-outlined text-primary text-[30px]"
-                style={{ fontVariationSettings: '"FILL" 1' }}
-              >
-              </span>
+              <img src="/contauplogo.png" alt="ContaUp" className="w-10 h-10" />
             </div>
             <h1 className="text-headline-lg text-on-surface">ContaUp</h1>
             <p className="text-body-md text-on-surface-variant">

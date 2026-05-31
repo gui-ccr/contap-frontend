@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ContaUp",
   description: "Plataforma de contabilidade e gestão financeira.",
+  icons: {
+    icon: "/contauplogo.png",
+  },
 };
 
 export default function RootLayout({
