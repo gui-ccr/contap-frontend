@@ -9,10 +9,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000"
+  ),
   title: "ContaUp",
   description: "Plataforma de contabilidade e gestão financeira.",
   icons: {
     icon: "/contauplogo.png",
+  },
+  openGraph: {
+    title: "ContaUp",
+    description: "Plataforma de contabilidade e gestão financeira.",
+    images: [{ url: "/contauplogo.png", width: 512, height: 512, alt: "ContaUp" }],
   },
 };
 

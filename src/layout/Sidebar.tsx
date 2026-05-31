@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DollarSign, LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
+import Image from "next/image";
 import type { Route } from "next";
 import Header from "./Header";
 
@@ -21,12 +22,13 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
       <div>
         {/* Logo */}
         <div className="flex items-center gap-3 px-3 mb-10">
-          <div
-            className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
-            style={{ background: "linear-gradient(135deg,#4edea3,#10b981)" }}
-          >
-            <DollarSign size={18} color="#003824" strokeWidth={2.5} />
-          </div>
+          <Image
+            src="/contauplogo.png"
+            alt="ContaUp"
+            width={36}
+            height={36}
+            className="rounded-2xl shadow-lg"
+          />
           <div>
             <span className="text-white font-bold text-lg tracking-tight leading-none">
               Conta<span style={{ color: "#4edea3" }}>Up</span>
@@ -110,12 +112,13 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg,#4edea3,#10b981)" }}
-          >
-            <DollarSign size={14} color="#003824" strokeWidth={2.5} />
-          </div>
+          <Image
+            src="/contauplogo.png"
+            alt="ContaUp"
+            width={28}
+            height={28}
+            className="rounded-lg"
+          />
           <span className="font-bold text-white text-base">
             Conta<span style={{ color: "#4edea3" }}>Up</span>
           </span>
