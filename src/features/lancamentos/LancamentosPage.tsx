@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, X, ChevronLeft, ChevronRight, Bell, HelpCircle } from "lucide-react";
+import { Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -36,10 +36,6 @@ export default function LancamentosPage() {
   const [search, setSearch]       = useState("");
   const [page, setPage]           = useState(1);
 
-  const today = new Date().toLocaleDateString("pt-BR", {
-    day: "numeric", month: "long", year: "numeric",
-  });
-
   function clearFilters() {
     setStartDate("2023-10-01");
     setEndDate("2023-10-31");
@@ -53,36 +49,6 @@ export default function LancamentosPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
-
-      {/* Top bar — desktop only */}
-      <header
-        className="hidden md:flex justify-between items-center px-8 h-16 sticky top-0 z-40 border-b"
-        style={{ background: "rgba(19,19,19,0.85)", backdropFilter: "blur(12px)", borderColor: "rgba(255,255,255,0.06)" }}
-      >
-        <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#6b7280" }} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar lançamentos..."
-            className="rounded-full pl-9 pr-4 py-1.5 text-sm outline-none transition-all w-64"
-            style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.06)", color: "#e5e2e1" }}
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm" style={{ color: "#6b7280" }}>{today}</span>
-          <button className="w-9 h-9 rounded-2xl flex items-center justify-center hover:bg-white/5" style={{ color: "#6b7280" }}>
-            <Bell size={17} />
-          </button>
-          <button className="w-9 h-9 rounded-2xl flex items-center justify-center hover:bg-white/5" style={{ color: "#6b7280" }}>
-            <HelpCircle size={17} />
-          </button>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
-            style={{ background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }}>
-            GR
-          </div>
-        </div>
-      </header>
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">

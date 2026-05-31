@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DollarSign, LogOut, Menu, X } from "lucide-react";
 import type { Route } from "next";
+import Header from "./Header";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "dashboard",       label: "Dashboard",               href: "/dashboard"           },
@@ -94,8 +95,9 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       <header
         className="md:hidden fixed top-0 left-0 right-0 h-14 z-40 flex items-center px-4 gap-3 border-b"
         style={{
-          background: "rgba(15,15,15,0.95)",
-          backdropFilter: "blur(12px)",
+          background: "rgba(13,13,13,0.95)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderColor: "rgba(255,255,255,0.06)",
         }}
       >
@@ -120,32 +122,49 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* ── Mobile drawer ── */}
-      {open && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Overlay */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            style={{ backdropFilter: "blur(4px)" }}
+      {/* ── Mobile drawer (always in DOM — animado via CSS) ── */}
+      <div
+        className="fixed inset-0 z-50 md:hidden"
+        style={{
+          opacity: open ? 1 : 0,
+          visibility: open ? "visible" : "hidden",
+          transition: "opacity 280ms ease, visibility 280ms ease",
+        }}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "rgba(0,0,0,0.65)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+          }}
+          onClick={() => setOpen(false)}
+        />
+
+        {/* Drawer panel */}
+        <aside
+          className="absolute left-0 top-0 bottom-0 w-72 flex flex-col px-4 py-6 justify-between"
+          style={{
+            background: "#0f0f0f",
+            transform: open ? "translateX(0)" : "translateX(-100%)",
+            transition: "transform 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+            boxShadow: "4px 0 32px rgba(0,0,0,0.5)",
+          }}
+        >
+          {/* Close button */}
+          <button
             onClick={() => setOpen(false)}
-          />
-          {/* Drawer */}
-          <aside
-            className="absolute left-0 top-0 bottom-0 w-72 flex flex-col px-4 py-6 justify-between"
-            style={{ background: "#0f0f0f" }}
+            className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5"
+            style={{ background: "#1e1e1e", color: "#6b7280" }}
+            aria-label="Fechar menu"
           >
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5"
-              style={{ background: "#1e1e1e", color: "#6b7280" }}
-              aria-label="Fechar menu"
-            >
-              <X size={16} />
-            </button>
-            <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
-          </aside>
-        </div>
-      )}
+            <X size={16} />
+          </button>
+
+          <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
+        </aside>
+      </div>
 
       {/* ── Desktop sidebar ── */}
       <aside
@@ -156,7 +175,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Page content ── */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden pt-14 md:pt-0">
+      <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-16">
+        <Header />
         {children}
       </div>
     </div>

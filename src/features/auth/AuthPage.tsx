@@ -51,7 +51,6 @@ export function AuthPage() {
                 className="material-symbols-outlined text-primary text-[30px]"
                 style={{ fontVariationSettings: '"FILL" 1' }}
               >
-                account_balance
               </span>
             </div>
             <h1 className="text-headline-lg text-on-surface">ContaUp</h1>
@@ -132,9 +131,7 @@ export function AuthPage() {
                 className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
               >
                 {isLoginMode ? "Entrar no Sistema" : "Criar Conta"}
-                <span className="material-symbols-outlined text-[18px]">
-                  arrow_forward
-                </span>
+                <span className="material-symbols-outlined text-[18px]"/>
               </button>
 
               <button
