@@ -1,4 +1,4 @@
-import { CompanyRegisterPage } from "@/features/company/components/CompanyRegisterPage";
+import { CompanyRegisterPage } from "@/features/company/CompanyRegisterPage";
 
 export function CadastroEmpresa() {
   return <CompanyRegisterPage />;
