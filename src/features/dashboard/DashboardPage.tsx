@@ -118,7 +118,7 @@ export default function DashboardPage() {
   });
 
   return (
-    <main className="flex-1 overflow-auto px-6 py-8 text-white">
+    <main className="flex-1 overflow-auto px-4 py-6 md:px-6 md:py-8 text-white">
 
         {/* HEADER */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">

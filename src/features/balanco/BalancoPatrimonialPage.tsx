@@ -84,35 +84,35 @@ export default function BalancoPatrimonialPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
-      {/* Top bar */}
-        <header
-          className="flex justify-between items-center px-8 h-16 sticky top-0 z-40 border-b"
-          style={{ background: "rgba(19,19,19,0.85)", backdropFilter: "blur(12px)", borderColor: "rgba(255,255,255,0.06)" }}
-        >
-          <div />
-          <div className="flex items-center gap-4">
-            <span className="text-sm hidden md:block" style={{ color: "#6b7280" }}>{today}</span>
-            <button className="w-9 h-9 rounded-2xl flex items-center justify-center transition-colors hover:bg-white/5" style={{ color: "#6b7280" }}>
-              <Bell size={17} />
-            </button>
-            <button className="w-9 h-9 rounded-2xl flex items-center justify-center transition-colors hover:bg-white/5" style={{ color: "#6b7280" }}>
-              <HelpCircle size={17} />
-            </button>
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
-              style={{ background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }}>
-              GR
-            </div>
+      {/* Top bar — desktop only */}
+      <header
+        className="hidden md:flex justify-between items-center px-8 h-16 sticky top-0 z-40 border-b"
+        style={{ background: "rgba(19,19,19,0.85)", backdropFilter: "blur(12px)", borderColor: "rgba(255,255,255,0.06)" }}
+      >
+        <div />
+        <div className="flex items-center gap-4">
+          <span className="text-sm" style={{ color: "#6b7280" }}>{today}</span>
+          <button className="w-9 h-9 rounded-2xl flex items-center justify-center hover:bg-white/5" style={{ color: "#6b7280" }}>
+            <Bell size={17} />
+          </button>
+          <button className="w-9 h-9 rounded-2xl flex items-center justify-center hover:bg-white/5" style={{ color: "#6b7280" }}>
+            <HelpCircle size={17} />
+          </button>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
+            style={{ background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }}>
+            GR
           </div>
-        </header>
+        </div>
+      </header>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto px-8 py-8">
-          <div className="max-w-6xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
+          <div className="max-w-6xl mx-auto space-y-5">
 
             {/* Page header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#e5e2e1" }}>
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: "#e5e2e1" }}>
                   Balanço Patrimonial
                 </h1>
                 <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
@@ -225,7 +225,7 @@ export default function BalancoPatrimonialPage() {
 
             {/* Equation footer */}
             <div
-              className="rounded-3xl p-5 flex items-center justify-center gap-8"
+              className="rounded-3xl p-4 md:p-5 flex flex-wrap items-center justify-center gap-4 md:gap-8"
               style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.04)" }}
             >
               <div className="text-center">
