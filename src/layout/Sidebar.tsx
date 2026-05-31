@@ -12,6 +12,7 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "dashboard",       label: "Dashboard",               href: "/dashboard"           },
   { icon: "menu_book",       label: "Listagem de Lançamentos", href: "/lancamentos"         },
   { icon: "account_balance", label: "Balanço Patrimonial",     href: "/balanco-patrimonial" },
+  { icon: "group",           label: "Funcionários",            href: "/funcionarios" as Route },
 ];
 
 const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha"];
