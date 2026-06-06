@@ -1,4 +1,4 @@
-import { DrePage } from "@/features/DRE/components/DrePage";
+import { DrePage } from "@/features/DRE/DrePage";
 
 export default function Page() {
   return <DrePage />;
