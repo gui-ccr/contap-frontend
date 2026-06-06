@@ -48,7 +48,7 @@ function Field({
           <button
             type="button"
             onClick={() => setShow(!show)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
           >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
@@ -90,7 +90,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
   return (
     <button
       onClick={onChange}
-      className="relative w-11 h-6 rounded-full transition-all duration-300 shrink-0"
+      className="relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 cursor-pointer"
       style={{ background: checked ? "#10b981" : "#333" }}
     >
       <span
@@ -173,11 +173,11 @@ function ProfileSettings() {
 
       <div className="flex items-center gap-5 mb-6 pb-6" style={{ borderBottom: "1px solid #2a2a2a" }}>
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold"
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold cursor-pointer"
             style={{ background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff" }}>
             JD
           </div>
-          <button className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center"
+          <button className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
             style={{ background: "#10b981" }}>
             <Camera size={11} color="#fff" />
           </button>
@@ -185,7 +185,7 @@ function ProfileSettings() {
         <div>
           <p className="text-sm font-semibold text-white">Foto de Perfil</p>
           <p className="text-xs text-gray-500 mt-0.5">PNG, JPG ou WEBP. Máx. 2MB.</p>
-          <button className="text-xs mt-2 font-medium transition-opacity hover:opacity-70" style={{ color: "#10b981" }}>
+          <button className="text-xs mt-2 font-medium transition-opacity hover:opacity-70 cursor-pointer" style={{ color: "#10b981" }}>
             Fazer upload →
           </button>
         </div>
@@ -271,18 +271,6 @@ function SystemPreferences() {
     <SettingsCard>
       <SectionHeader icon={SlidersHorizontal} title="Preferências do Sistema" subtitle="Tema, idioma e controle de notificações" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Tema</label>
-          <div className="flex gap-2">
-            {[{ v: "dark", label: "Escuro" }, { v: "light", label: "Claro" }].map((t) => (
-              <button key={t.v} onClick={() => setTheme(t.v)}
-                className="flex-1 py-2.5 rounded-2xl text-sm font-medium transition-all"
-                style={{ background: theme === t.v ? "#10b981" : "#242424", color: theme === t.v ? "#fff" : "#6b7280" }}>
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
         <SelectField label="Idioma" value={language} onChange={setLanguage}
           options={[
             { label: "Português (Brasil)", value: "pt_br" },
@@ -422,7 +410,7 @@ function FinancialSettings() {
           <span key={i} className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-xl"
             style={{ background: "#242424", color: "#d1d5db" }}>
             {c}
-            <button onClick={() => removeCategory(i)} className="hover:text-red-400 transition-colors"><Trash2 size={11} /></button>
+            <button onClick={() => removeCategory(i)} className="hover:text-red-400 transition-colors cursor-pointer"><Trash2 size={11} /></button>
           </span>
         ))}
       </div>
@@ -431,7 +419,7 @@ function FinancialSettings() {
           placeholder="Nova categoria..."
           className="flex-1 px-4 py-2.5 rounded-2xl text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-[#10b981]/50"
           style={{ background: "#242424" }} />
-        <button onClick={addCategory} className="px-4 py-2.5 rounded-2xl text-sm font-semibold text-white hover:opacity-80 transition-opacity"
+        <button onClick={addCategory} className="px-4 py-2.5 rounded-2xl text-sm font-semibold text-white hover:opacity-80 transition-opacity cursor-pointer"
           style={{ background: "#10b981" }}>
           <Plus size={15} />
         </button>
