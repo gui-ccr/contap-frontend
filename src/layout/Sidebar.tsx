@@ -9,15 +9,26 @@ import type { Route } from "next";
 import Header from "./Header";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
-  { icon: "dashboard",       label: "Dashboard",               href: "/dashboard"           },
-  { icon: "menu_book",       label: "Listagem de Lançamentos", href: "/lancamentos"         },
-  { icon: "account_balance", label: "Balanço Patrimonial",     href: "/balanco-patrimonial" },
-  { icon: "group",           label: "Funcionários",            href: "/funcionarios" as Route },
+  { icon: "dashboard", label: "Dashboard", href: "/dashboard" },
+  { icon: "menu_book", label: "Listagem de Lançamentos", href: "/lancamentos" },
+  {
+    icon: "account_balance",
+    label: "Balanço Patrimonial",
+    href: "/balanco-patrimonial",
+  },
+  { icon: "receipt_long", label: "DRE", href: "/dre" },
+  { icon: "group", label: "Funcionários", href: "/funcionarios" as Route },
 ];
 
 const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha"];
 
-function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function NavLinks({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string;
+  onNavigate?: () => void;
+}) {
   return (
     <>
       <div>
@@ -34,7 +45,10 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
             <span className="text-white font-bold text-lg tracking-tight leading-none">
               Conta<span style={{ color: "#4edea3" }}>Up</span>
             </span>
-            <p className="text-[10px] mt-0.5 font-medium" style={{ color: "#6b7280" }}>
+            <p
+              className="text-[10px] mt-0.5 font-medium"
+              style={{ color: "#6b7280" }}
+            >
               Gestão Financeira
             </p>
           </div>
@@ -57,13 +71,18 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
               >
                 <span
                   className="material-symbols-outlined text-[20px]"
-                  style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                  style={
+                    isActive ? { fontVariationSettings: "'FILL' 1" } : undefined
+                  }
                 >
                   {icon}
                 </span>
                 <span className="flex-1 leading-tight">{label}</span>
                 {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#4edea3" }} />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ background: "#4edea3" }}
+                  />
                 )}
               </Link>
             );
@@ -92,8 +111,10 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   if (AUTH_ROUTES.includes(pathname)) return <>{children}</>;
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#131313", color: "#e5e2e1" }}>
-
+    <div
+      className="min-h-screen flex"
+      style={{ background: "#131313", color: "#e5e2e1" }}
+    >
       {/* ── Mobile top bar ── */}
       <header
         className="md:hidden fixed top-0 left-0 right-0 h-14 z-40 flex items-center px-4 gap-3 border-b"
