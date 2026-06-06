@@ -5,8 +5,6 @@ import NovoLancamentoForm from "./components/NovoLancamentoForm";
 import { LancamentosFilters } from "./components/LancamentosFilters";
 import { LancamentosTable } from "./components/LancamentosTable";
 
-// ─── Mock data do Grupo ───────────────────────────────────────────────────────
-
 const CONTAS = [
   { value: "all",       label: "Todas as Contas" },
   { value: "1.1.01.01", label: "1.1.01.01 — Banco Itaú C/C" },
@@ -35,8 +33,28 @@ export default function LancamentosPage() {
   const [conta, setConta]         = useState("all");
   const [page, setPage]           = useState(1);
 
-  const totalPages = Math.ceil(TOTAL_MOCK / PAGE_SIZE);
-  const pageRows   = LANCAMENTOS.slice(0, PAGE_SIZE);
+  function parseBR(d: string) {
+    const [day, month, year] = d.split("/");
+    return new Date(`${year}-${month}-${day}`);
+  }
+
+  const filtered = LANCAMENTOS.filter((l) => {
+    const date = parseBR(l.data);
+    const from = startDate ? new Date(startDate) : null;
+    const to   = endDate   ? new Date(endDate)   : null;
+    if (from && date < from) return false;
+    if (to   && date > to)   return false;
+    if (conta !== "all") {
+      const contaId = conta.split(" ")[0];
+      if (!l.debito.startsWith(contaId) && !l.credito.startsWith(contaId)) return false;
+    }
+    return true;
+  });
+
+  const totalFiltered = filtered.length;
+  const totalPages    = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
+  const safePage      = Math.min(page, totalPages);
+  const pageRows      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   function clearFilters() {
     setStartDate("2023-10-01");
@@ -44,122 +62,81 @@ export default function LancamentosPage() {
     setConta("all");
     setPage(1);
   }
- 
+
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 lg:p-8 font-sans antialiased text-slate-600 selection:bg-slate-200">
-      
-      {/* 1. CABEÇALHO DA PÁGINA */}
-      <div className="max-w-7xl mx-auto mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Fluxo de Caixa
-          </h1>
-          <p className="mt-1.5 text-sm text-slate-500 font-medium">
-            Gerencie e monitore todos os lançamentos financeiros da Contap com precisão.
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2 bg-emerald-50/80 text-emerald-700 px-3.5 py-1.5 rounded-full text-xs font-bold self-start sm:self-center border border-emerald-200/60 shadow-sm shadow-emerald-100/50">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          Ambiente Interno
-        </div>
-      </div>
+    <div className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
+        <div className="max-w-7xl mx-auto space-y-6">
 
-      <div className="max-w-7xl mx-auto space-y-10">
-        
-        {/* 2. BLOCO DE CARTÕES DE RESUMO (KPIS) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card Receitas */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Receitas</span>
-              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-                </svg>
-              </div>
+          {/* Cabeçalho */}
+          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium" style={{ color: "#6b7280" }}>Outubro 2023</p>
+              <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">Fluxo de Caixa</h1>
             </div>
-            <div className="mt-5">
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">R$ 62.650,00</h3>
-              <p className="text-xs text-emerald-600 mt-1.5 font-semibold flex items-center gap-1">
-                <span>↑ 12%</span>
-                <span className="text-slate-400 font-normal">este mês</span>
-              </p>
-            </div>
-          </div>
+          </header>
 
-          {/* Card Despesas */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Despesas</span>
-              <div className="p-2 bg-rose-50 text-rose-600 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.306-4.307a11.95 11.95 0 015.814 5.519l2.74 1.22m0 0l-5.94 2.28m5.94 2.28l-2.28 5.941" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-5">
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">R$ 15.055,50</h3>
-              <p className="text-xs text-rose-600 mt-1.5 font-semibold flex items-center gap-1">
-                <span>↓ 4%</span>
-                <span className="text-slate-400 font-normal">em relação a ontem</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Card Saldo Executivo */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 to-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 flex flex-col justify-between text-white border-none group">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-slate-700/10 rounded-full blur-xl pointer-events-none" />
-            <div className="flex justify-between items-center z-10">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Saldo Disponível</span>
-              <div className="p-2 bg-slate-800/80 text-amber-400 rounded-xl group-hover:scale-110 transition-transform duration-200 border border-slate-700/50">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .596-.237 1.168-.659 1.591a2.25 2.25 0 01-1.591.659H6a2.25 2.25 0 01-2.25-2.25V14.15m16.5 0c0-1.242-1.008-2.25-2.25-2.25H3.75c-1.242 0-2.25 1.008-2.25 2.25m16.5 0l-3.59-3.59a2.25 2.25 0 00-3.182 0l-3.48 3.48m-1.67-3.48a2.25 2.25 0 00-3.182 0l-3.59 3.59m4.125-15.75h10.5a2.25 2.25 0 012.25 2.25v4.125H3.75V5.25a2.25 2.25 0 012.25-2.25z" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-5 z-10">
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">R$ 47.594,50</h3>
-              <p className="text-xs text-slate-300 mt-1.5 font-medium tracking-wide">Balanço líquido em tempo real</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. ARQUITETURA DO GRID EM DUAS COLUNAS */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* LADO ESQUERDO: Formulário */}
-          <div className="lg:col-span-5 lg:sticky lg:top-6 transition-all duration-200">
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-1 overflow-hidden">
-              <div className="p-5 pb-3 border-b border-slate-100">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Novo Registro</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Insira os dados do lançamento abaixo</p>
-              </div>
-              <div className="p-4 bg-slate-50/50 rounded-b-2xl">
-                <NovoLancamentoForm />
-              </div>
-            </div>
-          </div>
-
-          {/* LADO DIREITO: Filtros e Tabela */}
-          <div className="lg:col-span-7 space-y-8">
-            
-            {/* Bloco de Filtros */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="mb-5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="p-1.5 bg-slate-100 text-slate-700 rounded-lg">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                    </svg>
-                  </span>
-                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Filtros de Pesquisa</h3>
+          {/* KPIs */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Receitas */}
+            <div className="rounded-3xl p-5 flex flex-col justify-between gap-4" style={{ background: "#1e1e1e" }}>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>Total Receitas</span>
+                <div className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: "rgba(78,222,163,0.12)" }}>
+                  <svg className="w-4 h-4" fill="none" stroke="#4edea3" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
                 </div>
               </div>
-              
+              <div>
+                <p className="text-2xl font-bold text-white tracking-tight">R$ 62.650,00</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: "#4edea3" }}>↑ 12% este mês</p>
+              </div>
+            </div>
+
+            {/* Despesas */}
+            <div className="rounded-3xl p-5 flex flex-col justify-between gap-4" style={{ background: "#1e1e1e" }}>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>Total Despesas</span>
+                <div className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: "rgba(255,100,100,0.1)" }}>
+                  <svg className="w-4 h-4" fill="none" stroke="#ff6464" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.306-4.307a11.95 11.95 0 015.814 5.519l2.74 1.22m0 0l-5.94 2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white tracking-tight">R$ 15.055,50</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: "#ff6464" }}>↓ 4% em relação a ontem</p>
+              </div>
+            </div>
+
+            {/* Saldo */}
+            <div className="rounded-3xl p-5 flex flex-col justify-between gap-4" style={{ background: "#4edea3" }}>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#003824" }}>Saldo Disponível</span>
+                <div className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: "rgba(0,56,36,0.15)" }}>
+                  <svg className="w-4 h-4" fill="none" stroke="#003824" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .596-.237 1.168-.659 1.591a2.25 2.25 0 01-1.591.659H6a2.25 2.25 0 01-2.25-2.25V14.15m16.5 0c0-1.242-1.008-2.25-2.25-2.25H3.75c-1.242 0-2.25 1.008-2.25 2.25m16.5 0l-3.59-3.59a2.25 2.25 0 00-3.182 0l-3.48 3.48m-1.67-3.48a2.25 2.25 0 00-3.182 0l-3.59 3.59" />
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <p className="text-2xl font-bold tracking-tight" style={{ color: "#003824" }}>R$ 47.594,50</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: "#00422b" }}>Balanço líquido</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid: Formulário + Filtros/Tabela */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            {/* Formulário */}
+            <div className="lg:col-span-5 lg:sticky lg:top-6">
+              <NovoLancamentoForm />
+            </div>
+
+            {/* Filtros + Tabela */}
+            <div className="lg:col-span-7 space-y-5">
               <LancamentosFilters
                 startDate={startDate}
                 endDate={endDate}
@@ -171,30 +148,27 @@ export default function LancamentosPage() {
                 onClear={clearFilters}
                 onApply={() => setPage(1)}
               />
-            </div>
 
-            {/* Bloco da Tabela */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <div className="px-6 py-4.5 bg-slate-50/70 border-b border-slate-200/80 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="p-1.5 bg-slate-200/60 text-slate-700 rounded-lg">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                    </svg>
+              <div className="rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
+                <div
+                  className="px-5 py-4 flex justify-between items-center"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#1a1a1a" }}
+                >
+                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
+                    Histórico de Movimentações
                   </span>
-                  <h3 className="font-black text-slate-900 text-xs uppercase tracking-widest">Histórico de Movimentações</h3>
+                  <span
+                    className="text-xs font-semibold px-2.5 py-1 rounded-xl"
+                    style={{ background: "#4edea3", color: "#003824" }}
+                  >
+                    {totalFiltered} lançamentos
+                  </span>
                 </div>
-                <span className="text-xs bg-slate-900 text-white px-2.5 py-1 rounded-md font-bold tracking-tight shadow-sm">
-                  {TOTAL_MOCK} Lançamentos
-                </span>
-              </div>
-              
-              <div className="p-4 sm:p-6 overflow-x-auto">
                 <LancamentosTable
-                  rows={pageRows || []}
-                  page={page}
+                  rows={pageRows}
+                  page={safePage}
                   totalPages={totalPages}
-                  total={TOTAL_MOCK}
+                  total={totalFiltered}
                   pageSize={PAGE_SIZE}
                   onPage={setPage}
                 />
@@ -202,10 +176,8 @@ export default function LancamentosPage() {
             </div>
 
           </div>
-
         </div>
-
-      </div>
+      </main>
     </div>
   );
 }
