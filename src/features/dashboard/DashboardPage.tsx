@@ -1,11 +1,13 @@
 "use client";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 import { useState } from "react";
 import {
   LayoutDashboard, ArrowLeftRight, TrendingUp, TrendingDown,
   AlertCircle, DollarSign, LogOut, ChevronRight, Wallet,
   BarChart3, ArrowUpRight, ArrowDownRight, Bell, Plus,
-  RefreshCw, Target, Zap, ShieldCheck, Clock, CheckCircle,
+  RefreshCw, Target, Zap, ShieldCheck, Clock, CheckCircle, Settings,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -16,11 +18,13 @@ import {
 // MOCK DATA
 // ─────────────────────────────────────────────
 
+
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: "Dashboard",      id: "dashboard"    },
-  { icon: TrendingUp,      label: "Fluxo de Caixa", id: "cashflow"     },
-  { icon: ArrowLeftRight,  label: "Movimentações",  id: "transactions" },
-  { icon: AlertCircle,     label: "Pendências",     id: "pending"      },
+  { icon: LayoutDashboard, label: "Dashboard",      id: "dashboard",    href: "/dashboard"    },
+  { icon: TrendingUp,      label: "Fluxo de Caixa", id: "cashflow",     href: "/cashflow"     },
+  { icon: ArrowLeftRight,  label: "Movimentações",  id: "transactions", href: "/transactions" },
+  { icon: AlertCircle,     label: "Pendências",     id: "pending",      href: "/pending"      },
+  { icon: Settings,        label: "Configurações",  id: "settings",     href: "/settings"     },
 ];
 
 const KPI_DATA = [
@@ -121,7 +125,7 @@ function StatusBadge({ status }: { status: string }) {
 // ─────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const pathname = usePathname();
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
   const today = new Date().toLocaleDateString("pt-BR", {
@@ -152,24 +156,25 @@ export default function DashboardPage() {
 
           {/* Nav items */}
           <nav className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ icon: Icon, label, id }) => {
-              const isActive = activeNav === id;
-              return (
-                <button key={id} onClick={() => setActiveNav(id)}
-                  onMouseEnter={() => setHoveredNav(id)}
-                  onMouseLeave={() => setHoveredNav(null)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 w-full text-left"
-                  style={{
-                    background: isActive ? "#10b98118" : hoveredNav === id ? "#ffffff08" : "transparent",
-                    color: isActive ? "#10b981" : "#6b7280",
-                  }}>
-                  <Icon size={17} />
-                  <span className="flex-1">{label}</span>
-                  {isActive && <ChevronRight size={13} style={{ color: "#10b981" }} />}
-                </button>
-              );
-            })}
-          </nav>
+  {NAV_ITEMS.map(({ icon: Icon, label, id, href }) => {
+    const isActive = pathname === href;
+    return (
+      <Link
+        key={id}
+        href={href}
+        className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200"
+        style={{
+          background: isActive ? "#10b98118" : "transparent",
+          color: isActive ? "#10b981" : "#6b7280",
+        }}
+      >
+        <Icon size={17} />
+        <span className="flex-1">{label}</span>
+        {isActive && <ChevronRight size={13} style={{ color: "#10b981" }} />}
+      </Link>
+    );
+  })}
+</nav>
         </div>
 
         {/* Perfil do usuário */}
