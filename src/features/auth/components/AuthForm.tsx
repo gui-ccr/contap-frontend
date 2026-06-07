@@ -26,7 +26,7 @@ export function AuthForm({
     <button
       type="button"
       onClick={onTogglePassword}
-      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5"
+      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5 cursor-pointer"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
       <span className="material-symbols-outlined text-[20px]">
@@ -104,7 +104,7 @@ export function AuthForm({
         <button
           type="button"
           onClick={onToggleMode}
-          className="text-label-sm text-primary hover:text-primary-fixed transition-colors"
+          className="text-label-sm text-primary hover:text-primary-fixed transition-colors cursor-pointer"
         >
           {isLoginMode ? "Não tem uma conta? Cadastre-se" : "Já possui conta? Fazer Login"}
         </button>
