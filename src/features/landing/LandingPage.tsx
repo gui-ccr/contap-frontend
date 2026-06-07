@@ -1520,7 +1520,8 @@ export function LandingPage() {
                 </p>
                 <ul className="flex flex-col gap-2.5">
                   <li>
-                    <button
+                    <Link
+                      href={"https://tech-balance-focus.vercel.app/"}
                       onClick={() => scrollToSection("precos")}
                       className="text-[13px] bg-transparent border-0 p-0 cursor-pointer transition-colors"
                       style={{ color: "#86948a" }}
@@ -1531,8 +1532,8 @@ export function LandingPage() {
                         (e.currentTarget.style.color = "#86948a")
                       }
                     >
-                      Preços
-                    </button>
+                      Tech-Balance
+                    </Link>
                   </li>
                   <li>
                     <button
