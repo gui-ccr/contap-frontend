@@ -71,7 +71,7 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
       />
 
       <div
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl"
+        className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl"
         style={{ background: "#1a1a1a" }}
       >
         {/* Header */}
@@ -85,7 +85,7 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5 cursor-pointer"
             style={{ color: "#6b7280" }}
           >
             <X size={16} />
@@ -144,7 +144,7 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
               <button
                 type="button"
                 onClick={() => setShowSenha((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:opacity-70"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:opacity-70 cursor-pointer"
                 style={{ color: "#6b7280" }}
               >
                 {showSenha ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -184,14 +184,14 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
           <div className="flex justify-end gap-2 pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <button
               type="button" onClick={onClose}
-              className="px-4 py-2 rounded-2xl text-sm font-medium transition-all hover:bg-white/5"
+              className="px-4 py-2 rounded-2xl text-sm font-medium transition-all hover:bg-white/5 cursor-pointer"
               style={{ color: "#6b7280", border: "1px solid rgba(255,255,255,0.08)" }}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2 rounded-2xl text-sm font-semibold transition-all hover:opacity-90"
+              className="flex items-center gap-2 px-5 py-2 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 cursor-pointer"
               style={{ background: "#4edea3", color: "#003824" }}
             >
               <Plus size={14} strokeWidth={2.5} />

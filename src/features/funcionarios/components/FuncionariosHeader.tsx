@@ -19,7 +19,7 @@ export function FuncionariosHeader({ ativos, total, onNovo }: FuncionariosHeader
       </div>
       <button
         onClick={onNovo}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 shadow-lg self-start sm:self-auto"
+        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 shadow-lg self-start sm:self-auto cursor-pointer"
         style={{ background: "#4edea3", color: "#003824" }}
       >
         <Plus size={15} strokeWidth={2.5} />

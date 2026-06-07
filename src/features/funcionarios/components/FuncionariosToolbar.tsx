@@ -24,7 +24,7 @@ export function FuncionariosToolbar({ search, viewMode, onSearch, onViewMode }: 
       <div className="flex items-center rounded-2xl p-1 shrink-0" style={{ background: "#1e1e1e" }}>
         <button
           onClick={() => onViewMode("grid")}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
           style={viewMode === "grid" ? { background: "#4edea318", color: "#4edea3" } : { color: "#6b7280" }}
         >
           <LayoutGrid size={14} />
@@ -32,7 +32,7 @@ export function FuncionariosToolbar({ search, viewMode, onSearch, onViewMode }: 
         </button>
         <button
           onClick={() => onViewMode("list")}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
           style={viewMode === "list" ? { background: "#4edea318", color: "#4edea3" } : { color: "#6b7280" }}
         >
           <List size={14} />
