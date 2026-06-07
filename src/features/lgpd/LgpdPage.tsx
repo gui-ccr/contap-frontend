@@ -51,7 +51,7 @@ const TEAM_MEMBERS = [
     category: "backend",
   },
   {
-    name: "Joao Pedro Matos",
+    name: "João Pedro Matos Tameirão",
     role: "Desenvolvedor Back-end",
     sub: "Regras de Negócio & Contábil",
     category: "backend",
