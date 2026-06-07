@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { Route } from "next";
 import {
   User,
@@ -23,13 +22,11 @@ import {
   Plus,
   Trash2,
   Copy,
-  LayoutDashboard,
-  TrendingUp,
-  ArrowLeftRight,
-  AlertCircle,
-  DollarSign,
-  ChevronRight,
-  Settings,
+  FileText,
+  ArrowRight,
+  Info,
+  Download,
+  UserX,
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
@@ -777,107 +774,92 @@ function FinancialSettings() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// NAV ITEMS — com href para navegação real via Link
+// SEÇÃO 6 — LGPD / PROTEÇÃO DE DADOS
 // ─────────────────────────────────────────────────────────────
-const NAV_ITEMS = [
-  {
-    icon: LayoutDashboard,
-    label: "Dashboard",
-    id: "dashboard",
-    href: "/dashboard",
-  },
-  {
-    icon: TrendingUp,
-    label: "Fluxo de Caixa",
-    id: "cashflow",
-    href: "/cashflow",
-  },
-  {
-    icon: ArrowLeftRight,
-    label: "Movimentações",
-    id: "transactions",
-    href: "/transactions",
-  },
-  { icon: AlertCircle, label: "Pendências", id: "pending", href: "/pending" },
-  { icon: Settings, label: "Configurações", id: "settings", href: "/settings" },
-];
-
-// ─────────────────────────────────────────────────────────────
-// SIDEBAR — usa usePathname para detectar rota ativa
-// ─────────────────────────────────────────────────────────────
-function Sidebar() {
-  const pathname = usePathname();
+function LgpdSettings() {
+  const rights = [
+    { icon: Info, title: "Acesso aos dados", desc: "Você pode solicitar uma cópia completa de todos os dados pessoais que armazenamos sobre você." },
+    { icon: Download, title: "Portabilidade", desc: "Exporte seus dados em formato legível para transferi-los a outro serviço." },
+    { icon: Check, title: "Correção", desc: "Solicite a correção de dados pessoais incompletos, inexatos ou desatualizados." },
+    { icon: UserX, title: "Exclusão", desc: "Solicite a exclusão definitiva dos seus dados pessoais da nossa plataforma." },
+  ];
 
   return (
-    <aside
-      className="hidden md:flex flex-col w-64 shrink-0 h-screen sticky top-0 px-4 py-6 justify-between"
-      style={{ background: "#0f0f0f", borderRight: "1px solid #1f1f1f" }}
-    >
-      <div>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-3 mb-10">
+    <SettingsCard>
+      <SectionHeader
+        icon={FileText}
+        title="LGPD — Proteção de Dados"
+        subtitle="Seus direitos sob a Lei Geral de Proteção de Dados (Lei nº 13.709/2018)"
+      />
+
+      {/* Aviso informativo */}
+      <div
+        className="flex gap-3 p-4 rounded-2xl mb-6"
+        style={{ background: "#4edea308", border: "1px solid #4edea320" }}
+      >
+        <Info size={16} className="shrink-0 mt-0.5" style={{ color: "#4edea3" }} />
+        <p className="text-xs leading-relaxed" style={{ color: "#a3a3a3" }}>
+          A ContaUp respeita sua privacidade e garante o exercício dos seus direitos previstos
+          na LGPD. Todos os pedidos são analisados em até <strong style={{ color: "#e5e2e1" }}>15 dias úteis</strong>.
+        </p>
+      </div>
+
+      {/* Direitos */}
+      <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#6b7280" }}>
+        Seus Direitos
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+        {rights.map(({ icon: Icon, title, desc }) => (
           <div
-            className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
-            style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}
+            key={title}
+            className="flex gap-3 p-4 rounded-2xl"
+            style={{ background: "#242424" }}
           >
-            <DollarSign size={18} color="#fff" strokeWidth={2.5} />
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "#4edea312" }}
+            >
+              <Icon size={15} style={{ color: "#4edea3" }} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold mb-0.5" style={{ color: "#e5e2e1" }}>{title}</p>
+              <p className="text-[11px] leading-relaxed" style={{ color: "#6b7280" }}>{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CTA — exclusão de dados */}
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl"
+        style={{ background: "#242424", border: "1px solid #2a2a2a" }}
+      >
+        <div className="flex gap-3 items-start">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "#f4375418" }}
+          >
+            <UserX size={16} style={{ color: "#f43754" }} />
           </div>
           <div>
-            <span className="text-white font-bold text-lg tracking-tight leading-none">
-              Conta<span style={{ color: "#10b981" }}>Up</span>
-            </span>
-            <p className="text-[10px] text-gray-600 mt-0.5 font-medium">
-              Gestão Financeira
+            <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>
+              Solicitar exclusão dos meus dados
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>
+              Solicite a remoção permanente de todas as suas informações pessoais da plataforma.
             </p>
           </div>
         </div>
-
-        {/* Nav — Link com isActive baseado no pathname real */}
-        <nav className="flex flex-col gap-1">
-          {NAV_ITEMS.map(({ icon: Icon, label, id, href }) => {
-            const isActive = pathname === href;
-            
-            return (
-              <Link
-                key={id}
-                href={href as Route}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200"
-                style={{
-                  background: isActive ? "#10b98118" : "transparent",
-                  color: isActive ? "#10b981" : "#6b7280",
-                }}
-              >
-                <Icon size={17} />
-                <span className="flex-1">{label}</span>
-                {isActive && (
-                  <ChevronRight size={13} style={{ color: "#10b981" }} />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Perfil */}
-      <div
-        className="flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all"
-        style={{ background: "#1a1a1a" }}
-      >
-        <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-          style={{
-            background: "linear-gradient(135deg,#10b981,#059669)",
-            color: "#fff",
-          }}
+        <Link
+          href={"/solicitar-exclusao-dados" as Route}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-opacity hover:opacity-80"
+          style={{ background: "#f4375420", color: "#f43754" }}
         >
-          JD
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-white truncate">João Dias</p>
-          <p className="text-[10px] text-gray-500 truncate">Administrador</p>
-        </div>
+          Solicitar exclusão
+          <ArrowRight size={13} />
+        </Link>
       </div>
-    </aside>
+    </SettingsCard>
   );
 }
 
@@ -890,63 +872,81 @@ const TABS = [
   { id: "system", label: "Sistema", icon: SlidersHorizontal },
   { id: "security", label: "Segurança", icon: ShieldCheck },
   { id: "financial", label: "Financeiro", icon: Wallet },
+  { id: "lgpd", label: "LGPD", icon: FileText },
 ];
 
 // ─────────────────────────────────────────────────────────────
-// COMPONENTE PRINCIPAL — ORQUESTRADOR
+// COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
 
   return (
-    <div
-      className="min-h-screen flex text-white"
-      style={{ background: "#131313" }}
-    >
-      {/* Sidebar com navegação real */}
-      <Sidebar />
+    <div className="px-4 md:px-8 py-6 md:py-8">
+      {/* Page header */}
+      <div className="mb-6 md:mb-8 max-w-3xl">
+        <p className="text-xs font-medium" style={{ color: "#6b7280" }}>
+          ContaUp · Administração
+        </p>
+        <h1 className="text-2xl font-bold tracking-tight mt-0.5" style={{ color: "#e5e2e1" }}>
+          Configurações
+        </h1>
+      </div>
 
-      <main className="flex-1 overflow-auto px-6 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <p className="text-xs text-gray-500 font-medium">
-            ContaUp · Administração
-          </p>
-          <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">
-            Configurações
-          </h1>
-        </div>
-
-        {/* Tabs internas */}
+      {/* Tabs — grid 2 colunas no mobile, linha no desktop */}
+      <div className="mb-6 md:mb-8 max-w-3xl">
+        {/* Mobile: grid 2 colunas */}
         <div
-          className="flex gap-1 mb-8 p-1 rounded-2xl w-fit"
+          className="grid grid-cols-2 gap-1 p-1 rounded-2xl md:hidden"
           style={{ background: "#1e1e1e" }}
         >
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                activeTab === id
-                  ? "bg-[#10b981] text-white"
-                  : "bg-transparent text-[#6b7280] hover:bg-white/2"
-              }`}
+              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer"
+              style={{
+                background: activeTab === id ? "#4edea3" : "transparent",
+                color: activeTab === id ? "#003824" : "#6b7280",
+              }}
             >
               <Icon size={14} />
-              <span className="hidden sm:inline">{label}</span>
+              <span>{label}</span>
             </button>
           ))}
         </div>
 
-        {/* Conteúdo por tab */}
-        <div className="max-w-3xl">
-          {activeTab === "profile" && <ProfileSettings />}
-          {activeTab === "company" && <CompanySettings />}
-          {activeTab === "system" && <SystemPreferences />}
-          {activeTab === "security" && <SecuritySettings />}
-          {activeTab === "financial" && <FinancialSettings />}
+        {/* Desktop: linha */}
+        <div
+          className="hidden md:flex gap-1 p-1 rounded-2xl w-fit"
+          style={{ background: "#1e1e1e" }}
+        >
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer"
+              style={{
+                background: activeTab === id ? "#4edea3" : "transparent",
+                color: activeTab === id ? "#003824" : "#6b7280",
+              }}
+            >
+              <Icon size={14} />
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
-      </main>
+      </div>
+
+      {/* Conteúdo */}
+      <div className="max-w-3xl">
+        {activeTab === "profile" && <ProfileSettings />}
+        {activeTab === "company" && <CompanySettings />}
+        {activeTab === "system" && <SystemPreferences />}
+        {activeTab === "security" && <SecuritySettings />}
+        {activeTab === "financial" && <FinancialSettings />}
+        {activeTab === "lgpd" && <LgpdSettings />}
+      </div>
     </div>
   );
 }
