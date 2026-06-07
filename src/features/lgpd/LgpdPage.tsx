@@ -23,7 +23,7 @@ const TEAM_MEMBERS = [
   {
     name: "Guilherme Rodrigues",
     role: "Tech Lead & Arquiteto",
-    sub: "Front-end & Back-end",
+    sub: "Engenheiro de Software Full Stack",
     category: "tech-lead",
   },
   {
@@ -118,7 +118,7 @@ const ROLE_STYLES: Record<
   },
 };
 
-const MEMBERS_PER_PAGE = 3;
+const MEMBERS_PER_PAGE = 2;
 
 const TABS = [
   { id: "privacidade", label: "Política de Privacidade", icon: Shield },
@@ -437,7 +437,7 @@ function TeamGrid() {
                 <p className="text-[11px] font-medium mt-0.5" style={{ color: style.color }}>
                   {role}
                 </p>
-                <p className="text-[10px] mt-0.5" style={{ color: "#92704a" }}>
+                <p className="text-[10px] text-white/50 mt-0.5 " >
                   {sub}
                 </p>
               </div>
