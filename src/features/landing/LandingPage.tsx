@@ -1564,21 +1564,6 @@ export function LandingPage() {
                       Privacidade & Termos
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      href={"/solicitar-exclusao-dados" as Route}
-                      className="text-[13px] transition-colors"
-                      style={{ color: "#86948a" }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "#e5e2e1")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.color = "#86948a")
-                      }
-                    >
-                      Exclusão de dados
-                    </Link>
-                  </li>
                 </ul>
               </div>
               <div>
