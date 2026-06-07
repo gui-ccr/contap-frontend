@@ -20,13 +20,13 @@ function FinancialRow({ label, value, type = "neutral", indent = false }: Financ
   if (type === "negative") labelColorClass = "text-secondary";
 
   return (
-    <div className={`flex justify-between items-center hover:bg-white/[0.04] px-2.5 py-1.5 rounded-lg transition-all cursor-pointer select-none ${indent ? "pl-7" : ""}`}>
-      <span className={`text-[15px] flex items-center gap-1.5 ${labelColorClass}`}>
-        {type === "negative" && <span className="material-symbols-outlined text-[15px]">remove</span>}
-        {type === "positive" && <span className="material-symbols-outlined text-[15px]">add</span>}
-        {label}
+    <div className={`flex justify-between items-center hover:bg-white/[0.04] px-2.5 py-1.5 rounded-lg transition-all cursor-pointer select-none gap-2 ${indent ? "pl-7" : ""}`}>
+      <span className={`text-[15px] flex items-center gap-1.5 min-w-0 ${labelColorClass}`}>
+        {type === "negative" && <span className="material-symbols-outlined text-[15px] shrink-0">remove</span>}
+        {type === "positive" && <span className="material-symbols-outlined text-[15px] shrink-0">add</span>}
+        <span className="truncate">{label}</span>
       </span>
-      <span className="font-mono text-[15px] font-medium text-on-surface tabular-nums">
+      <span className="font-mono text-[15px] font-medium text-on-surface tabular-nums shrink-0">
         {type === "negative" ? `- ${formattedValue}` : formattedValue}
       </span>
     </div>
@@ -93,7 +93,7 @@ export function DrePage() {
               <span className="font-mono text-[15px] font-bold text-on-surface tabular-nums">R$ 1.250.000,00</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
               <FinancialRow label="Vendas de Produtos" value={850000} indent />
               <FinancialRow label="Prestação de Serviços" value={400000} indent />
             </div>
@@ -111,7 +111,7 @@ export function DrePage() {
           </div>
 
           {/* Bloco 2: Custos e Despesas */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
             <div className="bg-surface-container/40 glass-panel border border-white/5 rim-light rounded-2xl p-5 flex flex-col justify-between gap-2.5 shadow-xl">
               <div>
@@ -152,22 +152,21 @@ export function DrePage() {
             </div>
           </div>
 
-          {/* Bloco 3: Resultado Líquido — sempre horizontal */}
+          {/* Bloco 3: Resultado Líquido */}
           <div className="w-full rounded-2xl border border-white/5 shadow-2xl bg-[#1e2120] overflow-hidden">
-            <div className="flex flex-row items-stretch">
+            <div className="flex flex-col sm:flex-row items-stretch">
 
               {/* Esquerda: título e descrição */}
-              <div className="flex-1 px-6 py-5 flex flex-col justify-center gap-2 border-r border-white/5 min-w-0">
+              <div className="flex-1 px-6 py-5 flex flex-col justify-center gap-2 border-b sm:border-b-0 sm:border-r border-white/5 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span
-                    className="material-symbols-outlined text-[18px] text-[#00E676] shrink-0">
+                  <span className="material-symbols-outlined text-[18px] text-[#00E676] shrink-0">
                     trending_up
                   </span>
                   <span className="text-[13px] text-[#00E676] font-bold tracking-widest uppercase">
                     Resultado do Exercício
                   </span>
                 </div>
-                <h2 className="text-[17px] font-semibold text-white leading-snug whitespace-nowrap">
+                <h2 className="text-[17px] font-semibold text-white leading-snug">
                   Resultado Líquido do Exercício
                 </h2>
                 <p className="text-[14px] text-white/40 leading-relaxed">
@@ -176,16 +175,14 @@ export function DrePage() {
               </div>
 
               {/* Direita: valor e margem */}
-              <div className="px-8 py-5 flex flex-col items-center justify-center gap-2 shrink-0">
+              <div className="px-6 sm:px-8 py-5 flex flex-col items-center justify-center gap-2 shrink-0">
                 <span className="text-[18px] text-[#00E676] font-bold tracking-widest uppercase">
                   Lucro Apurado
                 </span>
-                <span
-                  className="font-sans font-bold text-[24px] leading-none tracking-tight tabular-nums text-[#00E676]">
+                <span className="font-sans font-bold text-[24px] leading-none tracking-tight tabular-nums text-[#00E676]">
                   R$ 425.000,00
                 </span>
-                <div
-                  className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[14px] font-semibold border cursor-pointer select-none transition-all hover:opacity-80 bg-[rgba(0,230,118,0.08)] text-[#00E676] border-[rgba(0,230,118,0.2)]">
+                <div className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[14px] font-semibold border cursor-pointer select-none transition-all hover:opacity-80 bg-[rgba(0,230,118,0.08)] text-[#00E676] border-[rgba(0,230,118,0.2)]">
                   <span className="material-symbols-outlined text-[15px]">
                     percent
                   </span>

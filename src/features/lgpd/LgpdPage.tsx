@@ -63,7 +63,7 @@ const TEAM_MEMBERS = [
     category: "backend",
   },
   {
-    name: "Thalys Souza",
+    name: "Thalys Georgys Fernandes Souza",
     role: "DBA",
     sub: "Modelagem & Otimização de Dados",
     category: "dba",
