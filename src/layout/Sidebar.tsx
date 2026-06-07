@@ -48,7 +48,7 @@ function NavLinks({
               Conta<span style={{ color: "#4edea3" }}>Up</span>
             </span>
             <p
-              className="text-[10px] mt-0.5 font-medium"
+              className="text-[12px] mt-0.5 font-medium"
               style={{ color: "#6b7280" }}
             >
               Gestão Financeira
@@ -65,11 +65,8 @@ function NavLinks({
                 key={href}
                 href={href}
                 onClick={onNavigate}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200"
-                style={{
-                  background: isActive ? "#4edea318" : "transparent",
-                  color: isActive ? "#4edea3" : "#6b7280",
-                }}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 hover:bg-[#4edea318]/50 hover:text-[#4edea3]/50
+                  ${isActive ? "bg-[#4edea318] text-[#4edea3]" :  "bg-transparent text-[#6b7280]"}`}
               >
                 <span
                   className="material-symbols-outlined text-[20px]"
