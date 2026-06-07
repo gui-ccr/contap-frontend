@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AuthBackground } from "./components/AuthBackground";
 import { AuthHeader } from "./components/AuthHeader";
 import { AuthForm } from "./components/AuthForm";
@@ -45,6 +46,16 @@ export function AuthPage() {
           <div className="text-center">
             <p className="text-label-sm text-on-surface-variant/50">
               Ambiente seguro e criptografado.
+            </p>
+            <p className="text-label-sm text-on-surface-variant/40 mt-1">
+              Ao continuar, você concorda com nossa{" "}
+              <Link
+                href={"/lgpd" as never}
+                className="underline underline-offset-2 transition-opacity hover:opacity-70"
+              >
+                Política de Privacidade e Termos de Serviço
+              </Link>
+              .
             </p>
           </div>
         </div>

@@ -22,7 +22,7 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
 
 ];
 
-const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha"];
+const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd"];
 
 function NavLinks({
   pathname,
