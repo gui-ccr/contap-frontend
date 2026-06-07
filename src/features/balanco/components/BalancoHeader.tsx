@@ -16,7 +16,7 @@ export function BalancoHeader({ today }: BalancoHeaderProps) {
         </p>
       </div>
       <button
-        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all hover:bg-white/5 self-start md:self-auto"
+        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all hover:bg-white/5 self-start md:self-auto cursor-pointer"
         style={{ background: "#1e1e1e", color: "#e5e2e1", border: "1px solid rgba(255,255,255,0.08)" }}
       >
         <Download size={15} />

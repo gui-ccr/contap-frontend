@@ -90,7 +90,7 @@ export function LancamentosTable({ rows, page, totalPages, total, pageSize, onPa
           <button
             onClick={() => onPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors disabled:opacity-30"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer"
             style={{ background: "#242424", color: "#6b7280" }}
           >
             <ChevronLeft size={14} />
@@ -100,7 +100,7 @@ export function LancamentosTable({ rows, page, totalPages, total, pageSize, onPa
             <button
               key={p}
               onClick={() => onPage(p)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition-all"
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition-all cursor-pointer"
               style={page === p
                 ? { background: "#4edea3", color: "#003824" }
                 : { background: "#242424", color: "#6b7280" }}
@@ -114,7 +114,7 @@ export function LancamentosTable({ rows, page, totalPages, total, pageSize, onPa
               <span className="text-xs px-0.5" style={{ color: "#6b7280" }}>…</span>
               <button
                 onClick={() => onPage(totalPages)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition-all"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition-all cursor-pointer"
                 style={{ background: "#242424", color: "#6b7280" }}
               >
                 {totalPages}
@@ -125,7 +125,7 @@ export function LancamentosTable({ rows, page, totalPages, total, pageSize, onPa
           <button
             onClick={() => onPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors disabled:opacity-30"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer"
             style={{ background: "#242424", color: "#6b7280" }}
           >
             <ChevronRight size={14} />

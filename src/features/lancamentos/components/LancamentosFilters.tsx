@@ -82,7 +82,7 @@ export function LancamentosFilters({
       <div className="mt-4 flex justify-end gap-2">
         <button
           onClick={onClear}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-medium transition-all hover:bg-white/5"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-medium transition-all hover:bg-white/5 cursor-pointer"
           style={{ color: "#6b7280", border: "1px solid rgba(255,255,255,0.08)" }}
         >
           <X size={13} />
@@ -90,7 +90,7 @@ export function LancamentosFilters({
         </button>
         <button
           onClick={onApply}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-semibold transition-all hover:opacity-90"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 cursor-pointer"
           style={{ background: "#4edea3", color: "#003824" }}
         >
           <Filter size={13} />

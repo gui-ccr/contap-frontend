@@ -128,7 +128,7 @@ export default function NovoLancamentoForm() {
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 mt-2"
+            className="w-full py-2.5 px-4 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 mt-2 cursor-pointer"
             style={{ background: "#4edea3", color: "#003824" }}
           >
             Avançar para Confirmação →
