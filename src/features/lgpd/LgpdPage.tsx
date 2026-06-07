@@ -33,13 +33,13 @@ const TEAM_MEMBERS = [
     category: "frontend",
   },
   {
-    name: "Joao Antonio",
+    name: "Júlio Cézar Oliveira de Souza",
     role: "Desenvolvedor Front-end",
     sub: "Interface & UX",
     category: "frontend",
   },
   {
-    name: "Julio Cesar",
+    name: "João Antonio Vieira Baldow",
     role: "Desenvolvedor Front-end",
     sub: "Interface & UX",
     category: "frontend",
@@ -57,7 +57,7 @@ const TEAM_MEMBERS = [
     category: "backend",
   },
   {
-    name: "Wesley",
+    name: "Wesley Gonçalves Pereira",
     role: "Desenvolvedor Back-end",
     sub: "Regras de Negócio & Contábil",
     category: "backend",
