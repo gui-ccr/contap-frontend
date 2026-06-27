@@ -371,7 +371,7 @@ function Navbar() {
             return (
               <button
                 key={l.id}
-                onClick={() => scrollToSection(l.id)}
+                onClick={() => scrollToSection(l.id!)}
                 className={className}
                 style={buttonStyles}
                 onMouseEnter={handleMouseEnter}
