@@ -330,22 +330,57 @@ function Navbar() {
             { id: "solucoes", label: "Solução" },
             { id: "precos", label: "Preços" },
             { id: "faq", label: "FAQ" },
-          ].map((l) => (
-            <button
-              key={l.id}
-              onClick={() => scrollToSection(l.id)}
-              className="bg-transparent border-0 cursor-pointer p-0 font-medium transition-colors"
-              style={{
-                color: "#86948a",
-                fontSize: scrolled ? "13px" : "14px",
-                transition: "font-size 0.4s ease-in-out, color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#e5e2e1")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#86948a")}
-            >
-              {l.label}
-            </button>
-          ))}
+            {
+              href: "https://contaup-api.vercel.app/",
+              label: "Documentação API",
+            },
+          ].map((l) => {
+            // Estilos compartilhados para não repetir código
+            const buttonStyles = {
+              color: "#86948a",
+              fontSize: scrolled ? "13px" : "14px",
+              transition: "font-size 0.4s ease-in-out, color 0.2s",
+            };
+
+            const className =
+              "bg-transparent border-0 cursor-pointer p-0 font-medium transition-colors no-underline inline-block";
+
+            const handleMouseEnter = (e) =>
+              (e.currentTarget.style.color = "#e5e2e1");
+            const handleMouseLeave = (e) =>
+              (e.currentTarget.style.color = "#86948a");
+
+            if (l.href) {
+              return (
+                <a 
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={className}
+                  style={buttonStyles}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {l.label}
+                </a>
+              );
+            }
+
+            // CASO CONTRÁRIO: Renderiza o botão de Scroll interno
+            return (
+              <button
+                key={l.id}
+                onClick={() => scrollToSection(l.id)}
+                className={className}
+                style={buttonStyles}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                {l.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* CTAs */}
