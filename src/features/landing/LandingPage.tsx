@@ -345,9 +345,9 @@ function Navbar() {
             const className =
               "bg-transparent border-0 cursor-pointer p-0 font-medium transition-colors no-underline inline-block";
 
-            const handleMouseEnter = (e) =>
+            const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) =>
               (e.currentTarget.style.color = "#e5e2e1");
-            const handleMouseLeave = (e) =>
+            const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) =>
               (e.currentTarget.style.color = "#86948a");
 
             if (l.href) {
