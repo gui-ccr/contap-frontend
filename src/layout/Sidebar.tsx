@@ -10,6 +10,7 @@ import Header from "./Header";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard" as Route },
+  { icon: "account_balance_wallet", label: "Contas a Receber", href: "/contas-receber" as Route },
   { icon: "menu_book", label: "Listagem de Lançamentos", href: "/lancamentos" as Route },
   {
     icon: "account_balance",
@@ -19,7 +20,6 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "receipt_long", label: "DRE", href: "/dre" as Route },
   { icon: "group", label: "Funcionários", href: "/funcionarios" as Route },
   { icon: "settings", label: "Configurações", href: "/configuracoes" as Route },
-
 ];
 
 const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];

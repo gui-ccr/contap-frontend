@@ -2,8 +2,14 @@
 
 import React, { useState } from 'react';
 import ModalConfirmacao from './ModalConfirmacao';
+import { lancamentosService } from '../lancamentosService';
+import { getEmpresaIdFromToken } from '@/shared/api';
 
-export default function NovoLancamentoForm() {
+interface NovoLancamentoFormProps {
+  onLancamentoCriado?: () => void;
+}
+
+export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancamentoFormProps) {
   const [form, setForm] = useState({
     descricao: '',
     valor: '',
@@ -24,11 +30,32 @@ export default function NovoLancamentoForm() {
     setIsModalOpen(true);
   };
 
-  const handleSalvarFinal = () => {
-    console.log("SALVANDO NOVO LANÇAMENTO:", form);
-    alert('Lançamento realizado com sucesso!');
-    setForm({ descricao: '', valor: '', tipo: 'receita', data: '' });
-    setIsModalOpen(false);
+  const handleSalvarFinal = async () => {
+    try {
+      const empresaId = getEmpresaIdFromToken();
+      if (!empresaId) {
+        alert("Erro: Sessão inválida ou empresa não encontrada.");
+        return;
+      }
+      
+      await lancamentosService.criarLancamentoSimplificado({
+        empresa_id: empresaId,
+        descricao: form.descricao,
+        valor: Number(form.valor),
+        tipoTransacao: form.tipo === 'receita' ? "CREDITO" : "DEBITO",
+        data_lancamento: form.data,
+      });
+
+      alert('Lançamento realizado com sucesso!');
+      setForm({ descricao: '', valor: '', tipo: 'receita', data: '' });
+      setIsModalOpen(false);
+      
+      if (onLancamentoCriado) {
+        onLancamentoCriado();
+      }
+    } catch (err: any) {
+      alert("Erro ao criar lançamento: " + err.message);
+    }
   };
 
   const inputStyle = {

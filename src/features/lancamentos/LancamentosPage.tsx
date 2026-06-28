@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NovoLancamentoForm from "./components/NovoLancamentoForm";
 import { LancamentosFilters } from "./components/LancamentosFilters";
 import { LancamentosTable } from "./components/LancamentosTable";
-import { BanknoteArrowUp } from "lucide-react"
+import { BanknoteArrowUp } from "lucide-react";
+import { lancamentosService, LancamentoBackend } from "./lancamentosService";
 
 const CONTAS = [
   { value: "all", label: "Todas as Contas" },
@@ -14,89 +15,61 @@ const CONTAS = [
   { value: "2.1.01.01", label: "2.1.01.01 — Fornecedores Nacionais" },
 ];
 
-const LANCAMENTOS = [
-  {
-    id: 1,
-    data: "10/10/2023",
-    descricao: "Pagamento Fornecedor XYZ",
-    debito: "2.1.01.01 — Fornecedores Nacionais",
-    credito: "1.1.01.01 — Banco Itaú C/C",
-    valor: "1.500,00",
-  },
-  {
-    id: 2,
-    data: "12/10/2023",
-    descricao: "Recebimento NF 1024",
-    debito: "1.1.01.01 — Banco Itaú C/C",
-    credito: "1.1.02.01 — Clientes Nacionais",
-    valor: "4.250,00",
-  },
-  {
-    id: 3,
-    data: "15/10/2023",
-    descricao: "Aquisição de Licenças Software",
-    debito: "4.1.01.02 — Despesas Administrativas",
-    credito: "1.1.01.01 — Banco Itaú C/C",
-    valor: "890,00",
-  },
-  {
-    id: 4,
-    data: "18/10/2023",
-    descricao: "Aporte de Capital Sócios",
-    debito: "1.1.01.01 — Banco Itaú C/C",
-    credito: "2.3.01.01 — Capital Social Integralizado",
-    valor: "50.000,00",
-  },
-  {
-    id: 5,
-    data: "20/10/2023",
-    descricao: "Tarifa Bancária Manutenção",
-    debito: "4.1.02.01 — Despesas Financeiras",
-    credito: "1.1.01.01 — Banco Itaú C/C",
-    valor: "125,50",
-  },
-  {
-    id: 6,
-    data: "22/10/2023",
-    descricao: "Receita de Consultoria",
-    debito: "1.1.01.01 — Banco Itaú C/C",
-    credito: "3.1.01.01 — Receitas de Serviços",
-    valor: "8.400,00",
-  },
-  {
-    id: 7,
-    data: "25/10/2023",
-    descricao: "Pagamento de Salários",
-    debito: "4.1.01.01 — Despesas com Pessoal",
-    credito: "1.1.01.01 — Banco Itaú C/C",
-    valor: "12.300,00",
-  },
-  {
-    id: 8,
-    data: "28/10/2023",
-    descricao: "Compra de Material de Escritório",
-    debito: "4.1.01.02 — Despesas Administrativas",
-    credito: "1.1.01.01 — Banco Itaú C/C",
-    valor: "340,00",
-  },
-];
-
 const PAGE_SIZE = 5;
-const TOTAL_MOCK = 142;
+
+function formatCurrency(value: number) {
+  return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 export default function LancamentosPage() {
-  const [startDate, setStartDate] = useState("2023-10-01");
-  const [endDate, setEndDate] = useState("2023-10-31");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [conta, setConta] = useState("all");
   const [page, setPage] = useState(1);
+  const [lancamentos, setLancamentos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const carregarLancamentos = async () => {
+    try {
+      setLoading(true);
+      const data = await lancamentosService.listarLancamentos();
+      
+      const formatados = data.map(l => {
+        const d = new Date(l.dataLancamento);
+        const dataStr = d.toLocaleDateString("pt-BR");
+        
+        const debito = l.partidas.find(p => p.tipo === "D");
+        const credito = l.partidas.find(p => p.tipo === "C");
+        
+        return {
+          id: l.id,
+          data: dataStr,
+          dataObj: d,
+          descricao: l.descricao,
+          debito: debito?.contaId || "-",
+          credito: credito?.contaId || "-",
+          valor: formatCurrency(debito?.valor || credito?.valor || 0),
+        };
+      });
+      setLancamentos(formatados);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarLancamentos();
+  }, []);
 
   function parseBR(d: string) {
     const [day, month, year] = d.split("/");
-    return new Date(`${year}-${month}-${day}`);
+    return new Date(`${year}-${month}-${day}T12:00:00Z`);
   }
 
-  const filtered = LANCAMENTOS.filter((l) => {
-    const date = parseBR(l.data);
+  const filtered = lancamentos.filter((l) => {
+    const date = l.dataObj;
     const from = startDate ? new Date(startDate) : null;
     const to = endDate ? new Date(endDate) : null;
     if (from && date < from) return false;
@@ -118,8 +91,8 @@ export default function LancamentosPage() {
   );
 
   function clearFilters() {
-    setStartDate("2023-10-01");
-    setEndDate("2023-10-31");
+    setStartDate("");
+    setEndDate("");
     setConta("all");
     setPage(1);
   }
@@ -135,7 +108,7 @@ export default function LancamentosPage() {
                 Outubro 2023
               </p>
               <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">
-                Fluxo de Caixa
+                Lançamentos Contábeis
               </h1>
             </div>
           </header>
@@ -264,7 +237,7 @@ export default function LancamentosPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Formulário */}
             <div className="lg:col-span-5 lg:sticky lg:top-6">
-              <NovoLancamentoForm />
+              <NovoLancamentoForm onLancamentoCriado={carregarLancamentos} />
             </div>
 
             {/* Filtros + Tabela */}
@@ -306,7 +279,7 @@ export default function LancamentosPage() {
                   </span>
                 </div>
                 <LancamentosTable
-                  rows={pageRows}
+                  rows={loading ? [] : pageRows}
                   page={safePage}
                   totalPages={totalPages}
                   total={totalFiltered}
