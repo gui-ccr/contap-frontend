@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Search, Bell, CheckCheck, X, TrendingUp, FileText, AlertTriangle, CreditCard, Wallet } from "lucide-react";
+import { useAuth } from "@/shared/AuthContext";
 
 const NOTIFICATIONS = [
   {
@@ -57,6 +58,7 @@ const NOTIFICATIONS = [
 ];
 
 export default function Header() {
+  const { usuario } = useAuth();
   const [now, setNow] = useState(new Date());
   const [bellHovered, setBellHovered] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
