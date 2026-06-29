@@ -93,6 +93,9 @@ export default function Header() {
     ? usuario.nome.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
     : "US";
 
+  const time = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const date = now.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+
   return (
     <header
       className="hidden md:flex h-16 shrink-0 items-center justify-between px-6 z-30 sticky top-0"
