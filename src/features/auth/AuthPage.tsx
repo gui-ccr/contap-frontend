@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AuthBackground } from "./components/AuthBackground";
 import { AuthHeader } from "./components/AuthHeader";
 import { AuthForm } from "./components/AuthForm";
+import { apiClient } from "@/shared/api";
 
 export function AuthPage() {
   const router = useRouter();
@@ -14,10 +15,55 @@ export function AuthPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push(isLoginMode ? ("/dashboard" as never) : ("/cadastro-empresa" as never));
+    setApiError("");
+    setLoading(true);
+
+    try {
+      if (isLoginMode) {
+        // Efetua login
+        const response = await apiClient.post<{ data: { token: string } }>("/auth/login", {
+          email,
+          senha: password,
+        });
+
+        if (response.data?.token) {
+          localStorage.setItem("token", response.data.token);
+          router.push("/dashboard" as never);
+        } else {
+          throw new Error("Token não recebido na resposta do servidor.");
+        }
+      } else {
+        // Registra o dono
+        await apiClient.post("/auth/registrar-dono", {
+          nome: name,
+          email,
+          senha: password,
+        });
+
+        // Login automático após registrar
+        const loginResponse = await apiClient.post<{ data: { token: string } }>("/auth/login", {
+          email,
+          senha: password,
+        });
+
+        if (loginResponse.data?.token) {
+          localStorage.setItem("token", loginResponse.data.token);
+          router.push("/cadastro-empresa" as never);
+        } else {
+          setIsLoginMode(true);
+          setApiError("Conta criada! Faça login com suas credenciais.");
+        }
+      }
+    } catch (err: any) {
+      setApiError(err.message || "Erro de conexão com o servidor.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -27,6 +73,12 @@ export function AuthPage() {
       <main className="w-full max-w-105 px-margin-mobile md:px-0 relative z-10">
         <div className="bg-surface-container/70 glass-panel border border-white/5 rim-light rounded-3xl p-lg shadow-2xl flex flex-col gap-xl">
           <AuthHeader isLoginMode={isLoginMode} />
+
+          {apiError && (
+            <div className="bg-red-500/10 text-red-500 text-sm p-3 rounded-xl border border-red-500/20 text-center">
+              {apiError}
+            </div>
+          )}
 
           <AuthForm
             isLoginMode={isLoginMode}
