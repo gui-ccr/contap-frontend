@@ -1,4 +1,4 @@
-const BASE_URL = "https://contup-api.vercel.app";
+const BASE_URL = "https://contaup-api.vercel.app";
 
 function getAuthHeaders(): Headers {
   const headers = new Headers();
