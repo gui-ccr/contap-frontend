@@ -4,7 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from "recharts";
-import type { MonthlyItem, CategoryItem } from "../data/data";
+import type { MonthlyItem, CategoryItem } from "../types";
 
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;

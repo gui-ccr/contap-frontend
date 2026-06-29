@@ -1,4 +1,4 @@
-import type { CashFlowRow } from "../data/data";
+import type { CashFlowRow } from "../types";
 
 function StatusBadge({ status }: { status: string }) {
   const ok = status === "Confirmado";

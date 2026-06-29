@@ -1,5 +1,5 @@
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import type { KpiItem } from "../data/data";
+import type { KpiItem } from "../types";
 
 interface KpiCardsProps {
   data: KpiItem[];
