@@ -58,7 +58,7 @@ export const apiClient = {
     return handleResponse<T>(response);
   },
 
-  async post<T>(endpoint: string, body?: any): Promise<T> {
+  async post<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
       headers: getAuthHeaders(),
@@ -67,7 +67,7 @@ export const apiClient = {
     return handleResponse<T>(response);
   },
 
-  async put<T>(endpoint: string, body?: any): Promise<T> {
+  async put<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "PUT",
       headers: getAuthHeaders(),
@@ -76,7 +76,7 @@ export const apiClient = {
     return handleResponse<T>(response);
   },
 
-  async patch<T>(endpoint: string, body?: any): Promise<T> {
+  async patch<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "PATCH",
       headers: getAuthHeaders(),

@@ -9,9 +9,19 @@ function formatDate(iso: string) {
 
 interface FuncionarioRowProps {
   f: Funcionario;
+  onRemove?: (id: string) => void;
 }
 
-export function FuncionarioRow({ f }: FuncionarioRowProps) {
+function cargoLabel(cargo: string) {
+  const labels: Record<string, string> = {
+    GERENTE: "Gerente",
+    CAIXA: "Caixa",
+    DONO: "Dono",
+  };
+  return labels[cargo] ?? cargo;
+}
+
+export function FuncionarioRow({ f, onRemove }: FuncionarioRowProps) {
   return (
     <tr
       className="transition-colors border-b"
@@ -35,7 +45,7 @@ export function FuncionarioRow({ f }: FuncionarioRowProps) {
       </td>
       <td className="px-4 py-3">
         <span className="text-xs font-medium px-2.5 py-1 rounded-xl" style={{ background: `${f.cor}15`, color: f.cor }}>
-          {f.cargo}
+          {cargoLabel(f.cargo)}
         </span>
       </td>
       <td className="hidden md:table-cell px-4 py-3 text-xs font-mono" style={{ color: "#6b7280" }}>
@@ -57,12 +67,15 @@ export function FuncionarioRow({ f }: FuncionarioRowProps) {
       <td className="px-4 py-3">
         <div className="flex gap-1 justify-end">
           <button
+            type="button"
             className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-white/10"
             style={{ color: "#6b7280" }}
           >
             <Pencil size={13} />
           </button>
           <button
+            type="button"
+            onClick={() => onRemove?.(f.id)}
             className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-red-500/10"
             style={{ color: "#6b7280" }}
           >
