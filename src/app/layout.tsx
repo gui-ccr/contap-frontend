@@ -36,6 +36,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { AuthProvider } from "@/shared/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -51,7 +53,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <Sidebar>{children}</Sidebar>
+        <AuthProvider>
+          <Sidebar>{children}</Sidebar>
+        </AuthProvider>
       </body>
     </html>
   );

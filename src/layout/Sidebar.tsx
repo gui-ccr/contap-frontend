@@ -7,6 +7,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import type { Route } from "next";
 import Header from "./Header";
+import { useAuth } from "@/shared/AuthContext";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard" as Route },
@@ -31,6 +32,11 @@ function NavLinks({
   pathname: string;
   onNavigate?: () => void;
 }) {
+  const { empresa } = useAuth();
+  const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
+  const firstName = companyName.split(" ")[0] || "Conta";
+  const secondName = companyName.split(" ").slice(1).join(" ") || "Up";
+
   return (
     <>
       <div>
@@ -44,8 +50,9 @@ function NavLinks({
             className="rounded-2xl shadow-lg"
           />
           <div>
-            <span className="text-white font-bold text-lg tracking-tight leading-none">
-              Conta<span style={{ color: "#4edea3" }}>Up</span>
+            <span className="text-white font-bold text-lg tracking-tight leading-none" title={companyName}>
+              {firstName}
+              {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 10 ? secondName.substring(0,10) + "..." : secondName}</span>}
             </span>
             <p
               className="text-[12px] mt-0.5 font-medium"
@@ -106,8 +113,13 @@ function NavLinks({
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { empresa } = useAuth();
 
   if (AUTH_ROUTES.includes(pathname)) return <>{children}</>;
+
+  const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
+  const firstName = companyName.split(" ")[0] || "Conta";
+  const secondName = companyName.split(" ").slice(1).join(" ") || "Up";
 
   return (
     <div
@@ -141,7 +153,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             className="rounded-lg"
           />
           <span className="font-bold text-white text-base">
-            Conta<span style={{ color: "#4edea3" }}>Up</span>
+            {firstName}
+            {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 8 ? secondName.substring(0,8) + "..." : secondName}</span>}
           </span>
         </div>
       </header>
