@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { contasReceberService, ContaReceberBackend } from "./contasReceberService";
+import { toast } from "sonner";
 import { Modal } from "@/ui/Modal";
 import {
   Banknote,
@@ -66,15 +67,9 @@ export default function ContasReceberPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [filter, setFilter] = useState<"todos" | "pendente" | "recebido">("todos");
 
   const [form, setForm] = useState({ origem: "", valor: "", data_previsao: "" });
-
-  const showToast = (msg: string, type: "success" | "error") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 4000);
-  };
 
   const carregarContas = async () => {
     try {
@@ -100,12 +95,12 @@ export default function ContasReceberPage() {
         valor: Number(form.valor),
         data_previsao: form.data_previsao,
       });
-      showToast("Conta a receber cadastrada com sucesso!", "success");
+      toast.success("Conta a receber cadastrada com sucesso!");
       setForm({ origem: "", valor: "", data_previsao: "" });
       setShowForm(false);
       carregarContas();
     } catch (err: any) {
-      showToast(err.message || "Erro ao salvar conta.", "error");
+      toast.error(err.message || "Erro ao salvar conta.");
     } finally {
       setSubmitting(false);
     }
@@ -114,10 +109,10 @@ export default function ContasReceberPage() {
   const handleBaixar = async (id: string) => {
     try {
       await contasReceberService.baixarConta(id);
-      showToast("Conta recebida e lançamento contábil gerado!", "success");
+      toast.success("Conta recebida e lançamento contábil gerado!");
       carregarContas();
     } catch (err: any) {
-      showToast(err.message || "Erro ao dar baixa.", "error");
+      toast.error(err.message || "Erro ao dar baixa.");
     }
   };
 
@@ -138,22 +133,6 @@ export default function ContasReceberPage() {
     <div className="flex-1 flex flex-col min-h-screen text-white">
       <main className="flex-1 overflow-auto px-4 py-6 md:px-8 md:py-8">
         <div className="max-w-7xl mx-auto space-y-6">
-
-          {/* Toast */}
-          {toast && (
-            <div
-              className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-sm font-medium ${
-                toast.type === "success"
-                  ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                  : "bg-red-500/15 border border-red-500/30 text-red-400"
-              }`}
-            >
-              {toast.type === "success" ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
-              {toast.msg}
-            </div>
-          )}
-
-          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <p className="text-xs font-medium text-gray-500">Gestão Financeira</p>
