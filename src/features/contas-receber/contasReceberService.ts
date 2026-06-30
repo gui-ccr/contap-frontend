@@ -11,7 +11,6 @@ export interface ContaReceberBackend {
 }
 
 export interface CriarContaReceberPayload {
-  empresa_id: string;
   origem: string;
   valor: number;
   data_previsao: string;
@@ -19,15 +18,11 @@ export interface CriarContaReceberPayload {
 
 export const contasReceberService = {
   async listarContasReceber(): Promise<ContaReceberBackend[]> {
-    const empresaId = getEmpresaIdFromToken();
-    if (!empresaId) throw new Error("Empresa não encontrada na sessão");
-    return await apiClient.get<ContaReceberBackend[]>("/contas-receber/conta-receber", { empresa_id: empresaId });
+    return await apiClient.get<ContaReceberBackend[]>("/contas-receber/conta-receber");
   },
 
-  async criarContaReceber(payload: Omit<CriarContaReceberPayload, "empresa_id">): Promise<ContaReceberBackend> {
-    const empresaId = getEmpresaIdFromToken();
-    if (!empresaId) throw new Error("Empresa não encontrada na sessão");
-    return await apiClient.post<ContaReceberBackend>("/contas-receber/conta-receber", { ...payload, empresa_id: empresaId });
+  async criarContaReceber(payload: CriarContaReceberPayload): Promise<ContaReceberBackend> {
+    return await apiClient.post<ContaReceberBackend>("/contas-receber/conta-receber", payload);
   },
 
   async baixarConta(id: string): Promise<void> {

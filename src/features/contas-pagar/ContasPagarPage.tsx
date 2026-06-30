@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { contasPagarService, ContaPagarBackend } from "./contasPagarService";
+import { Modal } from "@/ui/Modal";
 import {
   CreditCard,
   Plus,
@@ -137,7 +138,8 @@ export default function ContasPagarPage() {
   const inputStyle = { background: "#242424", borderColor: "rgba(255,255,255,0.08)", color: "#e5e2e1" };
 
   return (
-    <main className="flex-1 overflow-auto px-4 py-6 md:px-8 md:py-8 text-white">
+    <div className="flex-1 flex flex-col min-h-screen text-white">
+    <main className="flex-1 overflow-auto px-4 py-6 md:px-8 md:py-8">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Toast */}
@@ -162,7 +164,7 @@ export default function ContasPagarPage() {
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
+            className="cursor-pointer flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
             style={{ background: "#4edea3", color: "#003824" }}
           >
             <Plus size={16} /> Nova Conta
@@ -201,7 +203,7 @@ export default function ContasPagarPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className="px-4 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
+              className="cursor-pointer px-4 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
               style={filter === f
                 ? { background: "#4edea3", color: "#003824" }
                 : { color: "#6b7280" }}
@@ -282,7 +284,7 @@ export default function ContasPagarPage() {
                         {!c.pago && (
                           <button
                             onClick={() => handlePagar(c.id)}
-                            className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
+                            className="cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
                             style={{ background: "#4edea3", color: "#003824" }}
                           >
                             Dar Baixa
@@ -303,16 +305,15 @@ export default function ContasPagarPage() {
         </div>
       </div>
 
-      {/* Modal Form */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-          <div className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl" style={{ background: "#1e1e1e" }}>
+    </main>
+
+      <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="max-w-xl">
             <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#1a1a1a" }}>
               <div className="flex items-center gap-2">
                 <CreditCard size={15} className="text-[#4edea3]" />
                 <span className="text-sm font-semibold text-white">Nova Conta a Pagar</span>
               </div>
-              <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-white transition-colors">
+              <button onClick={() => setShowForm(false)} className="cursor-pointer text-gray-500 hover:text-white transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -362,7 +363,7 @@ export default function ContasPagarPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
+                  className="cursor-pointer flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
                   style={{ background: "rgba(255,255,255,0.06)", color: "#9ca3af" }}
                 >
                   Cancelar
@@ -370,16 +371,14 @@ export default function ContasPagarPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+                  className="cursor-pointer flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
                   style={{ background: "#4edea3", color: "#003824" }}
                 >
                   {submitting ? "Salvando..." : "Salvar Conta"}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-    </main>
+      </Modal>
+    </div>
   );
 }

@@ -10,16 +10,22 @@ export interface ContaPagarBackend {
   data_pagamento: string | null;
 }
 
+export interface CriarContaPagarPayload {
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+}
+
 export const contasPagarService = {
-  async listar(): Promise<ContaPagarBackend[]> {
+  async listarContasPagar(): Promise<ContaPagarBackend[]> {
     return await apiClient.get<ContaPagarBackend[]>("/contas-pagar");
   },
 
-  async criar(payload: { descricao: string; valor: number; data_vencimento: string }): Promise<ContaPagarBackend> {
+  async criarContaPagar(payload: CriarContaPagarPayload): Promise<ContaPagarBackend> {
     return await apiClient.post<ContaPagarBackend>("/contas-pagar", payload);
   },
 
-  async pagar(id: string): Promise<ContaPagarBackend> {
-    return await apiClient.patch<ContaPagarBackend>(`/contas-pagar/${id}/pagar`);
+  async baixarConta(id: string): Promise<void> {
+    await apiClient.patch(`/contas-pagar/${id}/pagar`);
   },
 };

@@ -1,5 +1,5 @@
 import { apiClient, getEmpresaIdFromToken } from "@/shared/api";
-import { supabase } from "@/shared/supabaseClient";
+import { getSupabaseClient } from "@/shared/supabaseClient";
 
 export interface NotaFiscal {
   id: string;
@@ -24,6 +24,7 @@ export interface AnexarNotaPayload {
 
 export const notasFiscaisService = {
   async uploadArquivo(file: File): Promise<string> {
+    const supabase = getSupabaseClient();
     const ext = file.name.split(".").pop();
     const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage
