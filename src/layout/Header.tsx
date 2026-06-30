@@ -90,8 +90,11 @@ export default function Header() {
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
 
   const iniciaisUsuario = usuario?.nome
-    ? usuario.nome.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
+    ? usuario.nome.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase()
     : "US";
+  const primeiroNome = usuario?.nome
+    ? usuario.nome.split(" ")[0]
+    : null;
 
   const time = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
   const date = now.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
@@ -284,7 +287,7 @@ export default function Header() {
           </div>
           <div className="text-left">
             <p className="text-xs font-semibold leading-tight" style={{ color: "#e5e2e1" }}>
-              {usuario?.nome || "Carregando..."}
+              {primeiroNome || "Carregando..."}
             </p>
             <p className="text-[10px]" style={{ color: "#6b7280" }}>
               {usuario?.cargo || "Usuário"}
