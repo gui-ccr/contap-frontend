@@ -12,6 +12,7 @@ import { useAuth } from "@/shared/AuthContext";
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard" as Route },
   { icon: "account_balance_wallet", label: "Contas a Receber", href: "/contas-receber" as Route },
+  { icon: "credit_card", label: "Contas a Pagar", href: "/contas-pagar" as Route },
   { icon: "menu_book", label: "Listagem de Lançamentos", href: "/lancamentos" as Route },
   { icon: "schema", label: "Plano de Contas", href: "/plano-contas" as Route },
   {

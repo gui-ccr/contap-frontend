@@ -63,184 +63,102 @@ export default function DashboardPage() {
       try {
         setLoading(true);
         setError(null);
-        
-        const dataInicio = "2023-01-01";
-        const dataFim = "2023-12-31";
 
-        // Busca todas as informações necessárias da API em paralelo
-        const [apiData, lancamentos, contasReceber] = await Promise.all([
-          dashboardService.obterResumo(dataInicio, dataFim),
-          lancamentosService.listarLancamentos().catch(() => [] as LancamentoBackend[]),
-          contasReceberService.listarContasReceber().catch(() => [])
+        const agora = new Date();
+        const [apiData] = await Promise.all([
+          dashboardService.obterResumo(agora.getMonth() + 1, agora.getFullYear()),
         ]);
 
-        // 1. Mapear os Cards de KPI com dados reais da API
+        const resumo = apiData.resumo;
+
+        // 1. Cards de KPI com campos corretos do backend
         const updatedCards = KPI_DATA_TEMPLATE.map((card: KpiItem) => {
           let realValue = "R$ 0,00";
-          let detailText = card.detail;
-
-          if (String(card.id) === "1" || card.label.toLowerCase().includes("consolidado")) {
-            realValue = formatCurrency(apiData.valorTotalRecebido); // Saldo consolidado/recebido
-          } else if (String(card.id) === "2" || card.label.toLowerCase().includes("receita")) {
-            realValue = formatCurrency(apiData.totalReceitas);
-          } else if (String(card.id) === "3" || card.label.toLowerCase().includes("despesa")) {
-            realValue = formatCurrency(apiData.totalDespesas);
-          } else if (String(card.id) === "4" || card.label.toLowerCase().includes("líquido")) {
-            realValue = formatCurrency(apiData.resultadoLiquido);
-            card.positive = apiData.resultadoLiquido >= 0;
+          if (card.label.toLowerCase().includes("consolidado")) {
+            realValue = formatCurrency(resumo.saldoConsolidado ?? 0);
+          } else if (card.label.toLowerCase().includes("receita")) {
+            realValue = formatCurrency(resumo.receitasMes ?? 0);
+          } else if (card.label.toLowerCase().includes("despesa")) {
+            realValue = formatCurrency(resumo.despesasMes ?? 0);
+          } else if (card.label.toLowerCase().includes("líquido")) {
+            realValue = formatCurrency(resumo.lucroLiquido ?? 0);
+            card.positive = (resumo.lucroLiquido ?? 0) >= 0;
           }
-
-          return {
-            ...card,
-            value: realValue,
-            detail: detailText,
-          };
+          return { ...card, value: realValue };
         });
         setKpiCardsMapped(updatedCards);
 
-        // Heurística contábil para identificar se um lançamento é entrada ou saída
-        const isEntrada = (l: LancamentoBackend) => {
-          const hasRevenue = l.partidas.some(p => p.tipo === "C" && p.contaId.startsWith("3"));
-          if (hasRevenue) return true;
-          const hasExpense = l.partidas.some(p => p.tipo === "D" && p.contaId.startsWith("4"));
-          if (hasExpense) return false;
-          return l.partidas.some(p => p.tipo === "C");
-        };
-
-        // Calcular Margem de Lucro Real
-        const margem = apiData.totalReceitas > 0 
-          ? Math.round((apiData.resultadoLiquido / apiData.totalReceitas) * 100) 
+        // 2. Indicadores rápidos
+        const margem = (resumo.receitasMes ?? 0) > 0
+          ? Math.round(((resumo.lucroLiquido ?? 0) / resumo.receitasMes) * 100)
           : 0;
+        setIndicators([
+          { id: 1, label: "Margem de Lucro",   value: `${margem}%`,  meta: "Meta: 60%",     icon: Target,      ok: margem >= 60 },
+          { id: 2, label: "Liquidez Corrente", value: "—",           meta: "Ideal: > 1,5x", icon: Zap,         ok: true },
+          { id: 3, label: "Inadimplência",     value: "0,0%",        meta: "Meta: < 3%",    icon: ShieldCheck, ok: true },
+        ]);
 
-        const updatedIndicators = [
-          { id: 1, label: "Margem de Lucro",   value: `${margem}%`, meta: "Meta: 60%",     icon: Target,      ok: margem >= 60 },
-          { id: 2, label: "Liquidez Corrente", value: "2,4x",  meta: "Ideal: > 1,5x", icon: Zap,         ok: true },
-          { id: 3, label: "Inadimplência",     value: "0,0%",  meta: "Meta: < 3%",    icon: ShieldCheck, ok: true },
-        ];
-        setIndicators(updatedIndicators);
-
-        if (lancamentos.length > 0) {
-          // 2. Mapear Movimentações Recentes (últimos 5 lançamentos reais)
-          const mappedRecent = lancamentos
-            .slice(-5)
-            .reverse()
-            .map((l, index) => {
-              const entrada = isEntrada(l);
-              const valorNum = l.partidas[0]?.valor || 0;
-              return {
-                id: index,
-                nome: l.descricao || "Lançamento",
-                categoria: l.partidas[0]?.contaId || "Geral",
-                data: new Date(l.dataLancamento).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-                valor: `${entrada ? "+" : "-"} ${formatCurrency(valorNum)}`,
-                entrada,
-                avatar: (l.descricao || "LA").substring(0, 2).toUpperCase()
-              };
-            });
+        // 3. Movimentações recentes (já vêm prontas do backend)
+        if (apiData.movimentacoesRecentes?.length > 0) {
+          const mappedRecent = apiData.movimentacoesRecentes.slice(0, 5).map((m, index) => ({
+            id: index,
+            nome: m.descricao || "Movimentação",
+            categoria: m.tipo,
+            data: new Date(m.data).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+            valor: `${m.tipo === "RECEITA" ? "+" : "-"} ${formatCurrency(m.valor)}`,
+            entrada: m.tipo === "RECEITA",
+            avatar: (m.descricao || "MV").substring(0, 2).toUpperCase(),
+          }));
           setRecentTransactions(mappedRecent);
 
-          // 3. Mapear Tabela de Fluxo de Caixa (últimos 6 lançamentos reais)
-          const mappedCashFlow = lancamentos
-            .slice(-6)
-            .reverse()
-            .map((l, index) => {
-              const entrada = isEntrada(l);
-              const valorNum = l.partidas[0]?.valor || 0;
-              return {
-                id: index,
-                descricao: l.descricao || "Lançamento",
-                tipo: (entrada ? "entrada" : "saida") as "entrada" | "saida",
-                data: new Date(l.dataLancamento).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
-                valor: `${entrada ? "+" : "-"} ${formatCurrency(valorNum)}`,
-                status: "Confirmado"
-              };
-            });
+          const mappedCashFlow = apiData.movimentacoesRecentes.slice(0, 6).map((m, index) => ({
+            id: index,
+            descricao: m.descricao || "Movimentação",
+            tipo: (m.tipo === "RECEITA" ? "entrada" : "saida") as "entrada" | "saida",
+            data: new Date(m.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+            valor: `${m.tipo === "RECEITA" ? "+" : "-"} ${formatCurrency(m.valor)}`,
+            status: "Confirmado",
+          }));
           setCashFlowRows(mappedCashFlow);
-
-          // 4. Mapear Gráfico Mensal dinamicamente com base nos lançamentos reais
-          const mesesAbreviados = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-          const monthlyMap = mesesAbreviados.map(mes => ({ mes, receita: 0, despesa: 0 }));
-          
-          lancamentos.forEach(l => {
-            const date = new Date(l.dataLancamento);
-            const monthIndex = date.getMonth();
-            if (monthIndex >= 0 && monthIndex < 12) {
-              const valorNum = l.partidas[0]?.valor || 0;
-              if (isEntrada(l)) {
-                monthlyMap[monthIndex].receita += valorNum;
-              } else {
-                monthlyMap[monthIndex].despesa += valorNum;
-              }
-            }
-          });
-          setMonthlyData(monthlyMap);
-
-          // 5. Mapear Distribuição por Categorias (Top 4 contas de receita)
-          const CONTAS_LABELS: Record<string, string> = {
-            "1.1.01.01": "Banco Itaú C/C",
-            "3.1.01.01": "Receitas de Serviços",
-            "4.1.01.02": "Despesas Adm.",
-            "2.1.01.01": "Fornecedores Nac.",
-          };
-          const categoriesMap: Record<string, number> = {};
-          let totalRevenues = 0;
-
-          lancamentos.forEach(l => {
-            if (isEntrada(l)) {
-              const valorNum = l.partidas[0]?.valor || 0;
-              const conta = l.partidas.find(p => p.tipo === "C")?.contaId || "Outros";
-              categoriesMap[conta] = (categoriesMap[conta] || 0) + valorNum;
-              totalRevenues += valorNum;
-            }
-          });
-
-          const colors = ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0"];
-          const mappedCategories = Object.entries(categoriesMap)
-            .map(([conta, valor], index) => {
-              const pct = totalRevenues > 0 ? Math.round((valor / totalRevenues) * 100) : 0;
-              return {
-                label: CONTAS_LABELS[conta] || `Conta ${conta}`,
-                value: formatCurrency(valor),
-                pct,
-                color: colors[index % colors.length]
-              };
-            })
-            .sort((a, b) => b.pct - a.pct)
-            .slice(0, 4);
-          if (mappedCategories.length > 0) {
-            setCategories(mappedCategories);
-          }
         }
 
-        // 6. Mapear Contas a Receber Pendentes (reais)
-        if (contasReceber && contasReceber.length > 0) {
-          const mappedPending = contasReceber
-            .filter(c => !c.recebido)
-            .slice(0, 5)
-            .map(c => {
-              const dataPrevisao = new Date(c.data_previsao);
-              const hoje = new Date();
-              hoje.setHours(0, 0, 0, 0);
-              dataPrevisao.setHours(0, 0, 0, 0);
-              
-              const diffTime = dataPrevisao.getTime() - hoje.getTime();
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              
-              let detalhe = `Vence em ${new Date(c.data_previsao).toLocaleDateString("pt-BR")}`;
-              if (diffDays < 0) {
-                detalhe = `Atrasado há ${Math.abs(diffDays)} dia(s)`;
-              } else if (diffDays === 0) {
-                detalhe = "Vence hoje";
-              }
+        // 4. Gráfico mensal (vem do desempenhoAnual)
+        if (apiData.desempenhoAnual?.length > 0) {
+          const mesesAbreviados = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+          const monthlyMap = mesesAbreviados.map((label, i) => {
+            const entry = apiData.desempenhoAnual.find(d => d.mes === i + 1);
+            return { mes: label, receita: entry?.receitas ?? 0, despesa: entry?.despesas ?? 0 };
+          });
+          setMonthlyData(monthlyMap);
+        }
 
-              return {
-                id: c.id,
-                titulo: c.origem || "Contas a Receber",
-                detalhe: `${detalhe} · ${formatCurrency(c.valor)}`,
-                urgente: diffDays <= 2,
-                icon: diffDays <= 2 ? AlertCircle : Clock
-              };
-            });
+        // 5. Categorias de receita
+        if (apiData.receitaPorCategoria?.length > 0) {
+          const colors = ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0"];
+          const mappedCategories = apiData.receitaPorCategoria.slice(0, 4).map((c, index) => ({
+            label: c.categoria,
+            value: formatCurrency(c.valor),
+            pct: Math.round(c.percentual),
+            color: colors[index % colors.length],
+          }));
+          setCategories(mappedCategories);
+        }
+
+        // 6. Pendências operacionais
+        if (apiData.pendenciasOperacionais?.length > 0) {
+          const mappedPending = apiData.pendenciasOperacionais.slice(0, 5).map(p => {
+            const dataVenc = new Date(p.vencimento);
+            const hoje = new Date(); hoje.setHours(0,0,0,0); dataVenc.setHours(0,0,0,0);
+            const diffDays = Math.ceil((dataVenc.getTime() - hoje.getTime()) / 86400000);
+            const detalhe = diffDays < 0 ? `Atrasado há ${Math.abs(diffDays)} dia(s)` : diffDays === 0 ? "Vence hoje" : `Vence em ${dataVenc.toLocaleDateString("pt-BR")}`;
+            return {
+              id: p.id,
+              titulo: p.descricao || "Pendência",
+              detalhe: `${detalhe} · ${formatCurrency(p.valor)}`,
+              urgente: diffDays <= 2,
+              icon: diffDays <= 2 ? AlertCircle : Clock,
+            };
+          });
           setPendingItems(mappedPending);
         }
 
@@ -253,6 +171,9 @@ export default function DashboardPage() {
 
     loadDashboardData();
   }, []);
+
+
+
 
   return (
     <main className="flex-1 overflow-auto px-4 py-6 md:px-6 md:py-8 text-white">
