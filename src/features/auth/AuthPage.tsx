@@ -26,13 +26,13 @@ export function AuthPage() {
     try {
       if (isLoginMode) {
         // Efetua login
-        const response = await apiClient.post<{ data: { token: string } }>("/auth/login", {
+        const response = await apiClient.post<{ token: string }>("/auth/login", {
           email,
           senha: password,
         });
 
-        if (response.data?.token) {
-          localStorage.setItem("token", response.data.token);
+        if (response.token) {
+          localStorage.setItem("token", response.token);
           router.push("/dashboard" as never);
         } else {
           throw new Error("Token não recebido na resposta do servidor.");
@@ -46,13 +46,13 @@ export function AuthPage() {
         });
 
         // Login automático após registrar
-        const loginResponse = await apiClient.post<{ data: { token: string } }>("/auth/login", {
+        const loginResponse = await apiClient.post<{ token: string }>("/auth/login", {
           email,
           senha: password,
         });
 
-        if (loginResponse.data?.token) {
-          localStorage.setItem("token", loginResponse.data.token);
+        if (loginResponse.token) {
+          localStorage.setItem("token", loginResponse.token);
           router.push("/cadastro-empresa" as never);
         } else {
           setIsLoginMode(true);

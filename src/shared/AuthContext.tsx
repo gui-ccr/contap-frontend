@@ -46,10 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await apiClient.get<{ data: { usuario: IUsuario; empresa: IEmpresa } }>("/auth/me");
-      if (response.data) {
-        setUsuario(response.data.usuario);
-        setEmpresa(response.data.empresa);
+      const response = await apiClient.get<{ usuario: IUsuario; empresa: IEmpresa }>("/auth/me");
+      if (response) {
+        setUsuario(response.usuario);
+        setEmpresa(response.empresa);
       }
     } catch (error) {
       console.error("Erro ao buscar dados do usuário", error);
