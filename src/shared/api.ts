@@ -1,4 +1,4 @@
-const BASE_URL = "https://contaup-api.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://contaup-api.vercel.app";
 
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
