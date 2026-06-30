@@ -34,8 +34,8 @@ function NavLinks({
 }) {
   const { empresa } = useAuth();
   const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
-  const firstName = companyName.split(" ")[0] || "Conta";
-  const secondName = companyName.split(" ").slice(1).join(" ") || "Up";
+  const names = companyName.split(" "); const firstName = names[0] || "Conta";
+  const secondName = names.length > 1 ? names.slice(1).join(" ") : (companyName === "ContaUp" ? "Up" : "");
 
   return (
     <>
@@ -118,8 +118,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   if (AUTH_ROUTES.includes(pathname)) return <>{children}</>;
 
   const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
-  const firstName = companyName.split(" ")[0] || "Conta";
-  const secondName = companyName.split(" ").slice(1).join(" ") || "Up";
+  const names = companyName.split(" "); const firstName = names[0] || "Conta";
+  const secondName = names.length > 1 ? names.slice(1).join(" ") : (companyName === "ContaUp" ? "Up" : "");
 
   return (
     <div
@@ -212,7 +212,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Page content ── */}
-      <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-16">
+      <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-0 relative">
         <Header />
         {children}
       </div>
