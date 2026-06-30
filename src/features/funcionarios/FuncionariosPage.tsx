@@ -1,38 +1,71 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { NovoFuncionarioModal } from "./components/NovoFuncionarioModal";
+import { useEffect, useMemo, useState } from "react";
+import { NovoFuncionarioModal, type NovoFuncionarioData } from "./components/NovoFuncionarioModal";
 import { FuncionarioCard } from "./components/FuncionarioCard";
 import { FuncionarioRow } from "./components/FuncionarioRow";
 import { FuncionariosHeader } from "./components/FuncionariosHeader";
 import { FuncionariosToolbar } from "./components/FuncionariosToolbar";
 import { FuncionariosPagination } from "./components/FuncionariosPagination";
-import type { Funcionario } from "./types/types";
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-
-const FUNCIONARIOS_MOCK: Funcionario[] = [
-  { id: 1, nome: "Ana Beatriz Santos",    email: "ana.santos@contaup.com.br",     cpf: "123.456.789-00", dataNascimento: "1992-03-15", cargo: "Gerente Financeiro",  iniciais: "AS", cor: "#4edea3", ativo: true  },
-  { id: 2, nome: "Carlos Eduardo Lima",   email: "carlos.lima@contaup.com.br",    cpf: "234.567.890-11", dataNascimento: "1988-07-22", cargo: "Contador",            iniciais: "CL", cor: "#6366f1", ativo: true  },
-  { id: 3, nome: "Fernanda Costa",        email: "fernanda.costa@contaup.com.br", cpf: "345.678.901-22", dataNascimento: "1995-11-08", cargo: "Analista Financeiro", iniciais: "FC", cor: "#f59e0b", ativo: true  },
-  { id: 4, nome: "Rafael Oliveira",       email: "rafael.oliveira@contaup.com.br",cpf: "456.789.012-33", dataNascimento: "1990-01-30", cargo: "Auditor Interno",     iniciais: "RO", cor: "#ec4899", ativo: true  },
-  { id: 5, nome: "Juliana Pereira",       email: "juliana.pereira@contaup.com.br",cpf: "567.890.123-44", dataNascimento: "1997-06-14", cargo: "Assistente Contábil", iniciais: "JP", cor: "#14b8a6", ativo: false },
-  { id: 6, nome: "Thiago Rodrigues",      email: "thiago.rodrigues@contaup.com.br",cpf: "678.901.234-55",dataNascimento: "1985-09-03", cargo: "Controller",         iniciais: "TR", cor: "#f97316", ativo: true  },
-  { id: 7, nome: "Mariana Almeida",       email: "mariana.almeida@contaup.com.br",cpf: "789.012.345-66", dataNascimento: "1999-04-25", cargo: "Estagiário",          iniciais: "MA", cor: "#a855f7", ativo: true  },
-  { id: 8, nome: "Lucas Ferreira",        email: "lucas.ferreira@contaup.com.br", cpf: "890.123.456-77", dataNascimento: "1993-12-19", cargo: "Analista Fiscal",     iniciais: "LF", cor: "#0ea5e9", ativo: false },
-];
+import { funcionariosService } from "./funcionariosService";
+import { getEmpresaIdFromToken } from "@/shared/api";
+import type { Funcionario, FuncionarioBackend } from "./types/types";
 
 const CORES = ["#4edea3", "#6366f1", "#f59e0b", "#ec4899", "#14b8a6", "#f97316", "#a855f7", "#0ea5e9"];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+function initials(nome: string) {
+  return nome
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+}
+
+function normalizeFuncionario(f: FuncionarioBackend, index: number): Funcionario {
+  return {
+    id: f.id,
+    nome: f.nome,
+    email: f.email,
+    cpf: f.cpf ?? "",
+    dataNascimento: f.data_nascimento ?? "",
+    cargo: f.cargo,
+    foto: f.foto_url,
+    iniciais: initials(f.nome),
+    cor: CORES[index % CORES.length],
+    ativo: true,
+  };
+}
 
 export default function FuncionariosPage() {
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>(FUNCIONARIOS_MOCK);
-  const [viewMode, setViewMode]         = useState<"grid" | "list">("grid");
-  const [search, setSearch]             = useState("");
-  const [modalOpen, setModalOpen]       = useState(false);
-  const [page, setPage]                 = useState(1);
-  const [pageSize, setPageSize]         = useState(8);
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function carregarFuncionarios() {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await funcionariosService.listarFuncionarios();
+      setFuncionarios(data.map(normalizeFuncionario));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Nao foi possivel carregar os funcionarios.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void carregarFuncionarios();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -42,29 +75,52 @@ export default function FuncionariosPage() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const filtered = funcionarios.filter((f) =>
-    f.nome.toLowerCase().includes(search.toLowerCase()) ||
-    f.email.toLowerCase().includes(search.toLowerCase()) ||
-    f.cargo.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const term = search.toLowerCase();
+    return funcionarios.filter((f) =>
+      f.nome.toLowerCase().includes(term) ||
+      f.email.toLowerCase().includes(term) ||
+      f.cargo.toLowerCase().includes(term)
+    );
+  }, [funcionarios, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const safePage   = Math.min(page, totalPages);
-  const paginated  = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const safePage = Math.min(page, totalPages);
+  const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  useEffect(() => { setPage(1); }, [search, pageSize]);
+  async function handleSave(data: NovoFuncionarioData) {
+    const empresaId = getEmpresaIdFromToken();
+    if (!empresaId) {
+      throw new Error("Empresa nao encontrada no token. Faca login novamente.");
+    }
 
-  function handleSave(data: Omit<Funcionario, "id" | "iniciais" | "cor" | "ativo">) {
-    const iniciais = data.nome.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join("");
-    const cor = CORES[funcionarios.length % CORES.length];
-    setFuncionarios((prev) => [...prev, { id: Date.now(), ...data, iniciais, cor, ativo: true }]);
+    await funcionariosService.criarFuncionario({
+      nome: data.nome,
+      email: data.email,
+      senha: data.senha,
+      empresa_id: empresaId,
+      cargo: data.cargo,
+      cpf: data.cpf ? data.cpf.replace(/\D/g, "") : undefined,
+      data_nascimento: data.dataNascimento || undefined,
+      foto_url: data.foto || undefined,
+    });
+    await carregarFuncionarios();
+  }
+
+  async function handleRemove(id: string) {
+    if (!confirm("Remover este funcionario?")) return;
+    try {
+      await funcionariosService.removerFuncionario(id);
+      await carregarFuncionarios();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Nao foi possivel remover o funcionario.");
+    }
   }
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
       <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
         <div className="max-w-7xl mx-auto space-y-5">
-
           <FuncionariosHeader
             ativos={funcionarios.filter((f) => f.ativo).length}
             total={funcionarios.length}
@@ -74,30 +130,45 @@ export default function FuncionariosPage() {
           <FuncionariosToolbar
             search={search}
             viewMode={viewMode}
-            onSearch={setSearch}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
             onViewMode={setViewMode}
           />
 
-          {filtered.length === 0 && (
+          {error && (
+            <div className="rounded-2xl px-4 py-3 text-sm font-medium" style={{ background: "rgba(239,68,68,0.12)", color: "#fca5a5" }}>
+              {error}
+            </div>
+          )}
+
+          {loading && (
+            <div className="rounded-3xl p-12 text-center text-sm" style={{ background: "#1e1e1e", color: "#6b7280" }}>
+              Carregando funcionarios...
+            </div>
+          )}
+
+          {!loading && filtered.length === 0 && (
             <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
               <span className="material-symbols-outlined text-5xl" style={{ color: "#6b7280" }}>group_off</span>
-              <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionário encontrado</p>
+              <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
             </div>
           )}
 
-          {viewMode === "grid" && filtered.length > 0 && (
+          {!loading && viewMode === "grid" && filtered.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {paginated.map((f) => <FuncionarioCard key={f.id} f={f} />)}
+              {paginated.map((f) => <FuncionarioCard key={f.id} f={f} onRemove={handleRemove} />)}
             </div>
           )}
 
-          {viewMode === "list" && filtered.length > 0 && (
+          {!loading && viewMode === "list" && filtered.length > 0 && (
             <div className="rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      {["Funcionário", "Cargo", "CPF", "Nascimento", "Status", ""].map((h) => (
+                      {["Funcionario", "Cargo", "CPF", "Nascimento", "Status", ""].map((h) => (
                         <th
                           key={h}
                           className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF", "Nascimento"].includes(h) ? " hidden md:table-cell" : ""}`}
@@ -109,14 +180,14 @@ export default function FuncionariosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginated.map((f) => <FuncionarioRow key={f.id} f={f} />)}
+                    {paginated.map((f) => <FuncionarioRow key={f.id} f={f} onRemove={handleRemove} />)}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
 
-          {filtered.length > 0 && (
+          {!loading && filtered.length > 0 && (
             <FuncionariosPagination
               page={safePage}
               totalPages={totalPages}
@@ -125,7 +196,6 @@ export default function FuncionariosPage() {
               onPage={setPage}
             />
           )}
-
         </div>
       </main>
 

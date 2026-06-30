@@ -19,9 +19,19 @@ function calcIdade(iso: string) {
 
 interface FuncionarioCardProps {
   f: Funcionario;
+  onRemove?: (id: string) => void;
 }
 
-export function FuncionarioCard({ f }: FuncionarioCardProps) {
+function cargoLabel(cargo: string) {
+  const labels: Record<string, string> = {
+    GERENTE: "Gerente",
+    CAIXA: "Caixa",
+    DONO: "Dono",
+  };
+  return labels[cargo] ?? cargo;
+}
+
+export function FuncionarioCard({ f, onRemove }: FuncionarioCardProps) {
   return (
     <div
       className="rounded-3xl p-5 flex flex-col gap-4 group transition-all duration-200 hover:scale-[1.01]"
@@ -48,7 +58,7 @@ export function FuncionarioCard({ f }: FuncionarioCardProps) {
 
       <div className="flex-1">
         <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{f.nome}</p>
-        <p className="text-xs mt-0.5 font-medium" style={{ color: f.cor }}>{f.cargo}</p>
+        <p className="text-xs mt-0.5 font-medium" style={{ color: f.cor }}>{cargoLabel(f.cargo)}</p>
         <p className="text-xs mt-2 truncate" style={{ color: "#6b7280" }}>{f.email}</p>
       </div>
 
@@ -65,12 +75,15 @@ export function FuncionarioCard({ f }: FuncionarioCardProps) {
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
+            type="button"
             className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-white/10"
             style={{ color: "#6b7280" }} title="Editar"
           >
             <Pencil size={13} />
           </button>
           <button
+            type="button"
+            onClick={() => onRemove?.(f.id)}
             className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-red-500/10"
             style={{ color: "#6b7280" }} title="Remover"
           >
