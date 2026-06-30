@@ -1,13 +1,14 @@
 const BASE_URL = "https://contaup-api.vercel.app";
 
-function getAuthHeaders(): Headers {
-  const headers = new Headers();
-  headers.set("Content-Type", "application/json");
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
 
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
   return headers;

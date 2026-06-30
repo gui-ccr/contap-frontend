@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import {
@@ -241,16 +241,47 @@ function useSave() {
   return { state, save };
 }
 
+import { useAuth } from "@/shared/AuthContext";
+import { apiClient } from "@/shared/api";
+
 // ─────────────────────────────────────────────────────────────
 // SEÇÃO 1 — PERFIL DO USUÁRIO
 // ─────────────────────────────────────────────────────────────
 function ProfileSettings() {
-  const [name, setName] = useState("João Dias");
-  const [role, setRole] = useState("Administrador");
-  const [email, setEmail] = useState("joao.dias@contaup.com.br");
+  const { usuario, refreshUserData } = useAuth();
+  
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const { state, save } = useSave();
+  const [state, setState] = useState<SaveState>("idle");
+
+  useEffect(() => {
+    if (usuario) {
+      setName(usuario.nome || "");
+      setRole(usuario.cargo || "");
+      setEmail(usuario.email || "");
+    }
+  }, [usuario]);
+
+  const save = async () => {
+    if (!usuario) return;
+    setState("loading");
+    try {
+      await apiClient.put(`/funcionarios/${usuario.id}`, {
+        nome: name,
+        cargo: role,
+        // email nao pode ser alterado por enquanto via put funcionario, a menos q api permita
+      });
+      await refreshUserData();
+      setState("saved");
+      setTimeout(() => setState("idle"), 2000);
+    } catch (err) {
+      console.error(err);
+      setState("idle");
+    }
+  };
 
   return (
     <SettingsCard>
@@ -346,11 +377,37 @@ function ProfileSettings() {
 // SEÇÃO 2 — CONTA / EMPRESA
 // ─────────────────────────────────────────────────────────────
 function CompanySettings() {
-  const [company, setCompany] = useState("ContaUp Soluções Ltda.");
-  const [cnpj, setCnpj] = useState("12.345.678/0001-99");
+  const { empresa, refreshUserData } = useAuth();
+
+  const [company, setCompany] = useState("");
+  const [cnpj, setCnpj] = useState("");
   const [timezone, setTimezone] = useState("america_sao_paulo");
   const [currency, setCurrency] = useState("brl");
-  const { state, save } = useSave();
+  const [state, setState] = useState<SaveState>("idle");
+
+  useEffect(() => {
+    if (empresa) {
+      setCompany(empresa.razao_social || "");
+      setCnpj(empresa.cnpj || "");
+    }
+  }, [empresa]);
+
+  const save = async () => {
+    if (!empresa) return;
+    setState("loading");
+    try {
+      await apiClient.put(`/empresas/${empresa.id}`, {
+        razao_social: company,
+        cnpj: cnpj.replace(/\D/g, ""), // Manda s numeros
+      });
+      await refreshUserData();
+      setState("saved");
+      setTimeout(() => setState("idle"), 2000);
+    } catch (err) {
+      console.error(err);
+      setState("idle");
+    }
+  };
 
   return (
     <SettingsCard>
