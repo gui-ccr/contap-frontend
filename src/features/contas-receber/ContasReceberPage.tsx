@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { contasReceberService, ContaReceberBackend } from "./contasReceberService";
+import { Modal } from "@/ui/Modal";
 import {
   Banknote,
   Plus,
@@ -296,17 +297,14 @@ export default function ContasReceberPage() {
           </div>
         </div>
       </main>
-
       {/* Modal Form */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-          <div className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl" style={{ background: "#1e1e1e" }}>
+      <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="576px">
             <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#1a1a1a" }}>
               <div className="flex items-center gap-2">
                 <Banknote size={15} className="text-[#4edea3]" />
                 <span className="text-sm font-semibold text-white">Nova Conta a Receber</span>
               </div>
-              <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-white transition-colors">
+              <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-white transition-colors cursor-pointer">
                 <X size={18} />
               </button>
             </div>
@@ -353,7 +351,7 @@ export default function ContasReceberPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80 cursor-pointer"
                   style={{ background: "rgba(255,255,255,0.06)", color: "#9ca3af" }}
                 >
                   Cancelar
@@ -361,16 +359,14 @@ export default function ContasReceberPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 cursor-pointer"
                   style={{ background: "#4edea3", color: "#003824" }}
                 >
                   {submitting ? "Salvando..." : "Salvar Conta"}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -83,7 +83,7 @@ export default function ContasPagarPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await contasPagarService.listar();
+      const data = await contasPagarService.listarContasPagar();
       setContas(data);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar contas a pagar.");
@@ -98,25 +98,25 @@ export default function ContasPagarPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await contasPagarService.criar({
+      await contasPagarService.criarContaPagar({
         descricao: form.descricao,
         valor: Number(form.valor),
         data_vencimento: form.data_vencimento,
       });
-      showToast("Conta a pagar cadastrada com sucesso!", "success");
-      setForm({ descricao: "", valor: "", data_vencimento: "" });
+      showToast("Conta criada com sucesso!", "success");
       setShowForm(false);
+      setForm({ descricao: "", valor: "", data_vencimento: "" });
       carregarContas();
     } catch (err: any) {
-      showToast(err.message || "Erro ao salvar conta.", "error");
+      showToast(err.message || "Erro ao criar conta.", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handlePagar = async (id: string) => {
+  const handleBaixarConta = async (id: string) => {
     try {
-      await contasPagarService.pagar(id);
+      await contasPagarService.baixarConta(id);
       showToast("Conta baixada e lançamento contábil gerado!", "success");
       carregarContas();
     } catch (err: any) {
@@ -283,7 +283,7 @@ export default function ContasPagarPage() {
                       <td className="px-5 py-4 text-right">
                         {!c.pago && (
                           <button
-                            onClick={() => handlePagar(c.id)}
+                            onClick={() => handleBaixarConta(c.id)}
                             className="cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
                             style={{ background: "#4edea3", color: "#003824" }}
                           >
@@ -307,7 +307,7 @@ export default function ContasPagarPage() {
 
     </main>
 
-      <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="max-w-xl">
+      <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="576px">
             <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#1a1a1a" }}>
               <div className="flex items-center gap-2">
                 <CreditCard size={15} className="text-[#4edea3]" />

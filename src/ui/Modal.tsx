@@ -10,7 +10,7 @@ interface ModalProps {
   maxWidth?: string;
 }
 
-export function Modal({ open, onClose, children, maxWidth = "max-w-lg" }: ModalProps) {
+export function Modal({ open, onClose, children, maxWidth = "500px" }: ModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,10 +34,13 @@ export function Modal({ open, onClose, children, maxWidth = "max-w-lg" }: ModalP
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.75)" }}
+      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className={`w-full ${maxWidth} rounded-3xl overflow-hidden shadow-2xl`} style={{ background: "#1e1e1e" }}>
+      <div 
+        className="rounded-3xl overflow-hidden shadow-2xl" 
+        style={{ background: "#1e1e1e", width: "100%", maxWidth: maxWidth }}
+      >
         {children}
       </div>
     </div>,
