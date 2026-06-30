@@ -1,4 +1,4 @@
-import type { IndicatorItem } from "../data/data";
+import type { IndicatorItem } from "../types";
 
 interface QuickIndicatorsProps {
   indicators: IndicatorItem[];

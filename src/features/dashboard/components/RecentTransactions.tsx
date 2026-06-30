@@ -1,4 +1,4 @@
-import type { RecentItem } from "../data/data";
+import type { RecentItem } from "../types";
 
 interface RecentTransactionsProps {
   transactions: RecentItem[];

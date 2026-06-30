@@ -1,11 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { BalancoHeader } from "./components/BalancoHeader";
 import { AtivoSection } from "./components/AtivoSection";
 import { PassivoSection } from "./components/PassivoSection";
 import { EquationFooter } from "./components/EquationFooter";
+import { balancoService } from "./balancoService";
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
+// ─── Mock data (Fallback) ──────────────────────────────────────────────────────
 
 const ATIVO_CIRCULANTE = [
   { label: "Caixa e Equivalentes", valor: "R$ 1.245.000,00" },
@@ -41,9 +43,62 @@ const TOTAL_PASSIVO = "R$ 6.965.500,00";
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BalancoPatrimonialPage() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   const today = new Date().toLocaleDateString("pt-BR", {
     day: "numeric", month: "long", year: "numeric",
   });
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+  };
+
+  useEffect(() => {
+    async function loadBalanco() {
+      try {
+        setLoading(true);
+        const res = await balancoService.obterBalanco();
+        
+        // Formatar valores para string conforme esperado pelos componentes visuais
+        const formatted = {
+          ativoCirculante: res.ativoCirculante.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
+          ativoNaoCirculante: res.ativoNaoCirculante.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
+          passivoCirculante: res.passivoCirculante.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
+          passivoNaoCirculante: res.passivoNaoCirculante.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
+          patrimonioLiquido: res.patrimonioLiquido.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
+          totalAtivo: formatCurrency(res.totalAtivo),
+          totalPassivo: formatCurrency(res.totalPassivo),
+          // Subtotais calculados
+          totalCirculanteAtivo: formatCurrency(res.ativoCirculante.reduce((acc, i) => acc + i.valor, 0)),
+          totalNaoCirculanteAtivo: formatCurrency(res.ativoNaoCirculante.reduce((acc, i) => acc + i.valor, 0)),
+          totalCirculantePassivo: formatCurrency(res.passivoCirculante.reduce((acc, i) => acc + i.valor, 0)),
+          totalNaoCirculantePassivo: formatCurrency(res.passivoNaoCirculante.reduce((acc, i) => acc + i.valor, 0)),
+          totalPatrimonio: formatCurrency(res.patrimonioLiquido.reduce((acc, i) => acc + i.valor, 0)),
+        };
+        setData(formatted);
+      } catch (err) {
+        console.warn("Falha ao carregar Balanço Patrimonial da API, usando dados mockados como fallback.", err);
+        setData({
+          ativoCirculante: ATIVO_CIRCULANTE,
+          ativoNaoCirculante: ATIVO_NAO_CIRCULANTE,
+          passivoCirculante: PASSIVO_CIRCULANTE,
+          passivoNaoCirculante: PASSIVO_NAO_CIRCULANTE,
+          patrimonioLiquido: PATRIMONIO_LIQUIDO,
+          totalAtivo: TOTAL_ATIVO,
+          totalPassivo: TOTAL_PASSIVO,
+          totalCirculanteAtivo: "R$ 2.515.500,00",
+          totalNaoCirculanteAtivo: "R$ 4.450.000,00",
+          totalCirculantePassivo: "R$ 1.155.000,00",
+          totalNaoCirculantePassivo: "R$ 2.010.500,00",
+          totalPatrimonio: "R$ 3.800.000,00",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadBalanco();
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
@@ -52,26 +107,37 @@ export default function BalancoPatrimonialPage() {
 
           <BalancoHeader today={today} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AtivoSection
-              circulante={ATIVO_CIRCULANTE}
-              naoCirculante={ATIVO_NAO_CIRCULANTE}
-              totalCirculante="R$ 2.515.500,00"
-              totalNaoCirculante="R$ 4.450.000,00"
-              totalAtivo={TOTAL_ATIVO}
-            />
-            <PassivoSection
-              circulante={PASSIVO_CIRCULANTE}
-              naoCirculante={PASSIVO_NAO_CIRCULANTE}
-              patrimonioLiquido={PATRIMONIO_LIQUIDO}
-              totalCirculante="R$ 1.155.000,00"
-              totalNaoCirculante="R$ 2.010.500,00"
-              totalPatrimonio="R$ 3.800.000,00"
-              totalPassivo={TOTAL_PASSIVO}
-            />
-          </div>
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-20 gap-3">
+              <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-gray-400 animate-pulse">Carregando Balanço Patrimonial...</p>
+            </div>
+          )}
 
-          <EquationFooter totalAtivo={TOTAL_ATIVO} totalPassivo={TOTAL_PASSIVO} />
+          {!loading && data && (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <AtivoSection
+                  circulante={data.ativoCirculante}
+                  naoCirculante={data.ativoNaoCirculante}
+                  totalCirculante={data.totalCirculanteAtivo}
+                  totalNaoCirculante={data.totalNaoCirculanteAtivo}
+                  totalAtivo={data.totalAtivo}
+                />
+                <PassivoSection
+                  circulante={data.passivoCirculante}
+                  naoCirculante={data.passivoNaoCirculante}
+                  patrimonioLiquido={data.patrimonioLiquido}
+                  totalCirculante={data.totalCirculantePassivo}
+                  totalNaoCirculante={data.totalNaoCirculantePassivo}
+                  totalPatrimonio={data.totalPatrimonio}
+                  totalPassivo={data.totalPassivo}
+                />
+              </div>
+
+              <EquationFooter totalAtivo={data.totalAtivo} totalPassivo={data.totalPassivo} />
+            </>
+          )}
 
         </div>
       </main>

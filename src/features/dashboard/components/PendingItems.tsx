@@ -1,4 +1,4 @@
-import type { PendingItem } from "../data/data";
+import type { PendingItem } from "../types";
 
 interface PendingItemsProps {
   items: PendingItem[];
