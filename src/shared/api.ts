@@ -26,6 +26,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
     throw new Error(data.message || data.error || "Ocorreu um erro na requisição.");
   }
 
+  if (data && typeof data === 'object' && 'status' in data && 'data' in data && data.status === "success") {
+    return data.data as T;
+  }
+
   return data as T;
 }
 

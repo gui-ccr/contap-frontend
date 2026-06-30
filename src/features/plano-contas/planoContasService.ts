@@ -17,42 +17,20 @@ export interface ContaContabilPayload {
   tipo: TipoConta;
 }
 
-interface ApiEnvelope<T> {
-  status: "success" | "error";
-  message?: string;
-  data: T;
-}
-
-function unwrap<T>(response: T | ApiEnvelope<T>): T {
-  if (
-    response &&
-    typeof response === "object" &&
-    "status" in response &&
-    "data" in response
-  ) {
-    return (response as ApiEnvelope<T>).data;
-  }
-
-  return response as T;
-}
-
 export const planoContasService = {
   async listarContas(empresaId?: string): Promise<ContaContabil[]> {
-    const response = await apiClient.get<ContaContabil[] | ApiEnvelope<ContaContabil[]>>(
+    return await apiClient.get<ContaContabil[]>(
       "/plano-contas",
       empresaId ? { empresa_id: empresaId } : undefined
     );
-    return unwrap(response);
   },
 
   async criarConta(payload: ContaContabilPayload): Promise<ContaContabil> {
-    const response = await apiClient.post<ContaContabil | ApiEnvelope<ContaContabil>>("/plano-contas", payload);
-    return unwrap(response);
+    return await apiClient.post<ContaContabil>("/plano-contas", payload);
   },
 
   async atualizarConta(id: string, payload: Partial<ContaContabilPayload>): Promise<ContaContabil> {
-    const response = await apiClient.patch<ContaContabil | ApiEnvelope<ContaContabil>>(`/plano-contas/${id}`, payload);
-    return unwrap(response);
+    return await apiClient.patch<ContaContabil>(`/plano-contas/${id}`, payload);
   },
 
   async removerConta(id: string): Promise<void> {
