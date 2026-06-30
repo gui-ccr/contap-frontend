@@ -6,22 +6,19 @@ export interface FinancialEntry {
   saldo: number;
 }
 
-export interface DreDataResponse {
-  status: string;
-  data: {
-    empresaId: string;
-    dataInicio: string;
-    dataFim: string;
-    receitas: FinancialEntry[];
-    despesas: FinancialEntry[];
-    totalReceitas: number;
-    totalDespesas: number;
-    resultadoLiquido: number;
-  };
+export interface DreData {
+  empresaId: string;
+  dataInicio: string;
+  dataFim: string;
+  receitas: FinancialEntry[];
+  despesas: FinancialEntry[];
+  totalReceitas: number;
+  totalDespesas: number;
+  resultadoLiquido: number;
 }
 
 export const dreService = {
-  async obterDre(periodo: string): Promise<DreDataResponse["data"]> {
+  async obterDre(periodo: string): Promise<DreData> {
     let dataInicio = "2023-07-01";
     let dataFim = "2023-09-30";
 
@@ -36,10 +33,9 @@ export const dreService = {
       dataFim = "2023-12-31";
     }
 
-    const response = await apiClient.get<DreDataResponse>("/relatorios/dre", {
+    return await apiClient.get<DreData>("/relatorios/dre", {
       dataInicio,
       dataFim,
     });
-    return response.data;
   },
 };

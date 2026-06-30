@@ -5,29 +5,22 @@ export interface BalancoItem {
   valor: number;
 }
 
-export interface BalancoDataResponse {
-  status: string;
-  data: {
-    ativoCirculante: BalancoItem[];
-    ativoNaoCirculante: BalancoItem[];
-    passivoCirculante: BalancoItem[];
-    passivoNaoCirculante: BalancoItem[];
-    patrimonioLiquido: BalancoItem[];
-    totalAtivo: number;
-    totalPassivo: number;
-  };
+export interface BalancoData {
+  ativoCirculante: BalancoItem[];
+  ativoNaoCirculante: BalancoItem[];
+  passivoCirculante: BalancoItem[];
+  passivoNaoCirculante: BalancoItem[];
+  patrimonioLiquido: BalancoItem[];
+  totalAtivo: number;
+  totalPassivo: number;
 }
 
 export const balancoService = {
-  async obterBalanco(): Promise<BalancoDataResponse["data"]> {
-    // Tenta primeiro /relatorios/balanco
+  async obterBalanco(): Promise<BalancoData> {
     try {
-      const response = await apiClient.get<BalancoDataResponse>("/relatorios/balanco");
-      return response.data;
+      return await apiClient.get<BalancoData>("/relatorios/balanco");
     } catch (err) {
-      // Se falhar, tenta o fallback /relatorios/balanco-patrimonial
-      const response = await apiClient.get<BalancoDataResponse>("/relatorios/balanco-patrimonial");
-      return response.data;
+      return await apiClient.get<BalancoData>("/relatorios/balanco-patrimonial");
     }
   },
 };

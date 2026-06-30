@@ -1,4 +1,4 @@
-const BASE_URL = "https://contup-api.vercel.app";
+const BASE_URL = "https://contaup-api.vercel.app";
 
 function getAuthHeaders(): Headers {
   const headers = new Headers();
@@ -24,6 +24,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
   if (data && typeof data === 'object' && 'status' in data && data.status === "error") {
     throw new Error(data.message || data.error || "Ocorreu um erro na requisição.");
+  }
+
+  if (data && typeof data === 'object' && 'status' in data && 'data' in data && data.status === "success") {
+    return data.data as T;
   }
 
   return data as T;
