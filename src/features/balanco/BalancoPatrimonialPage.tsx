@@ -78,21 +78,7 @@ export default function BalancoPatrimonialPage() {
         };
         setData(formatted);
       } catch (err) {
-        console.warn("Falha ao carregar Balanço Patrimonial da API, usando dados mockados como fallback.", err);
-        setData({
-          ativoCirculante: ATIVO_CIRCULANTE,
-          ativoNaoCirculante: ATIVO_NAO_CIRCULANTE,
-          passivoCirculante: PASSIVO_CIRCULANTE,
-          passivoNaoCirculante: PASSIVO_NAO_CIRCULANTE,
-          patrimonioLiquido: PATRIMONIO_LIQUIDO,
-          totalAtivo: TOTAL_ATIVO,
-          totalPassivo: TOTAL_PASSIVO,
-          totalCirculanteAtivo: "R$ 2.515.500,00",
-          totalNaoCirculanteAtivo: "R$ 4.450.000,00",
-          totalCirculantePassivo: "R$ 1.155.000,00",
-          totalNaoCirculantePassivo: "R$ 2.010.500,00",
-          totalPatrimonio: "R$ 3.800.000,00",
-        });
+        console.error("Falha ao carregar Balanço Patrimonial da API:", err);
       } finally {
         setLoading(false);
       }

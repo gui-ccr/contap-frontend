@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { contasPagarService, ContaPagarBackend } from "./contasPagarService";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Modal } from "@/ui/Modal";
 import {
   CreditCard,
@@ -13,6 +14,7 @@ import {
   TrendingDown,
   Calendar,
   X,
+  Filter
 } from "lucide-react";
 
 function formatCurrency(value: number) {
@@ -60,19 +62,51 @@ function StatusBadge({ pago, dataVencimento }: { pago: boolean; dataVencimento: 
   );
 }
 
+const TIPOS_PAGAR = ["Salário", "Aluguel", "Fornecedores", "Impostos", "Manutenção", "Serviços", "Outros"];
+
 export default function ContasPagarPage() {
   const [contas, setContas] = useState<ContaPagarBackend[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  
   const [filter, setFilter] = useState<"todos" | "pendente" | "pago">("todos");
+  
+  const getFirstDayOfMonth = () => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
+  };
+  const getLastDayOfMonth = () => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().split('T')[0];
+  };
+
+  const [dataInicio, setDataInicio] = useState(getFirstDayOfMonth);
+  const [dataFim, setDataFim] = useState(getLastDayOfMonth);
+  const [tipoFiltro, setTipoFiltro] = useState("");
 
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
+    tipo: "Outros",
     data_vencimento: "",
   });
+
+  function formatCurrencyInput(value: string | number) {
+    if (value === "" || value === null || value === undefined) return "";
+    const numeric = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(numeric)) return "";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(numeric);
+  }
+
+  function parseCurrency(value: string) {
+    return (Number(value.replace(/\D/g, "")) / 100).toString();
+  }
 
   const carregarContas = async () => {
     try {
@@ -89,45 +123,81 @@ export default function ContasPagarPage() {
 
   useEffect(() => { carregarContas(); }, []);
 
+  const abrirModalNovo = () => {
+    setEditingId(null);
+    setForm({ descricao: "", valor: "", tipo: "Outros", data_vencimento: "" });
+    setShowForm(true);
+  };
+
+  const handleEdit = (c: ContaPagarBackend) => {
+    setEditingId(c.id);
+    setForm({
+      descricao: c.descricao,
+      valor: c.valor.toString(),
+      tipo: c.tipo,
+      data_vencimento: c.data_vencimento
+    });
+    setShowForm(true);
+  };
+
+  const fecharModal = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm({ descricao: "", valor: "", tipo: "Outros", data_vencimento: "" });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await contasPagarService.criarContaPagar({
-        descricao: form.descricao,
-        valor: Number(form.valor),
-        data_vencimento: form.data_vencimento,
-      });
-      toast.success("Conta criada com sucesso!");
-      setShowForm(false);
-      setForm({ descricao: "", valor: "", data_vencimento: "" });
+      if (editingId) {
+        await contasPagarService.atualizarContaPagar(editingId, {
+          descricao: form.descricao,
+          valor: Number(form.valor),
+          tipo: form.tipo,
+          data_vencimento: form.data_vencimento,
+        });
+        toast.success("Conta atualizada com sucesso!");
+      } else {
+        await contasPagarService.criarContaPagar({
+          descricao: form.descricao,
+          valor: Number(form.valor),
+          tipo: form.tipo,
+          data_vencimento: form.data_vencimento,
+        });
+        toast.success("Conta criada com sucesso!");
+      }
+      fecharModal();
       carregarContas();
     } catch (err: any) {
-      toast.error(err.message || "Erro ao criar conta.");
+      toast.error(err.message || "Erro ao salvar conta.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleBaixarConta = async (id: string) => {
-    try {
-      await contasPagarService.baixarConta(id);
-      toast.success("Conta baixada e lançamento contábil gerado!");
-      carregarContas();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao dar baixa.");
-    }
+  const router = useRouter();
+
+  const handleBaixarConta = (c: ContaPagarBackend) => {
+    const desc = encodeURIComponent(c.descricao);
+    router.push(`/notas-fiscais?darBaixaId=${c.id}&tipoBaixa=conta_pagar&descBaixa=${desc}`);
   };
 
   const filtradas = contas.filter(c => {
-    if (filter === "pendente") return !c.pago;
-    if (filter === "pago") return c.pago;
+    if (filter === "pendente" && c.pago) return false;
+    if (filter === "pago" && !c.pago) return false;
+    
+    if (tipoFiltro && c.tipo !== tipoFiltro) return false;
+    
+    if (dataInicio && c.data_vencimento < dataInicio) return false;
+    if (dataFim && c.data_vencimento > dataFim) return false;
+    
     return true;
   });
 
-  const totalPendente = contas.filter(c => !c.pago).reduce((s, c) => s + c.valor, 0);
-  const totalPago = contas.filter(c => c.pago).reduce((s, c) => s + c.valor, 0);
-  const totalVencido = contas.filter(c => !c.pago && getDiffDays(c.data_vencimento) < 0).reduce((s, c) => s + c.valor, 0);
+  const totalPendente = filtradas.filter(c => !c.pago).reduce((s, c) => s + c.valor, 0);
+  const totalPago = filtradas.filter(c => c.pago).reduce((s, c) => s + c.valor, 0);
+  const totalVencido = filtradas.filter(c => !c.pago && getDiffDays(c.data_vencimento) < 0).reduce((s, c) => s + c.valor, 0);
 
   const inputCls = "w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all border focus:border-[#4edea3]/50";
   const inputStyle = { background: "#242424", borderColor: "rgba(255,255,255,0.08)", color: "#e5e2e1" };
@@ -142,7 +212,7 @@ export default function ContasPagarPage() {
             <h1 className="text-2xl font-bold tracking-tight mt-0.5">Contas a Pagar</h1>
           </div>
           <button
-            onClick={() => setShowForm(true)}
+            onClick={abrirModalNovo}
             className="cursor-pointer flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
             style={{ background: "#4edea3", color: "#003824" }}
           >
@@ -153,9 +223,9 @@ export default function ContasPagarPage() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { label: "Total Pendente", value: totalPendente, color: "#f59e0b", bg: "rgba(245,158,11,0.08)", icon: <Clock size={18} /> },
-            { label: "Total Vencido", value: totalVencido, color: "#ef4444", bg: "rgba(239,68,68,0.08)", icon: <AlertTriangle size={18} /> },
-            { label: "Total Pago (mês)", value: totalPago, color: "#4edea3", bg: "rgba(78,222,163,0.08)", icon: <CheckCircle size={18} /> },
+            { label: "Total Pendente (Filtro)", value: totalPendente, color: "#f59e0b", bg: "rgba(245,158,11,0.08)", icon: <Clock size={18} /> },
+            { label: "Total Vencido (Filtro)", value: totalVencido, color: "#ef4444", bg: "rgba(239,68,68,0.08)", icon: <AlertTriangle size={18} /> },
+            { label: "Total Pago (Filtro)", value: totalPago, color: "#4edea3", bg: "rgba(78,222,163,0.08)", icon: <CheckCircle size={18} /> },
           ].map(card => (
             <div key={card.label} className="rounded-2xl p-5 flex items-center justify-between" style={{ background: card.bg }}>
               <div>
@@ -176,20 +246,49 @@ export default function ContasPagarPage() {
           </div>
         )}
 
-        {/* Filter tabs */}
-        <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: "#1a1a1a" }}>
-          {(["todos", "pendente", "pago"] as const).map(f => (
+        {/* Filters Panel */}
+        <div className="bg-[#1a1a1a] p-4 rounded-2xl flex flex-col sm:flex-row flex-wrap gap-4 items-end border border-white/5">
+          <div className="flex gap-1 p-1 rounded-xl" style={{ background: "#242424" }}>
+            {(["todos", "pendente", "pago"] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className="cursor-pointer px-4 py-2 rounded-lg text-xs font-semibold capitalize transition-all"
+                style={filter === f
+                  ? { background: "#4edea3", color: "#003824" }
+                  : { color: "#6b7280" }}
+              >
+                {f === "todos" ? "Todos" : f === "pendente" ? "Pendentes" : "Pagos"}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 flex flex-wrap gap-4">
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[120px]">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Data Inicial</label>
+              <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} className={inputCls} style={inputStyle} />
+            </div>
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[120px]">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Data Final</label>
+              <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} className={inputCls} style={inputStyle} />
+            </div>
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[140px]">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Tipo de Conta</label>
+              <select value={tipoFiltro} onChange={e => setTipoFiltro(e.target.value)} className={inputCls} style={inputStyle}>
+                <option value="">Todas</option>
+                {TIPOS_PAGAR.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+          
+          {(dataInicio || dataFim || tipoFiltro) && (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className="cursor-pointer px-4 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
-              style={filter === f
-                ? { background: "#4edea3", color: "#003824" }
-                : { color: "#6b7280" }}
+              onClick={() => { setDataInicio(""); setDataFim(""); setTipoFiltro(""); }}
+              className="px-3 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 transition-all cursor-pointer h-[42px] flex items-center gap-2"
             >
-              {f === "todos" ? "Todos" : f === "pendente" ? "Pendentes" : "Pagos"}
+              <X size={14} /> Limpar
             </button>
-          ))}
+          )}
         </div>
 
         {/* Table */}
@@ -208,7 +307,7 @@ export default function ContasPagarPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  {["Descrição", "Vencimento", "Valor", "Status", ""].map(h => (
+                  {["Descrição", "Tipo", "Vencimento", "Valor", "Status", ""].map(h => (
                     <th key={h} className="px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -216,7 +315,7 @@ export default function ContasPagarPage() {
               <tbody className="text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-10 text-center">
+                    <td colSpan={6} className="px-5 py-10 text-center">
                       <div className="flex flex-col items-center gap-3 text-gray-500">
                         <div className="w-6 h-6 border-2 border-[#4edea3] border-t-transparent rounded-full animate-spin" />
                         Carregando contas...
@@ -225,16 +324,10 @@ export default function ContasPagarPage() {
                   </tr>
                 ) : filtradas.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-12 text-center">
+                    <td colSpan={6} className="px-5 py-12 text-center">
                       <div className="flex flex-col items-center gap-3 text-gray-500">
-                        <CreditCard size={32} className="text-gray-700" />
-                        <p className="text-sm">Nenhuma conta encontrada</p>
-                        <button
-                          onClick={() => setShowForm(true)}
-                          className="text-xs text-[#4edea3] hover:underline"
-                        >
-                          + Cadastrar primeira conta
-                        </button>
+                        <Filter size={32} className="text-gray-700" />
+                        <p className="text-sm">Nenhuma conta encontrada com estes filtros</p>
                       </div>
                     </td>
                   </tr>
@@ -254,26 +347,38 @@ export default function ContasPagarPage() {
                           <span className="font-medium text-gray-200">{c.descricao}</span>
                         </div>
                       </td>
+                      <td className="px-5 py-4 text-gray-400 text-[13px]">{c.tipo}</td>
                       <td className="px-5 py-4 text-gray-400 text-xs">{formatDate(c.data_vencimento)}</td>
                       <td className="px-5 py-4 font-semibold text-white">{formatCurrency(c.valor)}</td>
                       <td className="px-5 py-4">
                         <StatusBadge pago={c.pago} dataVencimento={c.data_vencimento} />
                       </td>
                       <td className="px-5 py-4 text-right">
-                        {!c.pago && (
-                          <button
-                            onClick={() => handleBaixarConta(c.id)}
-                            className="cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
-                            style={{ background: "#4edea3", color: "#003824" }}
-                          >
-                            Dar Baixa
-                          </button>
-                        )}
-                        {c.pago && c.data_pagamento && (
-                          <span className="text-[11px] text-gray-600">
-                            Pago em {formatDate(c.data_pagamento)}
-                          </span>
-                        )}
+                        <div className="flex items-center justify-end gap-2">
+                          {!c.pago && (
+                            <>
+                              <button
+                                onClick={() => handleEdit(c)}
+                                className="cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
+                                style={{ background: "rgba(255,255,255,0.08)", color: "#e5e2e1" }}
+                              >
+                                Editar
+                              </button>
+                              <button
+                                onClick={() => handleBaixarConta(c)}
+                                className="cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95"
+                                style={{ background: "#4edea3", color: "#003824" }}
+                              >
+                                Dar Baixa
+                              </button>
+                            </>
+                          )}
+                          {c.pago && c.data_pagamento && (
+                            <span className="text-[11px] text-gray-600">
+                              Pago em {formatDate(c.data_pagamento)}
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -286,13 +391,13 @@ export default function ContasPagarPage() {
 
     </main>
 
-      <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="576px">
+      <Modal open={showForm} onClose={fecharModal} maxWidth="576px">
             <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#1a1a1a" }}>
               <div className="flex items-center gap-2">
                 <CreditCard size={15} className="text-[#4edea3]" />
-                <span className="text-sm font-semibold text-white">Nova Conta a Pagar</span>
+                <span className="text-sm font-semibold text-white">{editingId ? "Editar Conta a Pagar" : "Nova Conta a Pagar"}</span>
               </div>
-              <button onClick={() => setShowForm(false)} className="cursor-pointer text-gray-500 hover:text-white transition-colors">
+              <button onClick={fecharModal} className="cursor-pointer text-gray-500 hover:text-white transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -311,21 +416,35 @@ export default function ContasPagarPage() {
                   required
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Valor (R$)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  name="valor"
-                  value={form.valor}
-                  onChange={e => setForm(p => ({ ...p, valor: e.target.value }))}
-                  placeholder="0,00"
-                  className={inputCls}
-                  style={inputStyle}
-                  required
-                />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Valor (R$)</label>
+                  <input
+                    type="text"
+                    name="valor"
+                    value={formatCurrencyInput(form.valor) || ""}
+                    onChange={e => setForm(p => ({ ...p, valor: parseCurrency(e.target.value) }))}
+                    placeholder="R$ 0,00"
+                    className={inputCls}
+                    style={inputStyle}
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Tipo da Despesa</label>
+                  <select
+                    value={form.tipo}
+                    onChange={e => setForm(p => ({ ...p, tipo: e.target.value }))}
+                    className={inputCls}
+                    style={inputStyle}
+                    required
+                  >
+                    {TIPOS_PAGAR.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
               </div>
+
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Data de Vencimento</label>
                 <input
@@ -341,7 +460,7 @@ export default function ContasPagarPage() {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={fecharModal}
                   className="cursor-pointer flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
                   style={{ background: "rgba(255,255,255,0.06)", color: "#9ca3af" }}
                 >

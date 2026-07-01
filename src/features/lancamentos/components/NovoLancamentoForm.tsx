@@ -19,9 +19,26 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  function formatCurrency(value: string | number) {
+    const numeric = typeof value === "string" ? Number(value.replace(/\D/g, "")) / 100 : value;
+    if (isNaN(numeric) || numeric === 0) return "";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(numeric);
+  }
+
+  function parseCurrency(value: string) {
+    return (Number(value.replace(/\D/g, "")) / 100).toString();
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    if (name === "valor") {
+      setForm(prev => ({ ...prev, [name]: parseCurrency(value) }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleAvancar = (e: React.FormEvent) => {
@@ -109,12 +126,11 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
                 Valor (R$)
               </label>
               <input
-                type="number"
+                type="text"
                 name="valor"
-                step="0.01"
-                value={form.valor}
+                value={formatCurrency(form.valor) || ""}
                 onChange={handleInputChange}
-                placeholder="0,00"
+                placeholder="R$ 0,00"
                 className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all"
                 style={inputStyle}
                 required

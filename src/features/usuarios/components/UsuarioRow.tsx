@@ -1,12 +1,12 @@
 import { Pencil, Trash2 } from "lucide-react";
-import type { Funcionario } from "../types/types";
+import type { Usuario } from "../types/types";
 
 
 
-interface FuncionarioRowProps {
-  f: Funcionario;
+interface UsuarioRowProps {
+  f: Usuario;
   onRemove?: (id: string) => void;
-  onEdit?: (f: Funcionario) => void;
+  onEdit?: (f: Usuario) => void;
 }
 
 function cargoLabel(cargo: string) {
@@ -18,7 +18,7 @@ function cargoLabel(cargo: string) {
   return labels[cargo] ?? cargo;
 }
 
-export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
+export function UsuarioRow({ f, onRemove, onEdit }: UsuarioRowProps) {
   return (
     <tr
       className="transition-colors border-b"
@@ -36,7 +36,6 @@ export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{f.nome}</p>
-            <p className="text-xs" style={{ color: "#6b7280" }}>{f.email}</p>
           </div>
         </div>
       </td>
@@ -45,14 +44,18 @@ export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
           {cargoLabel(f.cargo)}
         </span>
       </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-mono" style={{ color: "#6b7280" }}>
-        {f.cpf_cnpj}
+      <td className="hidden md:table-cell px-4 py-3 text-xs" style={{ color: "#6b7280" }}>
+        {f.email}
       </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
-        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(f.salario)}
-      </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
-        Dia {f.dia_pagamento}
+      <td className="px-4 py-3">
+        <span
+          className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+          style={f.ativo
+            ? { background: "#4edea318", color: "#4edea3" }
+            : { background: "rgba(255,255,255,0.05)", color: "#6b7280" }}
+        >
+          {f.ativo ? "Ativo" : "Inativo"}
+        </span>
       </td>
       <td className="px-4 py-3">
         <div className="flex gap-1 justify-end">

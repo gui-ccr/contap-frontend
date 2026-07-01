@@ -1,59 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, Plus, X } from "lucide-react";
+import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 
-const CARGOS = [
-  { label: "Gerente", value: "GERENTE" },
-  { label: "Caixa", value: "CAIXA" },
-] as const;
+function formatCpfCnpj(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 14);
+  if (digits.length <= 11) {
+    return digits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  } else {
+    return digits
+      .replace(/(\d{2})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1/$2")
+      .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+  }
+}
 
-function formatCPF(value: string) {
-  return value
-    .replace(/\D/g, "")
-    .slice(0, 11)
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+function formatCurrency(value: string | number) {
+  const numeric = typeof value === "string" ? Number(value.replace(/\D/g, "")) / 100 : value;
+  if (isNaN(numeric) || numeric === 0) return "";
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  }).format(numeric);
+}
+
+function parseCurrency(value: string) {
+  return Number(value.replace(/\D/g, "")) / 100;
 }
 
 export interface NovoFuncionarioData {
   nome: string;
-  email: string;
-  senha: string;
-  cpf: string;
-  dataNascimento: string;
-  cargo: "GERENTE" | "CAIXA";
-  foto: string;
+  email?: string;
+  cpf_cnpj: string;
+  salario: number;
+  dia_pagamento: number;
+  data_base_pagamento?: string;
+  cargo: string;
 }
 
 interface NovoFuncionarioModalProps {
   onClose: () => void;
   onSave: (data: NovoFuncionarioData) => Promise<void>;
+  initialData?: NovoFuncionarioData;
 }
 
 const FORM_EMPTY: NovoFuncionarioData = {
   nome: "",
   email: "",
-  senha: "",
-  cpf: "",
-  dataNascimento: "",
-  cargo: "CAIXA",
-  foto: "",
+  cpf_cnpj: "",
+  salario: 0,
+  dia_pagamento: 1,
+  data_base_pagamento: "",
+  cargo: "",
 };
 
-export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalProps) {
-  const [form, setForm] = useState<NovoFuncionarioData>(FORM_EMPTY);
-  const [showSenha, setShowSenha] = useState(false);
+export function NovoFuncionarioModal({ onClose, onSave, initialData }: NovoFuncionarioModalProps) {
+  const [form, setForm] = useState<NovoFuncionarioData>(initialData || FORM_EMPTY);
+  const [cargos, setCargos] = useState<CargoBackend[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  function handleChange(key: keyof NovoFuncionarioData, value: string) {
-    setForm((f) => ({ ...f, [key]: key === "cpf" ? formatCPF(value) : value }));
+  useEffect(() => {
+    cargosService.listarCargos().then(res => {
+      setCargos(res);
+      if (res.length > 0 && !initialData) {
+        setForm(f => ({ ...f, cargo: res[0].id }));
+      }
+    }).catch(() => {
+      console.warn("Nao foi possivel carregar cargos");
+    });
+  }, [initialData]);
+
+  function handleChange(key: keyof NovoFuncionarioData, value: any) {
+    setForm((f) => ({ ...f, [key]: key === "cpf_cnpj" ? formatCpfCnpj(value) : value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.email || !form.email.includes("@") || !form.email.includes(".")) {
+      setError("Por favor, insira um e-mail válido.");
+      return;
+    }
     try {
       setSaving(true);
       setError("");
@@ -87,10 +119,11 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
           style={{ background: "#1a1a1a", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
         >
           <div>
-            <h2 className="text-base font-bold" style={{ color: "#e5e2e1" }}>Novo funcionario</h2>
-            <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>Preencha os dados para cadastrar</p>
+            <h2 className="text-base font-bold" style={{ color: "#e5e2e1" }}>{initialData ? "Editar funcionário (RH)" : "Novo funcionário (RH)"}</h2>
+            <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>Preencha os dados trabalhistas para {initialData ? "salvar" : "cadastrar"}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5 cursor-pointer"
             style={{ color: "#6b7280" }}
@@ -101,82 +134,52 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 flex flex-col gap-4">
-          <div className="flex flex-col items-center gap-3">
-            <div
-              className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center"
-              style={{ background: form.foto ? "transparent" : "#4edea320", color: "#4edea3" }}
-            >
-              {form.foto
-                ? <img src={form.foto} alt="Foto" className="w-full h-full object-cover" />
-                : <span className="material-symbols-outlined text-3xl">person</span>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass} style={{ color: "#6b7280" }}>Nome completo *</label>
+              <input required value={form.nome} onChange={(e) => handleChange("nome", e.target.value)}
+                placeholder="Ex: Joao da Silva" className={inputClass} style={inputStyle} />
             </div>
-            <input
-              type="url"
-              value={form.foto}
-              onChange={(e) => handleChange("foto", e.target.value)}
-              placeholder="URL da foto (opcional)"
-              className="w-full max-w-md rounded-xl px-3 py-2 text-xs outline-none transition-all focus:ring-1"
-              style={inputStyle}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass} style={{ color: "#6b7280" }}>Nome completo *</label>
-            <input required value={form.nome} onChange={(e) => handleChange("nome", e.target.value)}
-              placeholder="Ex: Joao da Silva" className={inputClass} style={inputStyle} />
-          </div>
-
-          <div>
-            <label className={labelClass} style={{ color: "#6b7280" }}>E-mail *</label>
-            <input required type="email" value={form.email} onChange={(e) => handleChange("email", e.target.value)}
-              placeholder="joao.silva@empresa.com" className={inputClass} style={inputStyle} />
-          </div>
-
-          <div>
-            <label className={labelClass} style={{ color: "#6b7280" }}>Senha padrao *</label>
-            <div className="relative">
-              <input
-                required
-                minLength={6}
-                type={showSenha ? "text" : "password"}
-                value={form.senha}
-                onChange={(e) => handleChange("senha", e.target.value)}
-                placeholder="Senha inicial do funcionario"
-                className={inputClass + " pr-10"}
-                style={inputStyle}
-              />
-              <button
-                type="button"
-                onClick={() => setShowSenha((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:opacity-70 cursor-pointer"
-                style={{ color: "#6b7280" }}
-                aria-label={showSenha ? "Ocultar senha" : "Mostrar senha"}
-              >
-                {showSenha ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+            <div>
+              <label className={labelClass} style={{ color: "#6b7280" }}>E-mail *</label>
+              <input required type="email" value={form.email || ""} onChange={(e) => handleChange("email", e.target.value)}
+                placeholder="Ex: joao@email.com" className={inputClass} style={inputStyle} />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass} style={{ color: "#6b7280" }}>CPF</label>
-              <input value={form.cpf} onChange={(e) => handleChange("cpf", e.target.value)}
-                placeholder="000.000.000-00" className={inputClass} style={inputStyle} />
+              <label className={labelClass} style={{ color: "#6b7280" }}>CPF ou CNPJ *</label>
+              <input required value={form.cpf_cnpj} onChange={(e) => handleChange("cpf_cnpj", e.target.value)}
+                placeholder="000.000.000-00 ou 00.000.000/0000-00" className={inputClass} style={inputStyle} />
             </div>
             <div>
-              <label className={labelClass} style={{ color: "#6b7280" }}>Data de nascimento</label>
-              <input type="date" value={form.dataNascimento}
-                onChange={(e) => handleChange("dataNascimento", e.target.value)}
-                className={inputClass} style={inputStyle} />
+              <label className={labelClass} style={{ color: "#6b7280" }}>Salário (R$) *</label>
+              <input required type="text" value={formatCurrency(form.salario) || ""} 
+                onChange={(e) => handleChange("salario", parseCurrency(e.target.value))}
+                placeholder="R$ 0,00" className={inputClass} style={inputStyle} />
             </div>
           </div>
 
-          <div>
-            <label className={labelClass} style={{ color: "#6b7280" }}>Cargo *</label>
-            <select required value={form.cargo} onChange={(e) => handleChange("cargo", e.target.value)}
-              className={inputClass + " appearance-none"} style={inputStyle}>
-              {CARGOS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass} style={{ color: "#6b7280" }}>Dia do Pagamento *</label>
+              <input required type="date" value={form.data_base_pagamento || ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const dia = val ? parseInt(val.split("-")[2], 10) : 1;
+                  setForm((f) => ({ ...f, data_base_pagamento: val, dia_pagamento: dia }));
+                }}
+                className={inputClass} style={inputStyle} />
+            </div>
+            <div>
+              <label className={labelClass} style={{ color: "#6b7280" }}>Cargo *</label>
+              <select required value={form.cargo} onChange={(e) => handleChange("cargo", e.target.value)}
+                className={inputClass + " appearance-none"} style={inputStyle}>
+                {cargos.length === 0 && <option value="">Sem cargos criados</option>}
+                {cargos.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              </select>
+            </div>
           </div>
 
           {error && (
@@ -200,7 +203,7 @@ export function NovoFuncionarioModal({ onClose, onSave }: NovoFuncionarioModalPr
               style={{ background: saving ? "#2f8f69" : "#4edea3", color: "#003824" }}
             >
               <Plus size={14} strokeWidth={2.5} />
-              {saving ? "Cadastrando..." : "Cadastrar"}
+              {saving ? "Salvando..." : (initialData ? "Salvar" : "Cadastrar")}
             </button>
           </div>
         </form>

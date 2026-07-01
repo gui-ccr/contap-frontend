@@ -7,11 +7,11 @@ interface SubtotalRowProps {
 export function SubtotalRow({ label, valor, color }: SubtotalRowProps) {
   return (
     <div
-      className="flex justify-between items-center py-2.5 px-3 rounded-xl mt-1"
-      style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+      className="flex justify-between items-center py-3 px-4 rounded-xl mt-1 transition-all"
+      style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.03)" }}
     >
-      <span className="text-xs font-semibold" style={{ color: "#6b7280" }}>{label}</span>
-      <span className="text-sm font-bold font-mono" style={{ color }}>{valor}</span>
+      <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#9ca3af" }}>{label}</span>
+      <span className="text-sm font-black tracking-tight font-mono" style={{ color }}>{valor}</span>
     </div>
   );
 }

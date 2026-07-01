@@ -22,7 +22,8 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
     href: "/balanco-patrimonial" as Route
   },
   { icon: "receipt_long", label: "DRE", href: "/dre" as Route },
-  { icon: "group", label: "Funcionários", href: "/funcionarios" as Route },
+  { icon: "group", label: "Funcionários (RH)", href: "/funcionarios" as Route },
+  { icon: "admin_panel_settings", label: "Usuários", href: "/usuarios" as Route },
   { icon: "settings", label: "Configurações", href: "/configuracoes" as Route },
 ];
 

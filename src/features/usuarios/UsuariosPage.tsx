@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { NovoFuncionarioModal, type NovoFuncionarioData } from "./components/NovoFuncionarioModal";
-import { GerenciarCargosModal } from "./components/GerenciarCargosModal";
-import { FuncionarioCard } from "./components/FuncionarioCard";
-import { FuncionarioRow } from "./components/FuncionarioRow";
-import { FuncionariosHeader } from "./components/FuncionariosHeader";
-import { FuncionariosToolbar } from "./components/FuncionariosToolbar";
-import { FuncionariosPagination } from "./components/FuncionariosPagination";
-import { funcionariosService } from "./funcionariosService";
-import { ConfirmDeleteModal } from "@/ui/ConfirmDeleteModal";
+import { NovoUsuarioModal, type NovoUsuarioData } from "./components/NovoUsuarioModal";
+import { UsuarioCard } from "./components/UsuarioCard";
+import { UsuarioRow } from "./components/UsuarioRow";
+import { UsuariosHeader } from "./components/UsuariosHeader";
+import { UsuariosToolbar } from "./components/UsuariosToolbar";
+import { UsuariosPagination } from "./components/UsuariosPagination";
+import { usuariosService } from "./usuariosService";
+import { funcionariosService } from "@/features/funcionarios/funcionariosService";
 import { getEmpresaIdFromToken } from "@/shared/api";
-import type { Funcionario, FuncionarioBackend } from "./types/types";
+import type { Usuario, UsuarioBackend } from "./types/types";
+import { ConfirmDeleteModal } from "@/ui/ConfirmDeleteModal";
 
 const CORES = ["#4edea3", "#6366f1", "#f59e0b", "#ec4899", "#14b8a6", "#f97316", "#a855f7", "#0ea5e9"];
 
@@ -24,57 +24,38 @@ function initials(nome: string) {
     .join("");
 }
 
-function normalizeFuncionario(f: FuncionarioBackend, index: number): Funcionario {
+function normalizeUsuario(f: UsuarioBackend, index: number): Usuario {
   return {
     id: f.id,
     nome: f.nome,
     email: f.email,
-    cpf_cnpj: f.cpf_cnpj ?? "",
-    salario: f.salario ?? 0,
-    dia_pagamento: f.dia_pagamento ?? 1,
     cargo: f.cargo,
     iniciais: initials(f.nome),
     cor: CORES[index % CORES.length],
-    ativo: true,
+    ativo: f.ativo ?? true,
   };
 }
 
-export default function FuncionariosPage() {
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+export default function UsuariosPage() {
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingFuncionario, setEditingFuncionario] = useState<Funcionario | null>(null);
+  const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
   const [deleteConfirmInfo, setDeleteConfirmInfo] = useState<{ id: string; nome: string } | null>(null);
-  const [cargosModalOpen, setCargosModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function carregarFuncionarios() {
+  async function carregarUsuarios() {
     try {
       setLoading(true);
       setError("");
-      
-      const { cargosService } = await import("@/features/cargos/cargosService");
-      
-      const [funcionariosData, cargosData] = await Promise.all([
-        funcionariosService.listarFuncionarios(),
-        cargosService.listarCargos().catch(() => []) // Fallback in case of error
-      ]);
-      
-      const cargosMap = new Map(cargosData.map(c => [c.id, c.nome]));
-      
-      setFuncionarios(funcionariosData.map((f, i) => {
-        const mapped = normalizeFuncionario(f, i);
-        return {
-          ...mapped,
-          cargo: cargosMap.get(f.cargo) || f.cargo
-        };
-      }));
+      const data = await usuariosService.listarUsuarios();
+      setUsuarios(data.map(normalizeUsuario));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Nao foi possivel carregar os funcionarios.");
+      setError(err instanceof Error ? err.message : "Nao foi possivel carregar os usuarios.");
     } finally {
       setLoading(false);
     }
@@ -82,7 +63,7 @@ export default function FuncionariosPage() {
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      void carregarFuncionarios();
+      void carregarUsuarios();
     }, 0);
     return () => window.clearTimeout(timeout);
   }, []);
@@ -97,59 +78,69 @@ export default function FuncionariosPage() {
 
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
-    return funcionarios.filter((f) =>
+    return usuarios.filter((f) =>
       f.nome.toLowerCase().includes(term) ||
-      f.cpf_cnpj.toLowerCase().includes(term) ||
+      f.email.toLowerCase().includes(term) ||
       f.cargo.toLowerCase().includes(term)
     );
-  }, [funcionarios, search]);
+  }, [usuarios, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  async function handleSave(data: NovoFuncionarioData) {
+  async function handleSave(data: NovoUsuarioData) {
     const empresaId = getEmpresaIdFromToken();
     if (!empresaId) {
       throw new Error("Empresa nao encontrada no token. Faca login novamente.");
     }
-
-    if (editingFuncionario) {
-      await funcionariosService.atualizarFuncionario(editingFuncionario.id, {
+    if (editingUsuario) {
+      await usuariosService.atualizarUsuario(editingUsuario.id, {
         nome: data.nome,
-        email: data.email,
         cargo: data.cargo,
-        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
-        salario: data.salario,
-        dia_pagamento: data.dia_pagamento,
+        ativo: !!data.ativo,
       });
     } else {
-      await funcionariosService.criarFuncionario({
+      const cpfNum = data.cpf_cnpj ? data.cpf_cnpj.replace(/\D/g, "") : "123456";
+
+      if (data.modo === "novo") {
+        const diaPagamento = data.data_base_pagamento ? parseInt(data.data_base_pagamento.split("-")[2], 10) : 1;
+        await funcionariosService.criarFuncionario({
+          nome: data.nome,
+          email: data.email,
+          cargo: data.cargo,
+          cpf_cnpj: cpfNum,
+          salario: data.salario || 0,
+          dia_pagamento: diaPagamento,
+        });
+      }
+
+      await usuariosService.criarUsuario({
         nome: data.nome,
         email: data.email,
+        senha: cpfNum,
+        empresa_id: empresaId,
         cargo: data.cargo,
-        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
-        salario: data.salario,
-        dia_pagamento: data.dia_pagamento,
       });
     }
-    setEditingFuncionario(null);
-    await carregarFuncionarios();
+    
+    setEditingUsuario(null);
+    await carregarUsuarios();
   }
 
   function handleRemove(id: string) {
-    const f = funcionarios.find(x => x.id === id);
-    if (f) setDeleteConfirmInfo({ id, nome: f.nome });
+    const u = usuarios.find(x => x.id === id);
+    if (u) setDeleteConfirmInfo({ id, nome: u.nome });
   }
 
   async function handleConfirmDelete(excluirContas: boolean) {
     if (!deleteConfirmInfo) return;
     try {
-      await funcionariosService.removerFuncionario(deleteConfirmInfo.id, excluirContas);
-      await carregarFuncionarios();
+      await usuariosService.removerUsuario(deleteConfirmInfo.id, excluirContas);
+      await carregarUsuarios();
       setDeleteConfirmInfo(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Nao foi possivel remover o funcionario.");
+      setError(err instanceof Error ? err.message : "Nao foi possivel remover o usuario.");
     }
   }
 
@@ -157,14 +148,13 @@ export default function FuncionariosPage() {
     <div className="flex-1 flex flex-col min-h-screen">
       <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
         <div className="max-w-7xl mx-auto space-y-5">
-          <FuncionariosHeader
-            ativos={funcionarios.filter((f) => f.ativo).length}
-            total={funcionarios.length}
+          <UsuariosHeader
+            ativos={usuarios.filter((f) => f.ativo).length}
+            total={usuarios.length}
             onNovo={() => setModalOpen(true)}
-            onCargos={() => setCargosModalOpen(true)}
           />
 
-          <FuncionariosToolbar
+          <UsuariosToolbar
             search={search}
             viewMode={viewMode}
             onSearch={(value) => {
@@ -182,26 +172,26 @@ export default function FuncionariosPage() {
 
           {loading && (
             <div className="rounded-3xl p-12 text-center text-sm" style={{ background: "#1e1e1e", color: "#6b7280" }}>
-              Carregando funcionarios...
+              Carregando usuarios...
             </div>
           )}
 
           {!loading && filtered.length === 0 && (
             <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
               <span className="material-symbols-outlined text-5xl" style={{ color: "#6b7280" }}>group_off</span>
-              <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
+              <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum usuario encontrado</p>
             </div>
           )}
 
           {!loading && viewMode === "grid" && filtered.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {paginated.map((f) => (
-                <FuncionarioCard
+                <UsuarioCard
                   key={f.id}
                   f={f}
                   onRemove={handleRemove}
                   onEdit={(f) => {
-                    setEditingFuncionario(f);
+                    setEditingUsuario(f);
                     setModalOpen(true);
                   }}
                 />
@@ -215,10 +205,10 @@ export default function FuncionariosPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Dia Pag.", ""].map((h) => (
+                      {["Usuario", "Cargo", "Email", "Status", ""].map((h) => (
                         <th
                           key={h}
-                          className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Dia Pag."].includes(h) ? " hidden md:table-cell" : ""}`}
+                          className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["Email"].includes(h) ? " hidden md:table-cell" : ""}`}
                           style={{ color: "#6b7280", background: "#1a1a1a" }}
                         >
                           {h}
@@ -228,12 +218,12 @@ export default function FuncionariosPage() {
                   </thead>
                   <tbody>
                     {paginated.map((f) => (
-                      <FuncionarioRow
+                      <UsuarioRow
                         key={f.id}
                         f={f}
                         onRemove={handleRemove}
                         onEdit={(f) => {
-                          setEditingFuncionario(f);
+                          setEditingUsuario(f);
                           setModalOpen(true);
                         }}
                       />
@@ -245,7 +235,7 @@ export default function FuncionariosPage() {
           )}
 
           {!loading && filtered.length > 0 && (
-            <FuncionariosPagination
+            <UsuariosPagination
               page={safePage}
               totalPages={totalPages}
               total={filtered.length}
@@ -257,30 +247,23 @@ export default function FuncionariosPage() {
       </main>
 
       {modalOpen && (
-        <NovoFuncionarioModal
+        <NovoUsuarioModal
           onClose={() => {
             setModalOpen(false);
-            setEditingFuncionario(null);
+            setEditingUsuario(null);
           }}
           onSave={handleSave}
           initialData={
-            editingFuncionario
+            editingUsuario
               ? {
-                  nome: editingFuncionario.nome,
-                  email: editingFuncionario.email,
-                  cpf_cnpj: editingFuncionario.cpf_cnpj,
-                  salario: editingFuncionario.salario,
-                  dia_pagamento: editingFuncionario.dia_pagamento,
-                  cargo: editingFuncionario.cargo,
+                  modo: "editar",
+                  nome: editingUsuario.nome,
+                  email: editingUsuario.email,
+                  cargo: editingUsuario.cargo,
+                  ativo: editingUsuario.ativo,
                 }
               : undefined
           }
-        />
-      )}
-
-      {cargosModalOpen && (
-        <GerenciarCargosModal
-          onClose={() => setCargosModalOpen(false)}
         />
       )}
 
@@ -289,7 +272,7 @@ export default function FuncionariosPage() {
           open={!!deleteConfirmInfo}
           onClose={() => setDeleteConfirmInfo(null)}
           onConfirm={handleConfirmDelete}
-          title="Remover Funcionário"
+          title="Remover Usuário"
           itemName={deleteConfirmInfo.nome}
         />
       )}

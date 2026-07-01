@@ -26,13 +26,26 @@ export function AuthPage() {
     try {
       if (isLoginMode) {
         // Efetua login
-        const response = await apiClient.post<{ token: string }>("/auth/login", {
+        const response = await apiClient.post<{ token: string; refresh_token: string; empresa_id?: string }>("/auth/login", {
           email,
           senha: password,
         });
 
         if (response.token) {
           localStorage.setItem("token", response.token);
+          if (response.refresh_token) {
+            localStorage.setItem("refresh_token", response.refresh_token);
+            // Optionally, tell the frontend Supabase client about the session so it can refresh it magically if we use it
+            import("@/shared/supabaseClient").then(({ getSupabaseClient }) => {
+              getSupabaseClient().auth.setSession({
+                access_token: response.token,
+                refresh_token: response.refresh_token,
+              });
+            });
+          }
+          if (response.empresa_id) {
+            localStorage.setItem("empresaId", response.empresa_id);
+          }
           router.push("/dashboard" as never);
         } else {
           throw new Error("Token não recebido na resposta do servidor.");
@@ -46,13 +59,25 @@ export function AuthPage() {
         });
 
         // Login automático após registrar
-        const loginResponse = await apiClient.post<{ token: string }>("/auth/login", {
+        const loginResponse = await apiClient.post<{ token: string; refresh_token: string; empresa_id?: string }>("/auth/login", {
           email,
           senha: password,
         });
 
         if (loginResponse.token) {
           localStorage.setItem("token", loginResponse.token);
+          if (loginResponse.refresh_token) {
+            localStorage.setItem("refresh_token", loginResponse.refresh_token);
+            import("@/shared/supabaseClient").then(({ getSupabaseClient }) => {
+              getSupabaseClient().auth.setSession({
+                access_token: loginResponse.token,
+                refresh_token: loginResponse.refresh_token,
+              });
+            });
+          }
+          if (loginResponse.empresa_id) {
+            localStorage.setItem("empresaId", loginResponse.empresa_id);
+          }
           router.push("/cadastro-empresa" as never);
         } else {
           setIsLoginMode(true);

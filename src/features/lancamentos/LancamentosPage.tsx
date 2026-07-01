@@ -49,6 +49,7 @@ export default function LancamentosPage() {
           debito: debito?.contaId || "-",
           credito: credito?.contaId || "-",
           valor: formatCurrency(debito?.valor || credito?.valor || 0),
+          valorNum: debito?.valor || credito?.valor || 0,
         };
       });
       setLancamentos(formatados);
@@ -82,6 +83,16 @@ export default function LancamentosPage() {
     return true;
   });
 
+  let totalReceitas = 0;
+  let totalDespesas = 0;
+
+  filtered.forEach(l => {
+    if (l.credito.startsWith("3")) totalReceitas += l.valorNum;
+    if (l.debito.startsWith("4")) totalDespesas += l.valorNum;
+  });
+
+  const saldo = totalReceitas - totalDespesas;
+
   const totalFiltered = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -105,7 +116,7 @@ export default function LancamentosPage() {
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <p className="text-xs font-medium" style={{ color: "#6b7280" }}>
-                Outubro 2023
+                Visão Geral
               </p>
               <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">
                 Lançamentos Contábeis
@@ -148,13 +159,13 @@ export default function LancamentosPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-white tracking-tight">
-                  R$ 62.650,00
+                  R$ {formatCurrency(totalReceitas)}
                 </p>
                 <p
                   className="text-xs mt-1 font-medium"
                   style={{ color: "#4edea3" }}
                 >
-                  ↑ 12% este mês
+                  Contas do grupo 3
                 </p>
               </div>
             </div>
@@ -192,42 +203,51 @@ export default function LancamentosPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-white tracking-tight">
-                  R$ 15.055,50
+                  R$ {formatCurrency(totalDespesas)}
                 </p>
                 <p
                   className="text-xs mt-1 font-medium"
                   style={{ color: "#ff6464" }}
                 >
-                  ↓ 4% em relação a ontem
+                  Contas do grupo 4
                 </p>
               </div>
             </div>
 
             {/* Saldo */}
             <div
-              className="rounded-3xl p-5 flex flex-col justify-between gap-4 bg-[rgba(0,230,118,0.08)]">
+              className="rounded-3xl p-5 flex flex-col justify-between gap-4"
+              style={{ background: saldo >= 0 ? "rgba(0,230,118,0.08)" : "rgba(239,68,68,0.08)" }}
+            >
               <div className="flex justify-between items-center">
                 <span
-                  className="text-[10px] text-[#00E676] font-semibold uppercase tracking-widest"
+                  className="text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
                 >
-                  Saldo Disponível
+                  Balanço (Receitas - Despesas)
                 </span>
                 <div
-                  className="w-10 h-10 text-[#00E676] bg-emerald-900/50 rounded-2xl flex items-center justify-center"
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                  style={{ 
+                    color: saldo >= 0 ? "#00E676" : "#ef4444", 
+                    background: saldo >= 0 ? "rgba(0,230,118,0.2)" : "rgba(239,68,68,0.2)" 
+                  }}
                 >
                   <BanknoteArrowUp />
                 </div>
               </div>
               <div>
                 <p
-                  className="text-2xl text-[#00E676] font-bold tracking-tight"
+                  className="text-2xl font-bold tracking-tight"
+                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
                 >
-                  R$ 47.594,50
+                  R$ {formatCurrency(saldo)}
                 </p>
                 <p
-                  className="text-xs text-[#00E676] mt-1 font-medium"
+                  className="text-xs mt-1 font-medium"
+                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
                 >
-                  Balanço líquido
+                  {saldo >= 0 ? "Superávit do período" : "Déficit do período"}
                 </p>
               </div>
             </div>

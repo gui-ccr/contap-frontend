@@ -5,6 +5,7 @@ export interface ContaReceberBackend {
   empresa_id: string;
   origem: string;
   valor: number;
+  tipo: string;
   data_previsao: string;
   recebido: boolean;
   data_recebimento: string | null;
@@ -13,7 +14,15 @@ export interface ContaReceberBackend {
 export interface CriarContaReceberPayload {
   origem: string;
   valor: number;
+  tipo: string;
   data_previsao: string;
+}
+
+export interface AtualizarContaReceberPayload {
+  origem?: string;
+  valor?: number;
+  tipo?: string;
+  data_previsao?: string;
 }
 
 export const contasReceberService = {
@@ -23,6 +32,10 @@ export const contasReceberService = {
 
   async criarContaReceber(payload: CriarContaReceberPayload): Promise<ContaReceberBackend> {
     return await apiClient.post<ContaReceberBackend>("/contas-receber/conta-receber", payload);
+  },
+
+  async atualizarContaReceber(id: string, payload: AtualizarContaReceberPayload): Promise<ContaReceberBackend> {
+    return await apiClient.put<ContaReceberBackend>(`/contas-receber/conta-receber/${id}`, payload);
   },
 
   async baixarConta(id: string): Promise<void> {

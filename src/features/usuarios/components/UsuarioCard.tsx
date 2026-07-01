@@ -1,10 +1,10 @@
-import { Pencil, Trash2, Mail, CreditCard, Calendar, User, CircleDot } from "lucide-react";
-import type { Funcionario } from "../types/types";
+import { Pencil, Trash2, Mail, Shield, CircleDot } from "lucide-react";
+import type { Usuario } from "../types/types";
 
-interface FuncionarioCardProps {
-  f: Funcionario;
+interface UsuarioCardProps {
+  f: Usuario;
   onRemove?: (id: string) => void;
-  onEdit?: (f: Funcionario) => void;
+  onEdit?: (f: Usuario) => void;
 }
 
 function cargoLabel(cargo: string) {
@@ -16,7 +16,7 @@ function cargoLabel(cargo: string) {
   return labels[cargo] ?? cargo;
 }
 
-export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
+export function UsuarioCard({ f, onRemove, onEdit }: UsuarioCardProps) {
   return (
     <div
       className="rounded-3xl p-5 flex flex-col gap-5 group transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden"
@@ -38,7 +38,9 @@ export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
           </div>
           <div className="min-w-0">
             <p className="text-base font-bold text-white tracking-tight truncate">{f.nome}</p>
-            <p className="text-xs font-semibold uppercase tracking-wider mt-0.5 truncate" style={{ color: f.cor }}>{cargoLabel(f.cargo)}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider mt-0.5 flex items-center gap-1 truncate" style={{ color: f.cor }}>
+              <Shield size={11} /> {cargoLabel(f.cargo)}
+            </p>
           </div>
         </div>
         <div className="flex gap-2 flex-shrink-0 ml-2">
@@ -54,27 +56,9 @@ export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-y-4 gap-x-2 relative z-10 pt-2 pb-2">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><Mail size={11}/> Email</p>
-          <p className="text-xs font-medium text-gray-300 truncate" title={f.email}>{f.email || "—"}</p>
-        </div>
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><CreditCard size={11}/> Documento</p>
-          <p className="text-xs font-medium text-gray-300 truncate">{f.cpf_cnpj || "—"}</p>
-        </div>
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><User size={11}/> Salário</p>
-          <p className="text-sm font-bold text-white">
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(f.salario)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><Calendar size={11}/> Pagamento</p>
-          <p className="text-sm font-bold text-gray-200">
-            Dia {f.dia_pagamento}
-          </p>
-        </div>
+      <div className="relative z-10 pt-2 pb-2">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><Mail size={11}/> Email</p>
+        <p className="text-sm font-medium text-gray-300 truncate" title={f.email}>{f.email}</p>
       </div>
 
       <div

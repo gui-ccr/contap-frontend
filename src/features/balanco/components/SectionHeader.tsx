@@ -5,11 +5,12 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ label, color }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      <div className="w-0.5 h-4 rounded-full" style={{ background: color }} />
-      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#6b7280" }}>
+    <div className="flex items-center gap-2.5 mb-3 px-1">
+      <div className="w-1.5 h-1.5 rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}80` }} />
+      <span className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9ca3af" }}>
         {label}
       </span>
+      <div className="flex-1 h-[1px]" style={{ background: "linear-gradient(to right, rgba(255,255,255,0.06), transparent)" }} />
     </div>
   );
 }

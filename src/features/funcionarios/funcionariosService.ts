@@ -7,14 +7,15 @@ export const funcionariosService = {
   },
 
   async criarFuncionario(payload: CriarFuncionarioPayload): Promise<void> {
-    await apiClient.post("/auth/registrar-funcionario", payload);
+    await apiClient.post("/funcionarios", payload);
   },
 
-  async atualizarFuncionario(id: string, payload: Partial<Omit<CriarFuncionarioPayload, "empresa_id" | "senha" | "email">>): Promise<FuncionarioBackend> {
+  async atualizarFuncionario(id: string, payload: Partial<CriarFuncionarioPayload>): Promise<FuncionarioBackend> {
     return await apiClient.patch<FuncionarioBackend>(`/funcionarios/${id}`, payload);
   },
 
-  async removerFuncionario(id: string): Promise<void> {
-    await apiClient.delete(`/funcionarios/${id}`);
+  async removerFuncionario(id: string, excluirContas?: boolean): Promise<void> {
+    const query = excluirContas ? "?excluirContas=true" : "";
+    await apiClient.delete(`/funcionarios/${id}${query}`);
   },
 };

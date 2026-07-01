@@ -1,11 +1,39 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://contaup-api.vercel.app";
 
-function getAuthHeaders(): Record<string, string> {
+import { getSupabaseClient } from "@/shared/supabaseClient";
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
   if (typeof window !== "undefined") {
+    try {
+      const supabase = getSupabaseClient();
+      let { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        const localToken = localStorage.getItem("token");
+        const localRefresh = localStorage.getItem("refresh_token");
+        if (localToken && localRefresh) {
+          const { data } = await supabase.auth.setSession({
+            access_token: localToken,
+            refresh_token: localRefresh
+          });
+          session = data.session;
+        }
+      }
+
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+        localStorage.setItem("token", session.access_token);
+        if (session.refresh_token) localStorage.setItem("refresh_token", session.refresh_token);
+        return headers;
+      }
+    } catch (err) {
+      console.warn("Erro ao obter sessao supabase:", err);
+    }
+
     const token = localStorage.getItem("token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -58,7 +86,7 @@ export const apiClient = {
     }
     const response = await fetch(url.toString(), {
       method: "GET",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
     });
     return handleResponse<T>(response);
   },
@@ -66,7 +94,7 @@ export const apiClient = {
   async post<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
       body: body ? JSON.stringify(body) : undefined,
     });
     return handleResponse<T>(response);
@@ -75,7 +103,7 @@ export const apiClient = {
   async put<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
       body: body ? JSON.stringify(body) : undefined,
     });
     return handleResponse<T>(response);
@@ -84,7 +112,7 @@ export const apiClient = {
   async patch<T>(endpoint: string, body?: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "PATCH",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
       body: body ? JSON.stringify(body) : undefined,
     });
     return handleResponse<T>(response);
@@ -93,7 +121,7 @@ export const apiClient = {
   async delete<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
     });
     return handleResponse<T>(response);
   }
@@ -101,6 +129,10 @@ export const apiClient = {
 
 export function getEmpresaIdFromToken(): string | null {
   if (typeof window === "undefined") return null;
+  
+  const storedEmpresaId = localStorage.getItem("empresaId");
+  if (storedEmpresaId) return storedEmpresaId;
+  
   const token = localStorage.getItem("token");
   if (!token) return null;
   try {

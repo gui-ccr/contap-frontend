@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { contasReceberService, ContaReceberBackend } from "@/features/contas-receber/contasReceberService";
 import { notasFiscaisService, NotaFiscal } from "./notasFiscaisService";
 import { apiClient, getEmpresaIdFromToken } from "@/shared/api";
-import { FileText, Upload, Trash2, ExternalLink, Paperclip } from "lucide-react";
+import { FileText, Upload, Trash2, ExternalLink, Paperclip, X } from "lucide-react";
+import { UsuariosPagination } from "@/features/usuarios/components/UsuariosPagination";
 
 interface ContaPagar {
   id: string;
@@ -56,7 +57,29 @@ export default function NotasFiscaisPage() {
   const [form, setForm] = useState({ numero_nota: "", emitida_em: "" });
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const getFirstDayOfMonth = () => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
+  };
+  const getLastDayOfMonth = () => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().split('T')[0];
+  };
+
+  const [dataInicio, setDataInicio] = useState(getFirstDayOfMonth);
+  const [dataFim, setDataFim] = useState(getLastDayOfMonth);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
+
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = (e: MediaQueryListEvent | MediaQueryList) => setPageSize(e.matches ? 8 : 4);
+    update(mq);
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const carregar = async () => {
     try {
@@ -76,18 +99,38 @@ export default function NotasFiscaisPage() {
     }
   };
 
-  useEffect(() => { carregar(); }, []);
+  const [isBaixaOp, setIsBaixaOp] = useState(false);
+
+  useEffect(() => {
+    carregar().then(() => {
+      const search = new URLSearchParams(window.location.search);
+      const darBaixaId = search.get("darBaixaId");
+      const tipoBaixa = search.get("tipoBaixa") as Tab;
+      const descBaixa = search.get("descBaixa");
+
+      if (darBaixaId && tipoBaixa && descBaixa) {
+        setTab(tipoBaixa);
+        setModal({ open: true, tipo: tipoBaixa, referencia_id: darBaixaId, descricao: descBaixa });
+        setIsBaixaOp(true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
+  }, []);
 
   const notasDaReferencia = (referencia_id: string) =>
     notas.filter((n) => n.referencia_id === referencia_id);
 
   const abrirModal = (tipo: Tab, id: string, desc: string) => {
+    setIsBaixaOp(false);
     setModal({ open: true, tipo, referencia_id: id, descricao: desc });
     setForm({ numero_nota: "", emitida_em: "" });
     setArquivo(null);
   };
 
-  const fecharModal = () => setModal((m) => ({ ...m, open: false }));
+  const fecharModal = () => {
+    setModal((m) => ({ ...m, open: false }));
+    setIsBaixaOp(false);
+  };
 
   const handleAnexar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,6 +146,17 @@ export default function NotasFiscaisPage() {
         arquivo_nome: arquivo.name,
         emitida_em: form.emitida_em || undefined,
       });
+
+      if (isBaixaOp) {
+        if (modal.tipo === "conta_pagar") {
+          const { contasPagarService } = await import("@/features/contas-pagar/contasPagarService");
+          await contasPagarService.baixarConta(modal.referencia_id);
+        } else if (modal.tipo === "conta_receber") {
+          await contasReceberService.baixarConta(modal.referencia_id);
+        }
+        alert("Conta baixada com sucesso e nota fiscal anexada!");
+      }
+
       fecharModal();
       await carregar();
     } catch (err: any) {
@@ -127,10 +181,27 @@ export default function NotasFiscaisPage() {
   const inputStyle = { background: "#242424", border: "1px solid rgba(255,255,255,0.06)", color: "#e5e2e1" };
   const labelStyle = { color: "#6b7280" };
 
+  const contasReceberFiltradas = contasReceber.filter(c => {
+    if (dataInicio && c.data_previsao < dataInicio) return false;
+    if (dataFim && c.data_previsao > dataFim) return false;
+    return true;
+  });
+
+  const contasPagarFiltradas = contasPagar.filter(c => {
+    if (dataInicio && c.data_vencimento < dataInicio) return false;
+    if (dataFim && c.data_vencimento > dataFim) return false;
+    return true;
+  });
+
+  const listAtual = tab === "conta_receber" ? contasReceberFiltradas : contasPagarFiltradas;
+  const totalPages = Math.max(1, Math.ceil(listAtual.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const paginated = listAtual.slice((safePage - 1) * pageSize, safePage * pageSize);
+
   const totalSemNF =
     tab === "conta_receber"
-      ? contasReceber.filter((c) => notasDaReferencia(c.id).length === 0).length
-      : contasPagar.filter((c) => notasDaReferencia(c.id!).length === 0).length;
+      ? contasReceberFiltradas.filter((c) => notasDaReferencia(c.id).length === 0).length
+      : contasPagarFiltradas.filter((c) => notasDaReferencia(c.id!).length === 0).length;
 
   const NfChips = ({ referencia_id }: { referencia_id: string }) => {
     const nfs = notasDaReferencia(referencia_id);
@@ -190,7 +261,7 @@ export default function NotasFiscaisPage() {
             {(["conta_receber", "conta_pagar"] as Tab[]).map((t) => (
               <button
                 key={t}
-                onClick={() => setTab(t)}
+                onClick={() => { setTab(t); setPage(1); }}
                 className="px-4 py-2 rounded-2xl text-xs font-semibold transition"
                 style={
                   tab === t
@@ -201,6 +272,27 @@ export default function NotasFiscaisPage() {
                 {t === "conta_receber" ? "Contas a Receber" : "Contas a Pagar"}
               </button>
             ))}
+          </div>
+
+          {/* Filters Panel */}
+          <div className="bg-[#1a1a1a] p-4 rounded-2xl flex flex-col sm:flex-row flex-wrap gap-4 items-end border border-white/5">
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[120px]">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Data Inicial</label>
+              <input type="date" value={dataInicio} onChange={e => { setDataInicio(e.target.value); setPage(1); }} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all border focus:border-[#4edea3]/50" style={inputStyle} />
+            </div>
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[120px]">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Data Final</label>
+              <input type="date" value={dataFim} onChange={e => { setDataFim(e.target.value); setPage(1); }} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all border focus:border-[#4edea3]/50" style={inputStyle} />
+            </div>
+            
+            {(dataInicio || dataFim) && (
+              <button
+                onClick={() => { setDataInicio(""); setDataFim(""); setPage(1); }}
+                className="px-3 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 transition-all cursor-pointer h-[42px] flex items-center gap-2"
+              >
+                <X size={14} /> Limpar
+              </button>
+            )}
           </div>
 
           {/* Tabela */}
@@ -221,8 +313,8 @@ export default function NotasFiscaisPage() {
               {loading ? (
                 <p className="text-center text-gray-500 py-8">Carregando...</p>
               ) : tab === "conta_receber" ? (
-                contasReceber.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">Nenhuma conta a receber cadastrada.</p>
+                listAtual.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">Nenhuma conta a receber encontrada com estes filtros.</p>
                 ) : (
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -236,7 +328,7 @@ export default function NotasFiscaisPage() {
                       </tr>
                     </thead>
                     <tbody className="text-sm">
-                      {contasReceber.map((c) => (
+                      {(paginated as ContaReceberBackend[]).map((c) => (
                         <tr key={c.id} className="border-t border-gray-800">
                           <td className="py-4 text-gray-200">{c.origem}</td>
                           <td className="py-4 text-gray-200">{formatDate(c.data_previsao)}</td>
@@ -262,8 +354,8 @@ export default function NotasFiscaisPage() {
                   </table>
                 )
               ) : (
-                contasPagar.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">Nenhuma conta a pagar cadastrada.</p>
+                listAtual.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">Nenhuma conta a pagar encontrada com estes filtros.</p>
                 ) : (
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -277,7 +369,7 @@ export default function NotasFiscaisPage() {
                       </tr>
                     </thead>
                     <tbody className="text-sm">
-                      {contasPagar.map((c) => (
+                      {(paginated as ContaPagar[]).map((c) => (
                         <tr key={c.id} className="border-t border-gray-800">
                           <td className="py-4 text-gray-200">{c.descricao}</td>
                           <td className="py-4 text-gray-200">{formatDate(c.data_vencimento)}</td>
@@ -305,13 +397,23 @@ export default function NotasFiscaisPage() {
               )}
             </div>
           </div>
+          
+          {!loading && listAtual.length > 0 && (
+            <UsuariosPagination
+              page={safePage}
+              totalPages={totalPages}
+              total={listAtual.length}
+              pageSize={pageSize}
+              onPage={setPage}
+            />
+          )}
         </div>
       </main>
 
       {/* Modal */}
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-          <div className="w-full max-w-md rounded-3xl overflow-hidden" style={cardStyle}>
+          <div className="w-full max-w-[576px] rounded-3xl overflow-hidden" style={cardStyle}>
             <div className="px-5 py-4 flex items-center justify-between" style={headerStyle}>
               <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
                 Anexar Nota Fiscal
