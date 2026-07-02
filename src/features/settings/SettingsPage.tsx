@@ -244,6 +244,7 @@ function useSave() {
 import { useAuth } from "@/shared/AuthContext";
 import { apiClient } from "@/shared/api";
 import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { toast } from "sonner";
 
 // ─────────────────────────────────────────────────────────────
 // SEÇÃO 1 — PERFIL DO USUÁRIO
@@ -272,12 +273,12 @@ function ProfileSettings() {
     if (!usuario) return;
     if (password || confirm) {
       if (password !== confirm) {
-        alert("As senhas não coincidem.");
+        toast.error("As senhas não coincidem.");
         return;
       }
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-])[A-Za-z\d@$!%*?&\-]{6,}$/;
       if (!passwordRegex.test(password)) {
-        alert("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+        toast.error("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
         return;
       }
     }
@@ -300,9 +301,10 @@ function ProfileSettings() {
       setConfirm("");
       setState("saved");
       setTimeout(() => setState("idle"), 2000);
+      toast.success("Perfil atualizado com sucesso!");
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Erro ao atualizar perfil.");
+      toast.error(err.message || "Erro ao atualizar perfil.");
       setState("idle");
     }
   };
@@ -317,9 +319,9 @@ function ProfileSettings() {
       
       await apiClient.put(`/auth/usuarios/${usuario.id}`, { foto_url: fotoUrl });
       await refreshUserData();
-      alert("Foto de perfil atualizada com sucesso!");
+      toast.success("Foto de perfil atualizada com sucesso!");
     } catch(err: any) {
-      alert(err.message || "Erro ao atualizar foto.");
+      toast.error(err.message || "Erro ao atualizar foto.");
     } finally {
       setIsUploading(false);
     }

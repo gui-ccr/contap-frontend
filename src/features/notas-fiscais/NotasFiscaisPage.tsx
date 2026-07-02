@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { contasReceberService, ContaReceberBackend } from "@/features/contas-receber/contasReceberService";
 import { notasFiscaisService, NotaFiscal } from "./notasFiscaisService";
 import { apiClient, getEmpresaIdFromToken } from "@/shared/api";
@@ -134,7 +135,10 @@ export default function NotasFiscaisPage() {
 
   const handleAnexar = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!arquivo) return alert("Selecione um arquivo.");
+    if (!arquivo) {
+      toast.error("Selecione um arquivo.");
+      return;
+    }
     try {
       setUploading(true);
       const url = await notasFiscaisService.uploadArquivo(arquivo);
@@ -147,20 +151,18 @@ export default function NotasFiscaisPage() {
         emitida_em: form.emitida_em || undefined,
       });
 
-      if (isBaixaOp) {
-        if (modal.tipo === "conta_pagar") {
-          const { contasPagarService } = await import("@/features/contas-pagar/contasPagarService");
-          await contasPagarService.baixarConta(modal.referencia_id);
-        } else if (modal.tipo === "conta_receber") {
-          await contasReceberService.baixarConta(modal.referencia_id);
-        }
-        alert("Conta baixada com sucesso e nota fiscal anexada!");
+      if (modal.tipo === "conta_pagar") {
+        const { contasPagarService } = await import("@/features/contas-pagar/contasPagarService");
+        await contasPagarService.baixarConta(modal.referencia_id);
+      } else if (modal.tipo === "conta_receber") {
+        await contasReceberService.baixarConta(modal.referencia_id);
       }
+      toast.success("Conta baixada com sucesso e nota fiscal anexada!");
 
       fecharModal();
       await carregar();
     } catch (err: any) {
-      alert("Erro: " + err.message);
+      toast.error("Erro: " + err.message);
     } finally {
       setUploading(false);
     }
@@ -170,9 +172,10 @@ export default function NotasFiscaisPage() {
     if (!confirm("Remover esta nota fiscal?")) return;
     try {
       await notasFiscaisService.deletar(id);
+      toast.success("Nota fiscal removida.");
       await carregar();
     } catch (err: any) {
-      alert("Erro: " + err.message);
+      toast.error("Erro: " + err.message);
     }
   };
 

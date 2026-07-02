@@ -73,7 +73,7 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
         onLancamentoCriado();
       }
     } catch (err: any) {
-      alert("Erro ao criar lançamento: " + err.message);
+      toast.error("Erro ao criar lançamento: " + err.message);
     }
   };
 
