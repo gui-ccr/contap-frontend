@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { apiClient } from "./api";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface IUsuario {
@@ -35,10 +35,11 @@ const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/l
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const isPublicRoute = AUTH_ROUTES.includes(pathname);
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isError } = useQuery({
     queryKey: ["auth-me"],
     queryFn: async () => {
       const response = await apiClient.get<{ usuario: IUsuario; empresa: IEmpresa }>("/auth/me");
@@ -52,6 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refetch();
   };
 
+  useEffect(() => {
+    if (!isPublicRoute && isError) {
+      router.push("/login");
+    }
+  }, [isError, isPublicRoute, router]);
+
+  const showLoadingScreen = !isPublicRoute && (isLoading || isError);
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -61,7 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         refreshUserData 
       }}
     >
-      {children}
+      {showLoadingScreen ? (
+        <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+          <div className="w-8 h-8 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
