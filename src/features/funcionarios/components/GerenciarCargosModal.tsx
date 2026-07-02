@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Plus, Trash2, Pencil, Check } from "lucide-react";
+import { Plus, Trash2, Pencil, Check } from "lucide-react";
 import { ConfirmModal } from "@/ui/ConfirmModal";
+import { Modal, ModalHeader } from "@/ui/Modal";
+import { Input, Button, FormAlert } from "@/ui/forms";
 import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 
 interface GerenciarCargosModalProps {
@@ -14,17 +16,18 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  
+
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmDeleteCargoId, setConfirmDeleteCargoId] = useState<string | null>(null);
 
   async function carregarCargos() {
     try {
       setLoading(true);
       const data = await cargosService.listarCargos();
       setCargos(data);
-    } catch (err) {
+    } catch {
       setError("Não foi possível carregar os cargos.");
     } finally {
       setLoading(false);
@@ -69,19 +72,13 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
     setDescricao("");
   }
 
-  const [confirmDeleteCargoId, setConfirmDeleteCargoId] = useState<string | null>(null);
-
-  function handleRemove(id: string) {
-    setConfirmDeleteCargoId(id);
-  }
-
   async function executeRemove() {
     if (!confirmDeleteCargoId) return;
     try {
       setError("");
       await cargosService.removerCargo(confirmDeleteCargoId);
       await carregarCargos();
-    } catch (err) {
+    } catch {
       setError("Erro ao excluir cargo. Verifique se não há funcionários utilizando-o.");
     } finally {
       setConfirmDeleteCargoId(null);
@@ -89,90 +86,85 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0"
-        style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
-        onClick={onClose}
-      />
+    <>
+      <Modal open onClose={onClose} maxWidth="672px">
+        <ModalHeader
+          eyebrow="Funcionários (RH)"
+          title="Gerenciar cargos"
+          subtitle="Crie e organize os cargos da sua empresa"
+          onClose={onClose}
+        />
 
-      <div
-        className="relative flex flex-col rounded-3xl shadow-2xl overflow-hidden shrink-0"
-        style={{ background: "#1a1a1a", width: "100%", maxWidth: "672px", minWidth: "320px", maxHeight: "90vh" }}
-      >
-        <div
-          className="flex items-center justify-between px-6 py-5 shrink-0"
-          style={{ background: "#1a1a1a", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <div>
-            <h2 className="text-base font-bold" style={{ color: "#e5e2e1" }}>Gerenciar Cargos</h2>
-            <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>Crie e organize os cargos da sua empresa</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5 cursor-pointer"
-            style={{ color: "#6b7280" }}
+        <div className="px-6 py-5">
+          {error && <div className="mb-4"><FormAlert>{error}</FormAlert></div>}
+
+          <form
+            onSubmit={handleSave}
+            className="flex flex-col gap-3 mb-6 p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline-variant/50"
           >
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {error && (
-            <div className="rounded-2xl px-4 py-3 text-xs font-medium mb-4" style={{ background: "rgba(239,68,68,0.12)", color: "#fca5a5" }}>
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSave} className="flex flex-col gap-3 mb-6 p-4 rounded-2xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.1)" }}>
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#e5e2e1" }}>
-                {editingId ? "Editar Cargo" : "Novo Cargo"}
+              <h3 className="text-label-sm uppercase tracking-widest text-primary border-l-2 border-primary pl-3">
+                {editingId ? "Editar cargo" : "Novo cargo"}
               </h3>
               {editingId && (
-                <button type="button" onClick={cancelEdit} className="text-xs text-gray-400 hover:text-white">
-                  Cancelar
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="text-label-sm text-on-surface-variant/60 hover:text-on-surface cursor-pointer"
+                >
+                  Cancelar edição
                 </button>
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input required value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome (Ex: Vendedor)" className="w-full rounded-xl px-3 py-2 text-sm outline-none transition-all focus:ring-1" style={{ background: "#242424", border: "1px solid rgba(255,255,255,0.08)", color: "#e5e2e1" }} />
-              <input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição (Opcional)" className="w-full rounded-xl px-3 py-2 text-sm outline-none transition-all focus:ring-1" style={{ background: "#242424", border: "1px solid rgba(255,255,255,0.08)", color: "#e5e2e1" }} />
+              <Input
+                required
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Nome (Ex: Vendedor)"
+              />
+              <Input
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                placeholder="Descrição (opcional)"
+              />
             </div>
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-90 self-start"
-              style={{ background: saving ? "#2f8f69" : (editingId ? "#3b82f6" : "#4edea3"), color: editingId ? "#ffffff" : "#003824" }}
-            >
+            <Button type="submit" disabled={saving} className="self-start">
               {editingId ? <Check size={14} strokeWidth={2.5} /> : <Plus size={14} strokeWidth={2.5} />}
-              {saving ? "Salvando..." : (editingId ? "Salvar Alterações" : "Adicionar Cargo")}
-            </button>
+              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Adicionar cargo"}
+            </Button>
           </form>
 
           {loading ? (
-            <p className="text-sm text-center py-6" style={{ color: "#6b7280" }}>Carregando...</p>
+            <p className="text-body-sm text-center py-6 text-on-surface-variant/60">Carregando...</p>
           ) : cargos.length === 0 ? (
-            <p className="text-sm text-center py-6" style={{ color: "#6b7280" }}>Nenhum cargo personalizado encontrado.</p>
+            <p className="text-body-sm text-center py-6 text-on-surface-variant/60">
+              Nenhum cargo criado ainda. Adicione o primeiro acima.
+            </p>
           ) : (
             <div className="flex flex-col gap-2">
-              {cargos.map(cargo => (
-                <div key={cargo.id} className="flex items-center justify-between p-3 rounded-xl transition-colors hover:bg-white/5" style={{ background: "#242424", border: "1px solid rgba(255,255,255,0.04)" }}>
+              {cargos.map((cargo) => (
+                <div
+                  key={cargo.id}
+                  className="flex items-center justify-between p-3 rounded-xl transition-colors bg-surface-container-low border border-outline-variant/20 hover:bg-surface-container-high"
+                >
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{cargo.nome}</p>
-                    {cargo.descricao && <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>{cargo.descricao}</p>}
+                    <p className="text-body-sm font-semibold text-on-surface">{cargo.nome}</p>
+                    {cargo.descricao && (
+                      <p className="text-label-sm mt-0.5 text-on-surface-variant/60">{cargo.descricao}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleEdit(cargo)}
-                      className="p-2 rounded-lg transition-colors hover:bg-blue-500/20 text-blue-400"
+                      className="p-2 rounded-lg transition-colors hover:bg-tertiary/20 text-tertiary cursor-pointer"
                       title="Editar cargo"
                     >
                       <Pencil size={16} />
                     </button>
                     <button
-                      onClick={() => handleRemove(cargo.id)}
-                      className="p-2 rounded-lg transition-colors hover:bg-red-500/20 text-red-400"
+                      onClick={() => setConfirmDeleteCargoId(cargo.id)}
+                      className="p-2 rounded-lg transition-colors hover:bg-error-container/40 text-error cursor-pointer"
                       title="Excluir cargo"
                     >
                       <Trash2 size={16} />
@@ -183,7 +175,7 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
             </div>
           )}
         </div>
-      </div>
+      </Modal>
 
       <ConfirmModal
         isOpen={!!confirmDeleteCargoId}
@@ -193,6 +185,6 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
         onCancel={() => setConfirmDeleteCargoId(null)}
         confirmText="Sim, remover"
       />
-    </div>
+    </>
   );
 }

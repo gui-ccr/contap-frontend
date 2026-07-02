@@ -39,8 +39,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
       ]);
       setContas(data);
       setPlanoContas(contasContabeis.filter((c) => config.planoTipos.includes(c.tipo)));
-    } catch (err: any) {
-      setError(err.message || "Erro ao carregar dados.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar dados.");
     } finally {
       setLoading(false);
     }
@@ -61,8 +61,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
       setShowForm(false);
       setEditing(null);
       carregar();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao salvar conta.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar conta.");
     }
   }
 
