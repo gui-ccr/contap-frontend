@@ -1,4 +1,5 @@
 import { TextInput } from "@/ui/TextInput";
+import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
 
 interface AuthFormProps {
   isLoginMode: boolean;
@@ -88,6 +89,7 @@ export function AuthForm({
           required
           autoComplete={isLoginMode ? "current-password" : "new-password"}
         />
+        {!isLoginMode && <PasswordStrengthIndicator password={password} />}
       </div>
 
       <div className="pt-sm flex flex-col gap-base">

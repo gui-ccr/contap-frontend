@@ -243,6 +243,7 @@ function useSave() {
 
 import { useAuth } from "@/shared/AuthContext";
 import { apiClient } from "@/shared/api";
+import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
 
 // ─────────────────────────────────────────────────────────────
 // SEÇÃO 1 — PERFIL DO USUÁRIO
@@ -274,7 +275,7 @@ function ProfileSettings() {
         alert("As senhas não coincidem.");
         return;
       }
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-])[A-Za-z\d@$!%*?&\-]{6,}$/;
       if (!passwordRegex.test(password)) {
         alert("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
         return;
@@ -404,21 +405,24 @@ function ProfileSettings() {
       <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 mt-5">
         Alterar Senha
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field
-          label="Nova senha"
-          value={password}
-          onChange={setPassword}
-          type="password"
-          placeholder="••••••••"
-        />
-        <Field
-          label="Confirmar senha"
-          value={confirm}
-          onChange={setConfirm}
-          type="password"
-          placeholder="••••••••"
-        />
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field
+            label="Nova senha"
+            value={password}
+            onChange={setPassword}
+            type="password"
+            placeholder="••••••••"
+          />
+          <Field
+            label="Confirmar senha"
+            value={confirm}
+            onChange={setConfirm}
+            type="password"
+            placeholder="••••••••"
+          />
+        </div>
+        {password && <PasswordStrengthIndicator password={password} />}
       </div>
 
       <SaveButton state={state} onClick={save} />

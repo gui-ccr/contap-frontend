@@ -1,5 +1,6 @@
 import { FormEvent } from "react";
 import { TextInput } from "@/ui/TextInput";
+import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
 
 interface StepResetPasswordProps {
   code: string;
@@ -56,6 +57,7 @@ export function StepResetPassword({
         required
         autoComplete="new-password"
       />
+      <PasswordStrengthIndicator password={newPassword} />
 
       <TextInput
         label="Confirmar Nova Senha"

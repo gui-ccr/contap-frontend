@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { X, Calendar, FileText, Tag, DollarSign, ListFilter, CreditCard, Banknote, HelpCircle } from "lucide-react";
+import { toast } from "sonner";
 import ModalConfirmacao from './ModalConfirmacao';
 import { lancamentosService } from '../lancamentosService';
 import { getEmpresaIdFromToken } from '@/shared/api';
@@ -51,7 +53,7 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
     try {
       const empresaId = getEmpresaIdFromToken();
       if (!empresaId) {
-        alert("Erro: Sessão inválida ou empresa não encontrada.");
+        toast.error("Erro: Sessão inválida ou empresa não encontrada.");
         return;
       }
       
@@ -63,7 +65,7 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
         data_lancamento: form.data,
       });
 
-      alert('Lançamento realizado com sucesso!');
+      toast.success('Lançamento realizado com sucesso!');
       setForm({ descricao: '', valor: '', tipo: 'receita', data: '' });
       setIsModalOpen(false);
       
