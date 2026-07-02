@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { contasReceberService, ContaReceberBackend } from "./contasReceberService";
+import { planoContasService, type ContaContabil } from "@/features/plano-contas/planoContasService";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/ui/Modal";
@@ -63,7 +64,7 @@ function StatusBadge({ recebido, dataPrevisao }: { recebido: boolean; dataPrevis
   );
 }
 
-const TIPOS_RECEBER = ["Venda de Produtos", "Prestação de Serviços", "Rendimentos", "Empréstimos", "Outros"];
+
 
 export default function ContasReceberPage() {
   const [contas, setContas] = useState<ContaReceberBackend[]>([]);
@@ -88,7 +89,7 @@ export default function ContasReceberPage() {
   const [dataFim, setDataFim] = useState(getLastDayOfMonth);
   const [tipoFiltro, setTipoFiltro] = useState("");
 
-  const [form, setForm] = useState({ origem: "", valor: "", tipo: "Outros", data_previsao: "" });
+  const [form, setForm] = useState({ origem: "", valor: "", tipo: "", data_previsao: "" });
 
   function formatCurrencyInput(value: string | number) {
     if (value === "" || value === null || value === undefined) return "";
@@ -104,14 +105,20 @@ export default function ContasReceberPage() {
     return (Number(value.replace(/\D/g, "")) / 100).toString();
   }
 
+  const [planoContas, setPlanoContas] = useState<ContaContabil[]>([]);
+
   const carregarContas = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await contasReceberService.listarContasReceber();
+      const [data, contasContabeis] = await Promise.all([
+        contasReceberService.listarContasReceber(),
+        planoContasService.listarContas()
+      ]);
       setContas(data);
+      setPlanoContas(contasContabeis.filter(c => c.tipo === "RECEITA" || c.tipo === "ATIVO"));
     } catch (err: any) {
-      setError(err.message || "Erro ao carregar contas a receber.");
+      setError(err.message || "Erro ao carregar dados.");
     } finally {
       setLoading(false);
     }
@@ -121,7 +128,7 @@ export default function ContasReceberPage() {
 
   const abrirModalNovo = () => {
     setEditingId(null);
-    setForm({ origem: "", valor: "", tipo: "Outros", data_previsao: "" });
+    setForm({ origem: "", valor: "", tipo: planoContas.length > 0 ? planoContas[0].id : "", data_previsao: "" });
     setShowForm(true);
   };
 
@@ -139,7 +146,7 @@ export default function ContasReceberPage() {
   const fecharModal = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ origem: "", valor: "", tipo: "Outros", data_previsao: "" });
+    setForm({ origem: "", valor: "", tipo: planoContas.length > 0 ? planoContas[0].id : "", data_previsao: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -269,9 +276,9 @@ export default function ContasReceberPage() {
               <div className="flex flex-col gap-1.5 flex-1 min-w-[140px]">
                 <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Tipo de Recebimento</label>
                 <select value={tipoFiltro} onChange={e => setTipoFiltro(e.target.value)} className={inputCls} style={inputStyle}>
-                  <option value="">Todos</option>
-                  {TIPOS_RECEBER.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <option value="">Todas</option>
+                {planoContas.map(pc => <option key={pc.id} value={pc.id}>{pc.codigo} - {pc.nome}</option>)}
+              </select>
               </div>
             </div>
             
@@ -341,7 +348,9 @@ export default function ContasReceberPage() {
                             <span className="font-medium text-gray-200">{c.origem}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-gray-400 text-[13px]">{c.tipo}</td>
+                        <td className="px-5 py-4 text-gray-400 text-[13px]">
+                          {planoContas.find(pc => pc.id === c.tipo)?.nome || c.tipo}
+                        </td>
                         <td className="px-5 py-4 text-gray-400 text-xs">{formatDate(c.data_previsao)}</td>
                         <td className="px-5 py-4 font-semibold text-white">{formatCurrency(c.valor)}</td>
                         <td className="px-5 py-4">
@@ -431,7 +440,11 @@ export default function ContasReceberPage() {
                     style={inputStyle}
                     required
                   >
-                    {TIPOS_RECEBER.map(t => <option key={t} value={t}>{t}</option>)}
+                    {planoContas.map(pc => (
+                      <option key={pc.id} value={pc.id}>
+                        {pc.codigo} - {pc.nome}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

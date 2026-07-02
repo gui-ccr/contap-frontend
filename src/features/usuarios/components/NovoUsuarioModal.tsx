@@ -130,6 +130,7 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
         finalData.email = func.email;
         finalData.cargo = func.cargo;
         finalData.cpf_cnpj = func.cpf_cnpj;
+        finalData.foto_url = func.foto_url;
       }
     }
     

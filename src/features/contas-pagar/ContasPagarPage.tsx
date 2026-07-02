@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { contasPagarService, ContaPagarBackend } from "./contasPagarService";
+import { planoContasService, type ContaContabil } from "@/features/plano-contas/planoContasService";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/ui/Modal";
@@ -62,7 +63,7 @@ function StatusBadge({ pago, dataVencimento }: { pago: boolean; dataVencimento: 
   );
 }
 
-const TIPOS_PAGAR = ["Salário", "Aluguel", "Fornecedores", "Impostos", "Manutenção", "Serviços", "Outros"];
+
 
 export default function ContasPagarPage() {
   const [contas, setContas] = useState<ContaPagarBackend[]>([]);
@@ -90,7 +91,7 @@ export default function ContasPagarPage() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
-    tipo: "Outros",
+    tipo: "",
     data_vencimento: "",
   });
 
@@ -108,14 +109,20 @@ export default function ContasPagarPage() {
     return (Number(value.replace(/\D/g, "")) / 100).toString();
   }
 
+  const [planoContas, setPlanoContas] = useState<ContaContabil[]>([]);
+
   const carregarContas = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await contasPagarService.listarContasPagar();
+      const [data, contasContabeis] = await Promise.all([
+        contasPagarService.listarContasPagar(),
+        planoContasService.listarContas()
+      ]);
       setContas(data);
+      setPlanoContas(contasContabeis.filter(c => c.tipo === "DESPESA" || c.tipo === "PASSIVO"));
     } catch (err: any) {
-      setError(err.message || "Erro ao carregar contas a pagar.");
+      setError(err.message || "Erro ao carregar dados.");
     } finally {
       setLoading(false);
     }
@@ -125,7 +132,7 @@ export default function ContasPagarPage() {
 
   const abrirModalNovo = () => {
     setEditingId(null);
-    setForm({ descricao: "", valor: "", tipo: "Outros", data_vencimento: "" });
+    setForm({ descricao: "", valor: "", tipo: planoContas.length > 0 ? planoContas[0].id : "", data_vencimento: "" });
     setShowForm(true);
   };
 
@@ -143,7 +150,7 @@ export default function ContasPagarPage() {
   const fecharModal = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ descricao: "", valor: "", tipo: "Outros", data_vencimento: "" });
+    setForm({ descricao: "", valor: "", tipo: planoContas.length > 0 ? planoContas[0].id : "", data_vencimento: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -276,7 +283,7 @@ export default function ContasPagarPage() {
               <label className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Tipo de Conta</label>
               <select value={tipoFiltro} onChange={e => setTipoFiltro(e.target.value)} className={inputCls} style={inputStyle}>
                 <option value="">Todas</option>
-                {TIPOS_PAGAR.map(t => <option key={t} value={t}>{t}</option>)}
+                {planoContas.map(pc => <option key={pc.id} value={pc.id}>{pc.codigo} - {pc.nome}</option>)}
               </select>
             </div>
           </div>
@@ -347,7 +354,9 @@ export default function ContasPagarPage() {
                           <span className="font-medium text-gray-200">{c.descricao}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-gray-400 text-[13px]">{c.tipo}</td>
+                      <td className="px-5 py-4 text-gray-400 text-[13px]">
+                        {planoContas.find(pc => pc.id === c.tipo)?.nome || c.tipo}
+                      </td>
                       <td className="px-5 py-4 text-gray-400 text-xs">{formatDate(c.data_vencimento)}</td>
                       <td className="px-5 py-4 font-semibold text-white">{formatCurrency(c.valor)}</td>
                       <td className="px-5 py-4">
@@ -440,7 +449,11 @@ export default function ContasPagarPage() {
                     style={inputStyle}
                     required
                   >
-                    {TIPOS_PAGAR.map(t => <option key={t} value={t}>{t}</option>)}
+                    {planoContas.map(pc => (
+                      <option key={pc.id} value={pc.id}>
+                        {pc.codigo} - {pc.nome}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

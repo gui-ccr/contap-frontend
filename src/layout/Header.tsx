@@ -1,68 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Bell, CheckCheck, X, TrendingUp, FileText, AlertTriangle, CreditCard, Wallet } from "lucide-react";
+import { Search, Bell, CheckCheck, X, TrendingUp, FileText, AlertTriangle, CreditCard, Wallet, Info } from "lucide-react";
 import { useAuth } from "@/shared/AuthContext";
-
-const NOTIFICATIONS = [
-  {
-    id: 1,
-    icon: CreditCard,
-    iconColor: "#4edea3",
-    iconBg: "#4edea318",
-    title: "Novo lançamento registrado",
-    body: "Conta Corrente BB — entrada de R$ 4.850,00",
-    time: "2 min atrás",
-    unread: true,
-  },
-  {
-    id: 2,
-    icon: FileText,
-    iconColor: "#3b82f6",
-    iconBg: "#3b82f618",
-    title: "Relatório mensal disponível",
-    body: "Balanço Patrimonial de Junho/2026 gerado",
-    time: "15 min atrás",
-    unread: true,
-  },
-  {
-    id: 3,
-    icon: AlertTriangle,
-    iconColor: "#f59e0b",
-    iconBg: "#f59e0b18",
-    title: "Vencimento próximo",
-    body: "Fatura Fornecedor Alfa vence em 2 dias",
-    time: "1 hora atrás",
-    unread: true,
-  },
-  {
-    id: 4,
-    icon: TrendingUp,
-    iconColor: "#a855f7",
-    iconBg: "#a855f718",
-    title: "Meta de receita atingida",
-    body: "Receita mensal superou R$ 50.000,00",
-    time: "3 horas atrás",
-    unread: false,
-  },
-  {
-    id: 5,
-    icon: Wallet,
-    iconColor: "#ec4899",
-    iconBg: "#ec489918",
-    title: "Alerta de saldo baixo",
-    body: "Caixa com saldo abaixo do limite configurado",
-    time: "Ontem, 18:42",
-    unread: false,
-  },
-];
+import { notificacoesService, type Notificacao } from "@/features/notificacoes/notificacoesService";
+import { toast } from "sonner";
 
 export default function Header() {
-  const { usuario } = useAuth();
+  const { usuario, empresa } = useAuth();
   const [now, setNow] = useState(new Date());
   const [bellHovered, setBellHovered] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notificacao[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -70,6 +20,23 @@ export default function Header() {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  const loadNotifs = async () => {
+    if (!empresa?.id) return;
+    try {
+      const data = await notificacoesService.listar(empresa.id);
+      setNotifications(data.notificacoes);
+      setUnreadCount(data.naoLidas);
+    } catch (error) {
+      console.error("Erro ao carregar notificações", error);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifs();
+    const id = setInterval(loadNotifs, 30_000); // refresh every 30s
+    return () => clearInterval(id);
+  }, [empresa?.id]);
 
   useEffect(() => {
     if (!notifOpen) return;
@@ -85,9 +52,22 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [notifOpen]);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
-  const markAllRead = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+  const handleRead = async (notif: Notificacao) => {
+    if (notif.lida) return;
+    setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, lida: true } : n)));
+    setUnreadCount((c) => Math.max(0, c - 1));
+    try {
+      await notificacoesService.marcarComoLida(notif.id);
+    } catch (e) {
+      loadNotifs();
+    }
+  };
+
+  const markAllRead = () => {
+    notifications.forEach((n) => {
+      if (!n.lida) handleRead(n);
+    });
+  };
 
   const iniciaisUsuario = usuario?.nome
     ? usuario.nome.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase()
@@ -222,53 +202,58 @@ export default function Header() {
               </div>
 
               <div className="overflow-y-auto" style={{ maxHeight: "340px" }}>
-                {notifications.map((n) => {
-                  const Icon = n.icon;
-                  return (
-                    <div
-                      key={n.id}
-                      className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03] cursor-pointer border-b"
-                      style={{
-                        borderColor: "rgba(255,255,255,0.04)",
-                        background: n.unread ? "rgba(78,222,163,0.03)" : "transparent",
-                      }}
-                      onClick={() =>
-                        setNotifications((prev) =>
-                          prev.map((x) => (x.id === n.id ? { ...x, unread: false } : x))
-                        )
-                      }
-                    >
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-gray-500">Nenhuma notificação</div>
+                ) : (
+                  notifications.map((n) => {
+                    const Icon = Info;
+                    return (
                       <div
-                        className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center mt-0.5"
-                        style={{ background: n.iconBg }}
+                        key={n.id}
+                        className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03] cursor-pointer border-b"
+                        style={{
+                          borderColor: "rgba(255,255,255,0.04)",
+                          background: !n.lida ? "rgba(78,222,163,0.03)" : "transparent",
+                        }}
+                        onClick={() => handleRead(n)}
                       >
-                        <Icon size={14} style={{ color: n.iconColor }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <p
-                            className="text-xs font-semibold leading-tight"
-                            style={{ color: n.unread ? "#e5e2e1" : "#9ca3af" }}
-                          >
-                            {n.title}
-                          </p>
-                          {n.unread && (
-                            <span
-                              className="shrink-0 w-1.5 h-1.5 rounded-full mt-1"
-                              style={{ background: "#4edea3" }}
-                            />
-                          )}
+                        <div
+                          className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center mt-0.5"
+                          style={{ background: "#4edea318" }}
+                        >
+                          <Icon size={14} style={{ color: "#4edea3" }} />
                         </div>
-                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#6b7280" }}>
-                          {n.body}
-                        </p>
-                        <p className="text-[10px] mt-1" style={{ color: "#4b5563" }}>
-                          {n.time}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <p
+                              className="text-xs font-semibold leading-tight"
+                              style={{ color: !n.lida ? "#e5e2e1" : "#9ca3af" }}
+                            >
+                              {n.titulo}
+                            </p>
+                            {!n.lida && (
+                              <span
+                                className="shrink-0 w-1.5 h-1.5 rounded-full mt-1"
+                                style={{ background: "#4edea3" }}
+                              />
+                            )}
+                          </div>
+                          <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#6b7280" }}>
+                            {n.mensagem}
+                          </p>
+                          <p className="text-[10px] mt-1" style={{ color: "#4b5563" }}>
+                            {new Date(n.data_criacao).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
           )}

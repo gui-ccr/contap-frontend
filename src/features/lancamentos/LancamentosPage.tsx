@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NovoLancamentoForm from "./components/NovoLancamentoForm";
 import { LancamentosFilters } from "./components/LancamentosFilters";
 import { LancamentosTable } from "./components/LancamentosTable";
 import { BanknoteArrowUp } from "lucide-react";
@@ -253,16 +252,9 @@ export default function LancamentosPage() {
             </div>
           </div>
 
-          {/* Grid: Formulário + Filtros/Tabela */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Formulário */}
-            <div className="lg:col-span-5 lg:sticky lg:top-6">
-              <NovoLancamentoForm onLancamentoCriado={carregarLancamentos} />
-            </div>
-
-            {/* Filtros + Tabela */}
-            <div className="lg:col-span-7 space-y-5">
-              <LancamentosFilters
+          {/* Filtros + Tabela */}
+          <div className="space-y-5 w-full">
+            <LancamentosFilters
                 startDate={startDate}
                 endDate={endDate}
                 conta={conta}
@@ -309,7 +301,6 @@ export default function LancamentosPage() {
               </div>
             </div>
           </div>
-        </div>
       </main>
     </div>
   );

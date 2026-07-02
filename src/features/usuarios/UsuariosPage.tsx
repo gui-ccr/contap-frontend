@@ -24,14 +24,19 @@ function initials(nome: string) {
     .join("");
 }
 
-function normalizeUsuario(f: UsuarioBackend, index: number): Usuario {
+function getCargoColor(cargo: string) {
+  const hash = cargo.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return CORES[hash % CORES.length];
+}
+
+function normalizeUsuario(f: UsuarioBackend): Usuario {
   return {
     id: f.id,
     nome: f.nome,
     email: f.email,
     cargo: f.cargo,
     iniciais: initials(f.nome),
-    cor: CORES[index % CORES.length],
+    cor: getCargoColor(f.cargo),
     ativo: f.ativo ?? true,
     foto_url: f.foto_url,
   };
@@ -53,8 +58,23 @@ export default function UsuariosPage() {
     try {
       setLoading(true);
       setError("");
-      const data = await usuariosService.listarUsuarios();
-      setUsuarios(data.map(normalizeUsuario));
+      
+      const { cargosService } = await import("@/features/cargos/cargosService");
+      
+      const [usuariosData, cargosData] = await Promise.all([
+        usuariosService.listarUsuarios(),
+        cargosService.listarCargos().catch(() => []) // Fallback
+      ]);
+      
+      const cargosMap = new Map(cargosData.map(c => [c.id, c.nome]));
+      
+      setUsuarios(usuariosData.map((f) => {
+        const mapped = normalizeUsuario(f);
+        return {
+          ...mapped,
+          cargo: cargosMap.get(f.cargo) || f.cargo
+        };
+      }));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nao foi possivel carregar os usuarios.");
     } finally {
@@ -127,6 +147,8 @@ export default function UsuariosPage() {
       finalUrl = null;
     } else if (data.fotoFile && createdUsuarioId) {
       finalUrl = await usuariosService.uploadFotoPerfil(data.fotoFile, createdUsuarioId);
+    } else if (data.foto_url) {
+      finalUrl = data.foto_url;
     }
 
     if (editingUsuario) {

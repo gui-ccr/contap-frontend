@@ -29,10 +29,17 @@ export function UsuarioRow({ f, onRemove, onEdit }: UsuarioRowProps) {
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden"
-            style={{ background: `${f.cor}20`, color: f.cor }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden bg-cover bg-center"
+            style={f.foto_url ? { 
+              backgroundImage: `url(${f.foto_url})`, 
+              border: `1px solid ${f.cor}30` 
+            } : { 
+              background: `${f.cor}20`, 
+              color: f.cor,
+              border: `1px solid ${f.cor}30` 
+            }}
           >
-            {f.iniciais}
+            {!f.foto_url && f.iniciais}
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{f.nome}</p>
