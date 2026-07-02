@@ -10,21 +10,21 @@ import Header from "./Header";
 import { useAuth } from "@/shared/AuthContext";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
-  { icon: "dashboard", label: "Dashboard", href: "/dashboard" as Route },
-  { icon: "account_balance_wallet", label: "Contas a Receber", href: "/contas-receber" as Route },
-  { icon: "credit_card", label: "Contas a Pagar", href: "/contas-pagar" as Route },
-  { icon: "receipt", label: "Notas Fiscais", href: "/notas-fiscais" as Route },
-  { icon: "menu_book", label: "Listagem de Lançamentos", href: "/lancamentos" as Route },
-  { icon: "schema", label: "Plano de Contas", href: "/plano-contas" as Route },
+  { icon: "fi-rr-apps", label: "Dashboard", href: "/dashboard" as Route },
+  { icon: "fi-rr-wallet", label: "Contas a Receber", href: "/contas-receber" as Route },
+  { icon: "fi-rr-credit-card", label: "Contas a Pagar", href: "/contas-pagar" as Route },
+  { icon: "fi-rr-receipt", label: "Notas Fiscais", href: "/notas-fiscais" as Route },
+  { icon: "fi-rr-book-alt", label: "Listagem de Lançamentos", href: "/lancamentos" as Route },
+  { icon: "fi-rr-network-cloud", label: "Plano de Contas", href: "/plano-contas" as Route },
   {
-    icon: "account_balance",
+    icon: "fi-rr-bank",
     label: "Balanço Patrimonial",
     href: "/balanco-patrimonial" as Route
   },
-  { icon: "receipt_long", label: "DRE", href: "/dre" as Route },
-  { icon: "group", label: "Funcionários (RH)", href: "/funcionarios" as Route },
-  { icon: "admin_panel_settings", label: "Usuários", href: "/usuarios" as Route },
-  { icon: "settings", label: "Configurações", href: "/configuracoes" as Route },
+  { icon: "fi-rr-document-signed", label: "DRE", href: "/dre" as Route },
+  { icon: "fi-rr-users-alt", label: "Funcionários (RH)", href: "/funcionarios" as Route },
+  { icon: "fi-rr-user-shield", label: "Usuários", href: "/usuarios" as Route },
+  { icon: "fi-rr-settings", label: "Configurações", href: "/configuracoes" as Route },
 ];
 
 const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];
@@ -36,7 +36,7 @@ function NavLinks({
   pathname: string;
   onNavigate?: () => void;
 }) {
-  const { empresa } = useAuth();
+  const { empresa, loading } = useAuth();
   const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
   const names = companyName.split(" "); const firstName = names[0] || "Conta";
   const secondName = names.length > 1 ? names.slice(1).join(" ") : (companyName === "ContaUp" ? "Up" : "");
@@ -45,26 +45,38 @@ function NavLinks({
     <>
       <div>
         {/* Logo */}
-        <div className="flex items-center gap-3 px-3 mb-10">
-          <Image
-            src="/contauplogo.png"
-            alt="ContaUp"
-            width={36}
-            height={36}
-            className="rounded-2xl shadow-lg"
-          />
-          <div>
-            <span className="text-white font-bold text-lg tracking-tight leading-none" title={companyName}>
-              {firstName}
-              {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 10 ? secondName.substring(0,10) + "..." : secondName}</span>}
-            </span>
-            <p
-              className="text-[12px] mt-0.5 font-medium"
-              style={{ color: "#6b7280" }}
-            >
-              Gestão Financeira
-            </p>
-          </div>
+        <div className="flex items-center gap-3 px-3 mb-10 h-10">
+          {loading ? (
+            <div className="animate-pulse flex items-center gap-3 w-full">
+              <div className="w-9 h-9 rounded-2xl bg-white/10 shrink-0" />
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="h-4 w-24 bg-white/10 rounded" />
+                <div className="h-2 w-16 bg-white/10 rounded" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <Image
+                src="/contauplogo.png"
+                alt="ContaUp"
+                width={36}
+                height={36}
+                className="rounded-2xl shadow-lg"
+              />
+              <div>
+                <span className="text-white font-bold text-lg tracking-tight leading-none" title={companyName}>
+                  {firstName}
+                  {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 10 ? secondName.substring(0,10) + "..." : secondName}</span>}
+                </span>
+                <p
+                  className="text-[12px] mt-0.5 font-medium"
+                  style={{ color: "#6b7280" }}
+                >
+                  Gestão Financeira
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Nav items */}
@@ -79,14 +91,7 @@ function NavLinks({
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 hover:bg-[#4edea318]/50 hover:text-[#4edea3]/50
                   ${isActive ? "bg-[#4edea318] text-[#4edea3]" :  "bg-transparent text-[#6b7280]"}`}
               >
-                <span
-                  className="material-symbols-outlined text-[20px]"
-                  style={
-                    isActive ? { fontVariationSettings: "'FILL' 1" } : undefined
-                  }
-                >
-                  {icon}
-                </span>
+                <i className={`fi ${icon} text-[20px] flex items-center justify-center`} />
                 <span className="flex-1 leading-tight">{label}</span>
                 {isActive && (
                   <span
@@ -117,7 +122,7 @@ function NavLinks({
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { empresa } = useAuth();
+  const { empresa, loading } = useAuth();
 
   if (AUTH_ROUTES.includes(pathname)) return <>{children}</>;
 
@@ -149,17 +154,26 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <Image
-            src="/contauplogo.png"
-            alt="ContaUp"
-            width={28}
-            height={28}
-            className="rounded-lg"
-          />
-          <span className="font-bold text-white text-base">
-            {firstName}
-            {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 8 ? secondName.substring(0,8) + "..." : secondName}</span>}
-          </span>
+          {loading ? (
+            <div className="animate-pulse flex items-center gap-2 w-32">
+              <div className="w-7 h-7 rounded-lg bg-white/10 shrink-0" />
+              <div className="h-4 w-20 bg-white/10 rounded" />
+            </div>
+          ) : (
+            <>
+              <Image
+                src="/contauplogo.png"
+                alt="ContaUp"
+                width={28}
+                height={28}
+                className="rounded-lg"
+              />
+              <span className="font-bold text-white text-base">
+                {firstName}
+                {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 8 ? secondName.substring(0,8) + "..." : secondName}</span>}
+              </span>
+            </>
+          )}
         </div>
       </header>
 

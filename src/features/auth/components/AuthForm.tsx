@@ -29,9 +29,7 @@ export function AuthForm({
       className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5 cursor-pointer"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
-      <span className="material-symbols-outlined text-[20px]">
-        {showPassword ? "visibility" : "visibility_off"}
-      </span>
+      <i className={`fi ${showPassword ? "visibility" : "visibility_off"} text-[20px]`}></i>
     </button>
   );
 
@@ -41,7 +39,7 @@ export function AuthForm({
         <TextInput
           label="Nome Completo"
           name="name"
-          iconName="person"
+          iconName="fi-rr-user"
           type="text"
           placeholder="Seu nome completo"
           value={name}
@@ -54,7 +52,7 @@ export function AuthForm({
       <TextInput
         label="Email Corporativo"
         name="email"
-        iconName="mail"
+        iconName="fi-rr-envelope"
         type="email"
         placeholder="nome@empresa.com"
         value={email}
@@ -81,7 +79,7 @@ export function AuthForm({
         <TextInput
           label=""
           name="password"
-          iconName="lock"
+          iconName="fi-rr-lock"
           type={showPassword ? "text" : "password"}
           placeholder="••••••••"
           value={password}

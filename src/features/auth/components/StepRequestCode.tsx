@@ -11,13 +11,13 @@ export function StepRequestCode({ email, onEmailChange, onSubmit }: StepRequestC
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <TextInput
-        label="E-mail Institucional"
+        label="E-mail cadastrado"
         name="email"
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
-        iconName="mail"
+        iconName="fi-rr-envelope"
         type="email"
-        placeholder="exemplo@contaup.com"
+        placeholder="seunome@empresa.com"
         required
         autoComplete="email"
       />
@@ -27,7 +27,7 @@ export function StepRequestCode({ email, onEmailChange, onSubmit }: StepRequestC
           className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
         >
           Gerar Código de Verificação
-          <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          <i className="fi fi-rr-arrow-right text-[18px]"></i>
         </button>
       </div>
     </form>

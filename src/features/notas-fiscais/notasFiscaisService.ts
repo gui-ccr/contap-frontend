@@ -25,15 +25,18 @@ export interface AnexarNotaPayload {
 export const notasFiscaisService = {
   async uploadArquivo(file: File): Promise<string> {
     const supabase = getSupabaseClient();
+    const empresa_id = getEmpresaIdFromToken();
+    if (!empresa_id) throw new Error("Empresa não encontrada na sessão");
+
     const ext = file.name.split(".").pop();
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const path = `${empresa_id}/notas_fiscais/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage
-      .from("notas-fiscais")
+      .from("empresas")
       .upload(path, file, { upsert: false });
 
     if (error) throw new Error(`Erro ao fazer upload: ${error.message}`);
 
-    const { data } = supabase.storage.from("notas-fiscais").getPublicUrl(path);
+    const { data } = supabase.storage.from("empresas").getPublicUrl(path);
     return data.publicUrl;
   },
 

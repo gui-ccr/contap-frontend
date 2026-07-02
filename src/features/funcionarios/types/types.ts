@@ -9,6 +9,7 @@ export interface Funcionario {
   iniciais: string;
   cor: string;
   ativo: boolean;
+  foto_url?: string;
 }
 
 export interface FuncionarioBackend {
@@ -19,6 +20,7 @@ export interface FuncionarioBackend {
   dia_pagamento: number;
   cargo: string;
   email: string;
+  foto_url?: string;
 }
 
 export interface CriarFuncionarioPayload {
@@ -28,4 +30,5 @@ export interface CriarFuncionarioPayload {
   salario: number;
   dia_pagamento: number;
   cargo: string;
+  foto_url?: string | null;
 }

@@ -31,10 +31,17 @@ export function UsuarioCard({ f, onRemove, onEdit }: UsuarioCardProps) {
       <div className="flex items-start justify-between relative z-10">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold shadow-inner flex-shrink-0"
-            style={{ background: `${f.cor}15`, color: f.cor, border: `1px solid ${f.cor}30` }}
+            className="w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold shadow-inner flex-shrink-0 bg-cover bg-center"
+            style={f.foto_url ? { 
+              backgroundImage: `url(${f.foto_url})`, 
+              border: `1px solid ${f.cor}30` 
+            } : { 
+              background: `${f.cor}15`, 
+              color: f.cor, 
+              border: `1px solid ${f.cor}30` 
+            }}
           >
-            {f.iniciais}
+            {!f.foto_url && f.iniciais}
           </div>
           <div className="min-w-0">
             <p className="text-base font-bold text-white tracking-tight truncate">{f.nome}</p>

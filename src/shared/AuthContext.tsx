@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
 import { apiClient } from "./api";
 import { usePathname } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface IUsuario {
   id: string;
@@ -30,40 +31,36 @@ interface IAuthContextData {
 }
 
 const AuthContext = createContext<IAuthContextData>({} as IAuthContextData);
+const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [usuario, setUsuario] = useState<IUsuario | null>(null);
-  const [empresa, setEmpresa] = useState<IEmpresa | null>(null);
-  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const isPublicRoute = AUTH_ROUTES.includes(pathname);
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["auth-me"],
+    queryFn: async () => {
+      const response = await apiClient.get<{ usuario: IUsuario; empresa: IEmpresa }>("/auth/me");
+      return response;
+    },
+    enabled: !isPublicRoute,
+    retry: false,
+  });
 
   const refreshUserData = async () => {
-    // Não busca dados se estiver em rotas públicas para não gerar erro 401
-    const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];
-    if (AUTH_ROUTES.includes(pathname)) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await apiClient.get<{ usuario: IUsuario; empresa: IEmpresa }>("/auth/me");
-      if (response) {
-        setUsuario(response.usuario);
-        setEmpresa(response.empresa);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar dados do usuário", error);
-    } finally {
-      setLoading(false);
-    }
+    await refetch();
   };
 
-  useEffect(() => {
-    refreshUserData();
-  }, [pathname]); // Recarrega sempre que mudar de rota caso precise
-
   return (
-    <AuthContext.Provider value={{ usuario, empresa, loading, refreshUserData }}>
+    <AuthContext.Provider 
+      value={{ 
+        usuario: data?.usuario ?? null, 
+        empresa: data?.empresa ?? null, 
+        loading: isPublicRoute ? false : isLoading, 
+        refreshUserData 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

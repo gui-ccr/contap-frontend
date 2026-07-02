@@ -44,7 +44,7 @@ export function PassivoSection({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: "rgba(255, 179, 176, 0.08)", border: "1px solid rgba(255, 179, 176, 0.15)" }}>
-          <span className="material-symbols-outlined text-[24px]" style={{ color: "#ffb3b0" }}>trending_down</span>
+          <i className="fi fi-rr-arrow-trend-down text-[24px]" style={{ color: "#ffb3b0" }}></i>
         </div>
         <div>
           <h2 className="text-xl font-bold tracking-tight text-white">Passivo e P.L.</h2>

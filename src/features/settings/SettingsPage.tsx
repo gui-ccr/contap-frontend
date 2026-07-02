@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import {
@@ -256,6 +256,8 @@ function ProfileSettings() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [state, setState] = useState<SaveState>("idle");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (usuario) {
@@ -269,10 +271,9 @@ function ProfileSettings() {
     if (!usuario) return;
     setState("loading");
     try {
-      await apiClient.put(`/funcionarios/${usuario.id}`, {
+      await apiClient.put(`/auth/usuarios/${usuario.id}`, {
         nome: name,
         cargo: role,
-        // email nao pode ser alterado por enquanto via put funcionario, a menos q api permita
       });
       await refreshUserData();
       setState("saved");
@@ -280,6 +281,24 @@ function ProfileSettings() {
     } catch (err) {
       console.error(err);
       setState("idle");
+    }
+  };
+
+  const handleUploadFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !usuario) return;
+    const file = e.target.files[0];
+    try {
+      setIsUploading(true);
+      const { usuariosService } = await import("@/features/usuarios/usuariosService");
+      const fotoUrl = await usuariosService.uploadFotoPerfil(file, usuario.id);
+      
+      await apiClient.put(`/auth/usuarios/${usuario.id}`, { foto_url: fotoUrl });
+      await refreshUserData();
+      alert("Foto de perfil atualizada com sucesso!");
+    } catch(err: any) {
+      alert(err.message || "Erro ao atualizar foto.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -296,20 +315,30 @@ function ProfileSettings() {
         style={{ borderBottom: "1px solid #2a2a2a" }}
       >
         <div className="relative">
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleUploadFoto}
+            className="hidden"
+          />
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold cursor-pointer"
-            style={{
-              background: "linear-gradient(135deg,#10b981,#059669)",
-              color: "#fff",
-            }}
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold cursor-pointer bg-cover bg-center bg-no-repeat"
+            style={
+              usuario?.foto_url
+                ? { backgroundImage: `url(${usuario.foto_url})`, color: "#fff" }
+                : { background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff" }
+            }
+            onClick={() => fileInputRef.current?.click()}
           >
-            JD
+            {!usuario?.foto_url && (usuario?.nome || "JD").substring(0, 2).toUpperCase()}
           </div>
           <button
-            className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
             style={{ background: "#10b981" }}
           >
-            <Camera size={11} color="#fff" />
+            {isUploading ? <Loader2 size={11} color="#fff" className="animate-spin" /> : <Camera size={11} color="#fff" />}
           </button>
         </div>
         <div>
@@ -318,10 +347,12 @@ function ProfileSettings() {
             PNG, JPG ou WEBP. Máx. 2MB.
           </p>
           <button
+            onClick={() => fileInputRef.current?.click()}
             className="text-xs mt-2 font-medium transition-opacity hover:opacity-70 cursor-pointer"
             style={{ color: "#10b981" }}
+            disabled={isUploading}
           >
-            Fazer upload →
+            {isUploading ? "Enviando..." : "Fazer upload →"}
           </button>
         </div>
       </div>

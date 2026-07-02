@@ -24,7 +24,12 @@ function initials(nome: string) {
     .join("");
 }
 
-function normalizeFuncionario(f: FuncionarioBackend, index: number): Funcionario {
+function getCargoColor(cargo: string) {
+  const hash = cargo.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return CORES[hash % CORES.length];
+}
+
+function normalizeFuncionario(f: FuncionarioBackend): Funcionario {
   return {
     id: f.id,
     nome: f.nome,
@@ -34,8 +39,9 @@ function normalizeFuncionario(f: FuncionarioBackend, index: number): Funcionario
     dia_pagamento: f.dia_pagamento ?? 1,
     cargo: f.cargo,
     iniciais: initials(f.nome),
-    cor: CORES[index % CORES.length],
+    cor: getCargoColor(f.cargo),
     ativo: true,
+    foto_url: f.foto_url,
   };
 }
 
@@ -65,9 +71,8 @@ export default function FuncionariosPage() {
       ]);
       
       const cargosMap = new Map(cargosData.map(c => [c.id, c.nome]));
-      
-      setFuncionarios(funcionariosData.map((f, i) => {
-        const mapped = normalizeFuncionario(f, i);
+      setFuncionarios(funcionariosData.map((f) => {
+        const mapped = normalizeFuncionario(f);
         return {
           ...mapped,
           cargo: cargosMap.get(f.cargo) || f.cargo
@@ -114,6 +119,27 @@ export default function FuncionariosPage() {
       throw new Error("Empresa nao encontrada no token. Faca login novamente.");
     }
 
+    let finalUrl: string | null | undefined = undefined;
+    let createdFuncId = editingFuncionario?.id;
+
+    if (!editingFuncionario) {
+      const created = await funcionariosService.criarFuncionario({
+        nome: data.nome,
+        email: data.email,
+        cargo: data.cargo,
+        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
+        salario: data.salario,
+        dia_pagamento: data.dia_pagamento,
+      });
+      createdFuncId = created.id;
+    }
+
+    if (data.removerFoto) {
+      finalUrl = null;
+    } else if (data.fotoFile && createdFuncId) {
+      finalUrl = await funcionariosService.uploadFotoFuncionario(data.fotoFile, createdFuncId);
+    }
+
     if (editingFuncionario) {
       await funcionariosService.atualizarFuncionario(editingFuncionario.id, {
         nome: data.nome,
@@ -122,16 +148,10 @@ export default function FuncionariosPage() {
         cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
         salario: data.salario,
         dia_pagamento: data.dia_pagamento,
+        ...(finalUrl !== undefined && { foto_url: finalUrl }),
       });
-    } else {
-      await funcionariosService.criarFuncionario({
-        nome: data.nome,
-        email: data.email,
-        cargo: data.cargo,
-        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
-        salario: data.salario,
-        dia_pagamento: data.dia_pagamento,
-      });
+    } else if (finalUrl !== undefined && createdFuncId) {
+      await funcionariosService.atualizarFuncionario(createdFuncId, { foto_url: finalUrl });
     }
     setEditingFuncionario(null);
     await carregarFuncionarios();
@@ -188,7 +208,7 @@ export default function FuncionariosPage() {
 
           {!loading && filtered.length === 0 && (
             <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
-              <span className="material-symbols-outlined text-5xl" style={{ color: "#6b7280" }}>group_off</span>
+              <i className="fi fi-rr-user-slash text-5xl" style={{ color: "#6b7280" }}></i>
               <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
             </div>
           )}
@@ -271,7 +291,9 @@ export default function FuncionariosPage() {
                   cpf_cnpj: editingFuncionario.cpf_cnpj,
                   salario: editingFuncionario.salario,
                   dia_pagamento: editingFuncionario.dia_pagamento,
+                  data_base_pagamento: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(editingFuncionario.dia_pagamento).padStart(2, '0')}`,
                   cargo: editingFuncionario.cargo,
+                  foto_url: editingFuncionario.foto_url,
                 }
               : undefined
           }

@@ -21,6 +21,10 @@ export const cargosService = {
     return await apiClient.post<CargoBackend>("/cargos", payload);
   },
 
+  async atualizarCargo(id: string, payload: Partial<CriarCargoPayload>): Promise<CargoBackend> {
+    return await apiClient.put<CargoBackend>(`/cargos/${id}`, payload);
+  },
+
   async removerCargo(id: string): Promise<void> {
     await apiClient.delete(`/cargos/${id}`);
   },

@@ -85,7 +85,7 @@ export function RecoveryPage() {
               onClick={() => step === "reset" ? setStep("request") : router.push("/login")}
               className="inline-flex items-center gap-2 text-label-sm text-primary hover:text-primary-fixed transition-colors font-medium cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              <i className="fi fi-rr-arrow-left text-[16px]"></i>
               {step === "reset" ? "Voltar para o passo anterior" : "Voltar para o Login"}
             </button>
           </div>

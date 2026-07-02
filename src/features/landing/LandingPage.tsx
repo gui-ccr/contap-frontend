@@ -499,12 +499,8 @@ function AppPreview() {
                 >
                   {k.label}
                 </span>
-                <span
-                  className="material-symbols-outlined text-[14px]"
-                  style={{ color: k.color, fontVariationSettings: '"FILL" 1' }}
-                >
-                  {k.icon}
-                </span>
+                <i className={`fi ${k.icon} text-[14px]`} style={{ color: k.color, fontVariationSettings: '"FILL" 1' }}
+                ></i>
               </div>
               <span
                 className="text-[15px] font-bold tabular-nums"
@@ -581,15 +577,11 @@ function AppPreview() {
               }}
             >
               <div className="flex items-center gap-3">
-                <span
-                  className="material-symbols-outlined text-[16px]"
-                  style={{
+                <i className={`fi ${t.icon} text-[16px]`} style={{
                     color: t.type === "positive" ? "#4edea3" : "#ffb3b0",
                     fontVariationSettings: '"FILL" 1',
                   }}
-                >
-                  {t.icon}
-                </span>
+                ></i>
                 <span className="text-[13px]" style={{ color: "#bbcabf" }}>
                   {t.desc}
                 </span>
@@ -726,12 +718,8 @@ function PricingCard({
             className="flex items-center gap-2.5 text-[14px]"
             style={{ color: highlight ? "#e5e2e1" : "#bbcabf" }}
           >
-            <span
-              className="material-symbols-outlined text-[16px] shrink-0"
-              style={{ color: "#4edea3", fontVariationSettings: '"FILL" 1' }}
-            >
-              check_circle
-            </span>
+            <i className="fi fi-rr-check-circle text-[16px] shrink-0" style={{ color: "#4edea3", fontVariationSettings: '"FILL" 1' }}
+            ></i>
             {f}
           </li>
         ))}
@@ -1054,9 +1042,7 @@ export function LandingPage() {
                 boxShadow: "0 12px 32px rgba(78,222,163,0.22)",
               }}
             >
-              <span className="material-symbols-outlined text-[18px]">
-                rocket_launch
-              </span>
+              <i className="fi fi-rr-rocket-launch text-[18px]"></i>
               Cadastrar-se
             </Link>
             <Link
@@ -1068,9 +1054,7 @@ export function LandingPage() {
                 color: "#e5e2e1",
               }}
             >
-              <span className="material-symbols-outlined text-[18px]">
-                login
-              </span>
+              <i className="fi fi-rr-login text-[18px]"></i>
               Já tenho uma conta
             </Link>
           </div>
@@ -1119,12 +1103,8 @@ export function LandingPage() {
           >
             Rolar
           </span>
-          <span
-            className="material-symbols-outlined text-[20px] animate-bounce"
-            style={{ color: "#86948a" }}
-          >
-            keyboard_arrow_down
-          </span>
+          <i className="fi fi-rr-keyboard-arrow-down text-[20px] animate-bounce" style={{ color: "#86948a" }}
+          ></i>
         </div>
       </section>
 
@@ -1189,12 +1169,8 @@ export function LandingPage() {
                     border: "1px solid rgba(255,179,176,0.14)",
                   }}
                 >
-                  <span
-                    className="material-symbols-outlined text-[20px]"
-                    style={{ color: "#ffb3b0" }}
-                  >
-                    {p.icon}
-                  </span>
+                  <i className={`fi ${p.icon} text-[20px]`} style={{ color: "#ffb3b0" }}
+                  ></i>
                 </div>
                 <h3 className="font-bold text-[17px] text-white mb-2">
                   {p.title}
@@ -1279,15 +1255,11 @@ export function LandingPage() {
                     border: `1px solid ${f.color}1a`,
                   }}
                 >
-                  <span
-                    className="material-symbols-outlined text-[20px]"
-                    style={{
+                  <i className={`fi ${f.icon} text-[20px]`} style={{
                       color: f.color,
                       fontVariationSettings: '"FILL" 1',
                     }}
-                  >
-                    {f.icon}
-                  </span>
+                  ></i>
                 </div>
                 <h3 className="font-bold text-[16px] text-white mb-2">
                   {f.title}
@@ -1492,9 +1464,7 @@ export function LandingPage() {
                     boxShadow: "0 16px 40px rgba(78,222,163,0.28)",
                   }}
                 >
-                  <span className="material-symbols-outlined text-[20px]">
-                    rocket_launch
-                  </span>
+                  <i className="fi fi-rr-rocket-launch text-[20px]"></i>
                   Criar conta grátis agora
                 </Link>
                 <Link

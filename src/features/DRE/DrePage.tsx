@@ -23,8 +23,8 @@ function FinancialRow({ label, value, type = "neutral", indent = false }: Financ
   return (
     <div className={`flex justify-between items-center hover:bg-white/[0.04] p-xs rounded-lg transition-all cursor-pointer select-none ${indent ? "pl-8" : ""}`}>
       <span className={`text-body-md flex items-center gap-2 cursor-pointer ${labelColorClass}`}>
-        {type === "negative" && <span className="material-symbols-outlined text-[16px] cursor-pointer">remove</span>}
-        {type === "positive" && <span className="material-symbols-outlined text-[16px] cursor-pointer">add</span>}
+        {type === "negative" && <i className="fi fi-rr-minus text-[16px] cursor-pointer"></i>}
+        {type === "positive" && <i className="fi fi-rr-plus text-[16px] cursor-pointer"></i>}
         {label}
       </span>
       <span className="font-mono text-mono-data font-medium text-on-surface cursor-pointer">
@@ -90,16 +90,14 @@ export function DrePage() {
                 <option className="bg-[#222526]">Q1 2023 (Jan - Mar)</option>
                 <option className="bg-[#222526]">Ano 2023</option>
               </select>
-              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] z-0 pointer-events-none">
-                expand_more
-              </span>
+              <i className="fi fi-rr-expand-more absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] z-0 pointer-events-none"></i>
             </div>
 
             <button 
               style={{ cursor: "pointer" }}
               className="bg-white/[0.03] hover:bg-white/[0.07] active:scale-98 border border-white/5 text-on-surface py-2.5 px-4 rounded-xl text-label-md font-medium transition-all flex items-center gap-2 cursor-pointer select-none"
             >
-              <span className="material-symbols-outlined text-[18px] cursor-pointer">download</span>
+              <i className="fi fi-rr-download text-[18px] cursor-pointer"></i>
               Exportar
             </button>
           </div>
@@ -125,9 +123,7 @@ export function DrePage() {
             <div className="bg-surface-container/40 glass-panel border border-white/5 rim-light rounded-2xl p-md flex flex-col gap-base shadow-xl">
               <div className="flex justify-between items-center border-b border-white/5 pb-sm mb-xs">
                 <h3 className="text-headline-md text-primary font-semibold flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: '"FILL" 1' }}>
-                    add_circle
-                  </span>
+                  <i className="fi fi-rr-add-circle text-primary" style={{ fontVariationSettings: '"FILL" 1' }}></i>
                   Receita Operacional Bruta
                 </h3>
                 <span className="font-mono text-headline-md font-bold text-on-surface">
@@ -158,9 +154,7 @@ export function DrePage() {
             <div className="bg-surface-container/40 glass-panel border border-white/5 rim-light rounded-2xl p-md flex flex-col gap-sm shadow-xl">
               <div>
                 <h4 className="text-label-md text-secondary font-bold tracking-wider uppercase text-xs mb-sm flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: '"FILL" 1' }}>
-                    remove_circle
-                  </span>
+                  <i className="fi fi-rr-remove-circle text-secondary" style={{ fontVariationSettings: '"FILL" 1' }}></i>
                   Custos e Despesas Operacionais
                 </h4>
                 
@@ -205,9 +199,7 @@ export function DrePage() {
                   style={{ cursor: "pointer" }}
                   className="mt-4 inline-flex items-center gap-2 bg-[#00E676]/10 text-[#00E676] px-5 py-2 rounded-xl text-sm font-semibold border border-[#00E676]/20 shadow-sm cursor-pointer select-none hover:bg-[#00E676]/20 transition-all"
                 >
-                  <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: '"FILL" 1' }}>
-                    trending_up
-                  </span>
+                  <i className="fi fi-rr-arrow-trend-up text-[18px]" style={{ fontVariationSettings: '"FILL" 1' }}></i>
                   Margem Líquida: {margemLiquida}%
                 </div>
               </div>

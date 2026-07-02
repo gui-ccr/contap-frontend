@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Pencil, Check } from "lucide-react";
 import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 
 interface GerenciarCargosModalProps {
@@ -16,6 +16,7 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
   
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function carregarCargos() {
     try {
@@ -33,21 +34,38 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
     void carregarCargos();
   }, []);
 
-  async function handleAdd(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!nome.trim()) return;
     try {
       setSaving(true);
       setError("");
-      await cargosService.criarCargo({ nome, descricao });
+      if (editingId) {
+        await cargosService.atualizarCargo(editingId, { nome, descricao });
+      } else {
+        await cargosService.criarCargo({ nome, descricao });
+      }
       setNome("");
       setDescricao("");
+      setEditingId(null);
       await carregarCargos();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao criar cargo.");
+      setError(err instanceof Error ? err.message : "Erro ao salvar cargo.");
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleEdit(cargo: CargoBackend) {
+    setEditingId(cargo.id);
+    setNome(cargo.nome);
+    setDescricao(cargo.descricao || "");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setNome("");
+    setDescricao("");
   }
 
   async function handleRemove(id: string) {
@@ -97,8 +115,17 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
             </div>
           )}
 
-          <form onSubmit={handleAdd} className="flex flex-col gap-3 mb-6 p-4 rounded-2xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.1)" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#e5e2e1" }}>Novo Cargo</h3>
+          <form onSubmit={handleSave} className="flex flex-col gap-3 mb-6 p-4 rounded-2xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.1)" }}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#e5e2e1" }}>
+                {editingId ? "Editar Cargo" : "Novo Cargo"}
+              </h3>
+              {editingId && (
+                <button type="button" onClick={cancelEdit} className="text-xs text-gray-400 hover:text-white">
+                  Cancelar
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input required value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome (Ex: Vendedor)" className="w-full rounded-xl px-3 py-2 text-sm outline-none transition-all focus:ring-1" style={{ background: "#242424", border: "1px solid rgba(255,255,255,0.08)", color: "#e5e2e1" }} />
               <input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição (Opcional)" className="w-full rounded-xl px-3 py-2 text-sm outline-none transition-all focus:ring-1" style={{ background: "#242424", border: "1px solid rgba(255,255,255,0.08)", color: "#e5e2e1" }} />
@@ -107,10 +134,10 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
               type="submit"
               disabled={saving}
               className="mt-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-90 self-start"
-              style={{ background: saving ? "#2f8f69" : "#4edea3", color: "#003824" }}
+              style={{ background: saving ? "#2f8f69" : (editingId ? "#3b82f6" : "#4edea3"), color: editingId ? "#ffffff" : "#003824" }}
             >
-              <Plus size={14} strokeWidth={2.5} />
-              {saving ? "Salvando..." : "Adicionar Cargo"}
+              {editingId ? <Check size={14} strokeWidth={2.5} /> : <Plus size={14} strokeWidth={2.5} />}
+              {saving ? "Salvando..." : (editingId ? "Salvar Alterações" : "Adicionar Cargo")}
             </button>
           </form>
 
@@ -126,13 +153,22 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
                     <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{cargo.nome}</p>
                     {cargo.descricao && <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>{cargo.descricao}</p>}
                   </div>
-                  <button
-                    onClick={() => handleRemove(cargo.id)}
-                    className="p-2 rounded-lg transition-colors hover:bg-red-500/20 text-red-400"
-                    title="Excluir cargo"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleEdit(cargo)}
+                      className="p-2 rounded-lg transition-colors hover:bg-blue-500/20 text-blue-400"
+                      title="Editar cargo"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleRemove(cargo.id)}
+                      className="p-2 rounded-lg transition-colors hover:bg-red-500/20 text-red-400"
+                      title="Excluir cargo"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

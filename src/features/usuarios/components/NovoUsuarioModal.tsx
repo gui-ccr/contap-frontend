@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Camera, Trash2 } from "lucide-react";
 import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 import { funcionariosService } from "@/features/funcionarios/funcionariosService";
 import type { FuncionarioBackend } from "@/features/funcionarios/types/types";
@@ -16,6 +16,9 @@ export interface NovoUsuarioData {
   data_base_pagamento?: string;
   funcionario_id?: string;
   ativo?: boolean;
+  foto_url?: string;
+  fotoFile?: File | null;
+  removerFoto?: boolean;
 }
 
 interface NovoUsuarioModalProps {
@@ -63,6 +66,18 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
 
   function handleChange(key: keyof NovoUsuarioData, value: string | number) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const objectUrl = URL.createObjectURL(file);
+      setForm(f => ({ ...f, fotoFile: file, foto_url: objectUrl, removerFoto: false }));
+    }
+  }
+
+  function handleRemoveFoto() {
+    setForm(f => ({ ...f, fotoFile: null, foto_url: undefined, removerFoto: true }));
   }
 
   function formatCurrencyInput(value: string | number) {
@@ -202,6 +217,41 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
             </div>
           ) : form.modo === "editar" ? (
             <>
+              <div className="flex flex-col items-center justify-center mb-2">
+                <div className="relative group">
+                  <div 
+                    className="w-20 h-20 rounded-full flex items-center justify-center bg-cover bg-center bg-no-repeat transition-all"
+                    style={{
+                      background: form.foto_url 
+                        ? `url(${form.foto_url}) center/cover no-repeat` 
+                        : "linear-gradient(135deg, #4edea3, #10b981)",
+                      border: "2px solid #242424"
+                    }}
+                  >
+                    {!form.foto_url && (
+                      <span className="text-xl font-bold text-[#003824]">
+                        {form.nome ? form.nome.charAt(0).toUpperCase() : "?"}
+                      </span>
+                    )}
+                  </div>
+                  <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
+                    <Camera size={16} className="mb-1" />
+                    <span className="text-[9px] font-bold uppercase tracking-wider">Alterar</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                  </label>
+                  {form.foto_url && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveFoto}
+                      className="absolute -bottom-1 -right-1 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg border-2 border-[#1a1a1a]"
+                      title="Remover foto"
+                    >
+                      <Trash2 size={12} className="text-white" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 gap-3">
                 <div>
                   <label className={labelClass} style={{ color: "#6b7280" }}>Nome completo *</label>
@@ -229,6 +279,41 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
             </>
           ) : (
             <>
+              <div className="flex flex-col items-center justify-center mb-2">
+                <div className="relative group">
+                  <div 
+                    className="w-20 h-20 rounded-full flex items-center justify-center bg-cover bg-center bg-no-repeat transition-all"
+                    style={{
+                      background: form.foto_url 
+                        ? `url(${form.foto_url}) center/cover no-repeat` 
+                        : "linear-gradient(135deg, #4edea3, #10b981)",
+                      border: "2px solid #242424"
+                    }}
+                  >
+                    {!form.foto_url && (
+                      <span className="text-xl font-bold text-[#003824]">
+                        {form.nome ? form.nome.charAt(0).toUpperCase() : "?"}
+                      </span>
+                    )}
+                  </div>
+                  <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
+                    <Camera size={16} className="mb-1" />
+                    <span className="text-[9px] font-bold uppercase tracking-wider">Alterar</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                  </label>
+                  {form.foto_url && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveFoto}
+                      className="absolute -bottom-1 -right-1 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg border-2 border-[#1a1a1a]"
+                      title="Remover foto"
+                    >
+                      <Trash2 size={12} className="text-white" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className={labelClass} style={{ color: "#6b7280" }}>Nome completo *</label>

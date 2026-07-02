@@ -6,8 +6,8 @@ export const usuariosService = {
     return await apiClient.get<UsuarioBackend[]>("/auth/usuarios");
   },
 
-  async criarUsuario(payload: CriarUsuarioPayload): Promise<void> {
-    await apiClient.post("/auth/registrar-usuario", payload);
+  async criarUsuario(payload: CriarUsuarioPayload): Promise<{ id: string }> {
+    return await apiClient.post<{ id: string }>("/auth/registrar-usuario", payload);
   },
 
   async atualizarUsuario(id: string, payload: Partial<CriarUsuarioPayload>): Promise<UsuarioBackend> {
@@ -17,5 +17,25 @@ export const usuariosService = {
   async removerUsuario(id: string, excluirContas?: boolean): Promise<void> {
     const query = excluirContas ? "?excluirContas=true" : "";
     await apiClient.delete(`/auth/usuarios/${id}${query}`);
+  },
+
+  async uploadFotoPerfil(file: File, usuarioId: string): Promise<string> {
+    const { getSupabaseClient } = await import("@/shared/supabaseClient");
+    const { getEmpresaIdFromToken } = await import("@/shared/api");
+    const supabase = getSupabaseClient();
+    const empresa_id = getEmpresaIdFromToken();
+    if (!empresa_id) throw new Error("Empresa não encontrada na sessão");
+    
+    const ext = file.name.split(".").pop();
+    const path = `${empresa_id}/fotos_perfil/${usuarioId}-${Date.now()}.${ext}`;
+    
+    const { error } = await supabase.storage
+      .from("empresas")
+      .upload(path, file, { upsert: true });
+
+    if (error) throw new Error(`Erro ao fazer upload da foto: ${error.message}`);
+
+    const { data } = supabase.storage.from("empresas").getPublicUrl(path);
+    return data.publicUrl;
   },
 };

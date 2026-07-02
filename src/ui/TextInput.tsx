@@ -33,9 +33,7 @@ export function TextInput({
         {label}
       </label>
       <div className="relative flex items-center">
-        <span className="material-symbols-outlined absolute left-4 text-on-surface-variant/50 pointer-events-none select-none text-[20px]">
-          {iconName}
-        </span>
+        <i className={`fi ${iconName} absolute left-4 text-on-surface-variant/50 pointer-events-none select-none text-[20px]`}></i>
         <input
           className={[
             "w-full bg-surface-container-lowest border rounded-xl py-3 text-body-md text-on-surface",

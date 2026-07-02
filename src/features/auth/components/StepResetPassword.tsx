@@ -27,9 +27,7 @@ export function StepResetPassword({
       className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
-      <span className="material-symbols-outlined text-[20px]">
-        {showPassword ? "visibility" : "visibility_off"}
-      </span>
+      <i className={`fi fi-rr-${showPassword ? "eye" : "eye-crossed"} text-[20px]`}></i>
     </button>
   );
 
@@ -40,7 +38,7 @@ export function StepResetPassword({
         name="code"
         value={code}
         onChange={(e) => onCodeChange(e.target.value)}
-        iconName="pin"
+        iconName="fi-rr-key"
         type="text"
         placeholder="Digite o código de 6 dígitos"
         required
@@ -51,7 +49,7 @@ export function StepResetPassword({
         name="newPassword"
         value={newPassword}
         onChange={(e) => onNewPasswordChange(e.target.value)}
-        iconName="lock"
+        iconName="fi-rr-lock"
         type={showPassword ? "text" : "password"}
         placeholder="••••••••"
         rightElement={passwordToggle}
@@ -64,7 +62,7 @@ export function StepResetPassword({
         name="confirmPassword"
         value={confirmPassword}
         onChange={(e) => onConfirmPasswordChange(e.target.value)}
-        iconName="lock_reset"
+        iconName="fi-rr-rotate-right"
         type={showPassword ? "text" : "password"}
         placeholder="••••••••"
         rightElement={passwordToggle}
@@ -83,7 +81,7 @@ export function StepResetPassword({
           className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
         >
           Redefinir Senha e Entrar
-          <span className="material-symbols-outlined text-[18px]">check_circle</span>
+          <i className="fi fi-rr-check-circle text-[18px]"></i>
         </button>
       </div>
     </form>

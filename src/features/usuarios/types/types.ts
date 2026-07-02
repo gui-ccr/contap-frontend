@@ -6,6 +6,7 @@ export interface Usuario {
   ativo: boolean;
   iniciais: string;
   cor: string;
+  foto_url?: string;
 }
 
 export interface UsuarioBackend {
@@ -14,6 +15,7 @@ export interface UsuarioBackend {
   email: string;
   cargo: "DONO" | "GERENTE" | "CAIXA";
   ativo?: boolean;
+  foto_url?: string;
 }
 
 export interface CriarUsuarioPayload {
@@ -22,4 +24,6 @@ export interface CriarUsuarioPayload {
   senha?: string;
   empresa_id: string;
   cargo: "GERENTE" | "CAIXA";
+  ativo?: boolean;
+  foto_url?: string | null;
 }

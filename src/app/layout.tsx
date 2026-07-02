@@ -38,6 +38,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/shared/AuthContext";
+import { Providers } from "@/shared/Providers";
 
 export default function RootLayout({
   children,
@@ -49,15 +50,17 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          href="https://cdn-uicons.flaticon.com/2.4.2/uicons-regular-rounded/css/uicons-regular-rounded.css"
           precedence="default"
         />
       </head>
       <body className="min-h-screen">
-        <AuthProvider>
-          <Sidebar>{children}</Sidebar>
-          <Toaster position="top-center" richColors />
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            <Sidebar>{children}</Sidebar>
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

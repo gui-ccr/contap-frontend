@@ -66,7 +66,7 @@ export function CompanyForm() {
       <TextInput
         label="Razão Social"
         name="razaoSocial"
-        iconName="domain"
+        iconName="fi-rr-building"
         placeholder="Razão Social da Empresa"
         value={razaoSocial}
         onChange={(e) => { setRazaoSocial(e.target.value); if (errors.razaoSocial) setErrors((p) => ({ ...p, razaoSocial: "" })); }}
@@ -77,7 +77,7 @@ export function CompanyForm() {
       <TextInput
         label="Nome Fantasia"
         name="nomeFantasia"
-        iconName="store"
+        iconName="fi-rr-shop"
         placeholder="Nome Fantasia da Empresa"
         value={nomeFantasia}
         onChange={(e) => { setNomeFantasia(e.target.value); if (errors.nomeFantasia) setErrors((p) => ({ ...p, nomeFantasia: "" })); }}
@@ -88,7 +88,7 @@ export function CompanyForm() {
       <TextInput
         label="CNPJ"
         name="cnpj"
-        iconName="fingerprint"
+        iconName="fi-rr-fingerprint"
         placeholder="00.000.000/0001-00"
         value={cnpj}
         onChange={handleCnpjChange}
@@ -103,7 +103,7 @@ export function CompanyForm() {
           className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] disabled:opacity-50 text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
         >
           {loading ? "Cadastrando..." : "Cadastrar Empresa"}
-          {!loading && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
+          {!loading && <i className="fi fi-rr-arrow-right text-[18px]"></i>}
         </button>
         <button
           type="button"

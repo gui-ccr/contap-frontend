@@ -280,10 +280,14 @@ export default function Header() {
           style={{ background: "#1e1e1e" }}
         >
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-            style={{ background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-cover bg-center bg-no-repeat"
+            style={
+              usuario?.foto_url 
+                ? { backgroundImage: `url(${usuario.foto_url})` }
+                : { background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }
+            }
           >
-            {iniciaisUsuario}
+            {!usuario?.foto_url && iniciaisUsuario}
           </div>
           <div className="text-left">
             <p className="text-xs font-semibold leading-tight" style={{ color: "#e5e2e1" }}>

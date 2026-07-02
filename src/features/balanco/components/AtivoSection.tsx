@@ -42,7 +42,7 @@ export function AtivoSection({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: "rgba(192, 193, 255, 0.08)", border: "1px solid rgba(192, 193, 255, 0.15)" }}>
-          <span className="material-symbols-outlined text-[24px]" style={{ color: "#c0c1ff" }}>trending_up</span>
+          <i className="fi fi-rr-arrow-trend-up text-[24px]" style={{ color: "#c0c1ff" }}></i>
         </div>
         <div>
           <h2 className="text-xl font-bold tracking-tight text-white">Ativo</h2>

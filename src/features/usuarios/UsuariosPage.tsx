@@ -33,6 +33,7 @@ function normalizeUsuario(f: UsuarioBackend, index: number): Usuario {
     iniciais: initials(f.nome),
     cor: CORES[index % CORES.length],
     ativo: f.ativo ?? true,
+    foto_url: f.foto_url,
   };
 }
 
@@ -94,13 +95,10 @@ export default function UsuariosPage() {
     if (!empresaId) {
       throw new Error("Empresa nao encontrada no token. Faca login novamente.");
     }
-    if (editingUsuario) {
-      await usuariosService.atualizarUsuario(editingUsuario.id, {
-        nome: data.nome,
-        cargo: data.cargo,
-        ativo: !!data.ativo,
-      });
-    } else {
+    let finalUrl: string | null | undefined = undefined;
+    let createdUsuarioId = editingUsuario?.id;
+
+    if (!editingUsuario) {
       const cpfNum = data.cpf_cnpj ? data.cpf_cnpj.replace(/\D/g, "") : "123456";
 
       if (data.modo === "novo") {
@@ -115,13 +113,31 @@ export default function UsuariosPage() {
         });
       }
 
-      await usuariosService.criarUsuario({
+      const created = await usuariosService.criarUsuario({
         nome: data.nome,
         email: data.email,
         senha: cpfNum,
         empresa_id: empresaId,
-        cargo: data.cargo,
+        cargo: data.cargo as "GERENTE" | "CAIXA",
       });
+      createdUsuarioId = created.id;
+    }
+
+    if (data.removerFoto) {
+      finalUrl = null;
+    } else if (data.fotoFile && createdUsuarioId) {
+      finalUrl = await usuariosService.uploadFotoPerfil(data.fotoFile, createdUsuarioId);
+    }
+
+    if (editingUsuario) {
+      await usuariosService.atualizarUsuario(editingUsuario.id, {
+        nome: data.nome,
+        cargo: data.cargo as "GERENTE" | "CAIXA",
+        ativo: !!data.ativo,
+        ...(finalUrl !== undefined && { foto_url: finalUrl }),
+      });
+    } else if (finalUrl !== undefined && createdUsuarioId) {
+      await usuariosService.atualizarUsuario(createdUsuarioId, { foto_url: finalUrl });
     }
     
     setEditingUsuario(null);
@@ -178,7 +194,7 @@ export default function UsuariosPage() {
 
           {!loading && filtered.length === 0 && (
             <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
-              <span className="material-symbols-outlined text-5xl" style={{ color: "#6b7280" }}>group_off</span>
+              <i className="fi fi-rr-user-slash text-5xl" style={{ color: "#6b7280" }}></i>
               <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum usuario encontrado</p>
             </div>
           )}
@@ -261,6 +277,7 @@ export default function UsuariosPage() {
                   email: editingUsuario.email,
                   cargo: editingUsuario.cargo,
                   ativo: editingUsuario.ativo,
+                  foto_url: editingUsuario.foto_url,
                 }
               : undefined
           }
