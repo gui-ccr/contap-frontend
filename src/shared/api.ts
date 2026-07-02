@@ -1,7 +1,19 @@
 import axios, { AxiosError } from "axios";
 import { getSupabaseClient } from "@/shared/supabaseClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://contaup-api.vercel.app";
+let BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://contaup-api.vercel.app";
+
+if (typeof window !== "undefined") {
+  // Se estivermos em um ambiente de produção real (domínio público)
+  // E a BASE_URL tiver sido gerada incorretamente apontando para localhost, forçamos a API de produção
+  if (
+    !window.location.hostname.includes("localhost") && 
+    !window.location.hostname.includes("127.0.0.1") &&
+    BASE_URL.includes("localhost")
+  ) {
+    BASE_URL = "https://contaup-api.vercel.app";
+  }
+}
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
