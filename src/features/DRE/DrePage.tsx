@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { dreService, FinancialEntry } from "./dreService";
+import { useState, useEffect, useMemo } from "react";
+import { dreService, gerarPeriodosDre, FinancialEntry } from "./dreService";
 
 interface FinancialRowProps {
   label: string;
@@ -35,7 +35,9 @@ function FinancialRow({ label, value, type = "neutral", indent = false }: Financ
 }
 
 export function DrePage() {
-  const [periodo, setPeriodo] = useState("Q3 2023 (Jul - Set)");
+  const periodos = useMemo(() => gerarPeriodosDre(), []);
+  const [periodoLabel, setPeriodoLabel] = useState(periodos[0].label);
+  const periodo = periodos.find((p) => p.label === periodoLabel) ?? periodos[0];
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,8 @@ export function DrePage() {
       }
     }
     loadData();
-  }, [periodo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periodoLabel]);
 
   const margemLiquida = reportData && reportData.totalReceitas > 0
     ? ((reportData.resultadoLiquido / reportData.totalReceitas) * 100).toFixed(0)
@@ -80,15 +83,14 @@ export function DrePage() {
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-none cursor-pointer">
               <select
-                value={periodo}
-                onChange={(e) => setPeriodo(e.target.value)}
+                value={periodoLabel}
+                onChange={(e) => setPeriodoLabel(e.target.value)}
                 style={{ cursor: "pointer" }}
                 className="w-full bg-surface-container-high/60 border border-white/5 rounded-xl py-2.5 pl-4 pr-10 text-label-md text-on-surface focus:outline-none focus:border-primary transition-all backdrop-blur-md cursor-pointer appearance-none relative z-10"
               >
-                <option className="bg-[#222526]">Q3 2023 (Jul - Set)</option>
-                <option className="bg-[#222526]">Q2 2023 (Abr - Jun)</option>
-                <option className="bg-[#222526]">Q1 2023 (Jan - Mar)</option>
-                <option className="bg-[#222526]">Ano 2023</option>
+                {periodos.map((p) => (
+                  <option key={p.label} className="bg-[#222526]">{p.label}</option>
+                ))}
               </select>
               <i className="fi fi-rr-expand-more absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] z-0 pointer-events-none"></i>
             </div>

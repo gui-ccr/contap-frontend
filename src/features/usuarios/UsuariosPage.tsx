@@ -138,7 +138,7 @@ export default function UsuariosPage() {
         email: data.email,
         senha: cpfNum,
         empresa_id: empresaId,
-        cargo: data.cargo as "GERENTE" | "CAIXA",
+        cargo: data.cargo,
       });
       createdUsuarioId = created.id;
     }
@@ -154,7 +154,7 @@ export default function UsuariosPage() {
     if (editingUsuario) {
       await usuariosService.atualizarUsuario(editingUsuario.id, {
         nome: data.nome,
-        cargo: data.cargo as "GERENTE" | "CAIXA",
+        cargo: data.cargo,
         ativo: !!data.ativo,
         ...(finalUrl !== undefined && { foto_url: finalUrl }),
       });

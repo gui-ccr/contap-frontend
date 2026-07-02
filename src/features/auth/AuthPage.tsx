@@ -41,17 +41,13 @@ export function AuthPage() {
         });
 
         if (response.token) {
-          localStorage.setItem("token", response.token);
-          if (response.refresh_token) {
-            localStorage.setItem("refresh_token", response.refresh_token);
-            // Optionally, tell the frontend Supabase client about the session so it can refresh it magically if we use it
-            import("@/shared/supabaseClient").then(({ getSupabaseClient }) => {
-              getSupabaseClient().auth.setSession({
-                access_token: response.token,
-                refresh_token: response.refresh_token,
-              });
-            });
-          }
+          // Entrega a sessão ao SDK do Supabase, que passa a persistir e
+          // renovar os tokens sozinho (ver shared/supabaseClient.ts).
+          const { getSupabaseClient } = await import("@/shared/supabaseClient");
+          await getSupabaseClient().auth.setSession({
+            access_token: response.token,
+            refresh_token: response.refresh_token,
+          });
           if (response.empresa_id) {
             localStorage.setItem("empresaId", response.empresa_id);
           }
@@ -74,16 +70,11 @@ export function AuthPage() {
         });
 
         if (loginResponse.token) {
-          localStorage.setItem("token", loginResponse.token);
-          if (loginResponse.refresh_token) {
-            localStorage.setItem("refresh_token", loginResponse.refresh_token);
-            import("@/shared/supabaseClient").then(({ getSupabaseClient }) => {
-              getSupabaseClient().auth.setSession({
-                access_token: loginResponse.token,
-                refresh_token: loginResponse.refresh_token,
-              });
-            });
-          }
+          const { getSupabaseClient } = await import("@/shared/supabaseClient");
+          await getSupabaseClient().auth.setSession({
+            access_token: loginResponse.token,
+            refresh_token: loginResponse.refresh_token,
+          });
           if (loginResponse.empresa_id) {
             localStorage.setItem("empresaId", loginResponse.empresa_id);
           }

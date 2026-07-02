@@ -13,34 +13,18 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(async (config) => {
   if (typeof window !== "undefined") {
     try {
+      // O SDK do Supabase é a única fonte de verdade da sessão:
+      // getSession() já renova o access token expirado usando o refresh token
+      // persistido. Nunca chamar setSession com tokens guardados manualmente —
+      // refresh tokens são de uso único e reusar um antigo derruba a sessão.
       const supabase = getSupabaseClient();
-      let { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        const localToken = localStorage.getItem("token");
-        const localRefresh = localStorage.getItem("refresh_token");
-        if (localToken && localRefresh) {
-          const { data } = await supabase.auth.setSession({
-            access_token: localToken,
-            refresh_token: localRefresh
-          });
-          session = data.session;
-        }
-      }
+      const { data: { session } } = await supabase.auth.getSession();
 
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
-        localStorage.setItem("token", session.access_token);
-        if (session.refresh_token) localStorage.setItem("refresh_token", session.refresh_token);
-        return config;
       }
     } catch (err) {
       console.warn("Erro ao obter sessao supabase:", err);
-    }
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
     }
   }
   return config;
@@ -88,15 +72,19 @@ export const apiClient = {
 
 export function getEmpresaIdFromToken(): string | null {
   if (typeof window === "undefined") return null;
-  
+
   const storedEmpresaId = localStorage.getItem("empresaId");
   if (storedEmpresaId) return storedEmpresaId;
-  
-  const token = localStorage.getItem("token");
-  if (!token) return null;
+
   try {
+    // Sessão persistida pelo SDK do Supabase (ver storageKey em supabaseClient.ts)
+    const raw = localStorage.getItem("contaup-auth");
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    const token: string | undefined = session?.access_token;
+    if (!token) return null;
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.empresaId || null;
+    return payload.empresaId || payload.user_metadata?.empresa_id || null;
   } catch (err) {
     console.error("Erro ao decodificar token", err);
     return null;

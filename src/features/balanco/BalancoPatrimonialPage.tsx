@@ -45,6 +45,7 @@ const TOTAL_PASSIVO = "R$ 6.965.500,00";
 export default function BalancoPatrimonialPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const today = new Date().toLocaleDateString("pt-BR", {
     day: "numeric", month: "long", year: "numeric",
@@ -58,6 +59,7 @@ export default function BalancoPatrimonialPage() {
     async function loadBalanco() {
       try {
         setLoading(true);
+        setError(null);
         const res = await balancoService.obterBalanco();
         
         // Formatar valores para string conforme esperado pelos componentes visuais
@@ -79,6 +81,7 @@ export default function BalancoPatrimonialPage() {
         setData(formatted);
       } catch (err) {
         console.error("Falha ao carregar Balanço Patrimonial da API:", err);
+        setError(err instanceof Error ? err.message : "Falha ao carregar o Balanço Patrimonial.");
       } finally {
         setLoading(false);
       }
@@ -100,7 +103,14 @@ export default function BalancoPatrimonialPage() {
             </div>
           )}
 
-          {!loading && data && (
+          {!loading && error && (
+            <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl text-center">
+              <p className="text-red-400 font-medium">{error}</p>
+              <p className="text-sm text-gray-400 mt-1">Verifique sua conexão e se o login está ativo, depois recarregue a página.</p>
+            </div>
+          )}
+
+          {!loading && !error && data && (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <AtivoSection

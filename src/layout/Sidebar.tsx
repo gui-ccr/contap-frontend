@@ -108,7 +108,15 @@ function NavLinks({
       {/* Logout */}
       <Link
         href="/login"
-        onClick={onNavigate}
+        onClick={async () => {
+          onNavigate?.();
+          const { getSupabaseClient } = await import("@/shared/supabaseClient");
+          await getSupabaseClient().auth.signOut();
+          localStorage.removeItem("empresaId");
+          // Chaves legadas de versões antigas do fluxo de auth
+          localStorage.removeItem("token");
+          localStorage.removeItem("refresh_token");
+        }}
         className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-colors hover:bg-white/5"
         style={{ color: "#6b7280" }}
       >

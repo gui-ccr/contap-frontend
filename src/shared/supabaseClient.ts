@@ -14,6 +14,13 @@ export function getSupabaseClient(): SupabaseClient {
     );
   }
 
-  _client = createClient(url, key);
+  _client = createClient(url, key, {
+    auth: {
+      // O próprio SDK persiste e renova a sessão; nada de guardar token na mão.
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: "contaup-auth",
+    },
+  });
   return _client;
 }

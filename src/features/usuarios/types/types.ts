@@ -1,8 +1,10 @@
+// O cargo é um texto livre vindo da tabela de cargos do backend
+// (não é mais o enum fixo DONO/GERENTE/CAIXA).
 export interface Usuario {
   id: string;
   nome: string;
   email: string;
-  cargo: "DONO" | "GERENTE" | "CAIXA";
+  cargo: string;
   ativo: boolean;
   iniciais: string;
   cor: string;
@@ -13,7 +15,7 @@ export interface UsuarioBackend {
   id: string;
   nome: string;
   email: string;
-  cargo: "DONO" | "GERENTE" | "CAIXA";
+  cargo: string;
   ativo?: boolean;
   foto_url?: string;
 }
@@ -23,7 +25,7 @@ export interface CriarUsuarioPayload {
   email: string;
   senha?: string;
   empresa_id: string;
-  cargo: "GERENTE" | "CAIXA";
+  cargo: string;
   ativo?: boolean;
   foto_url?: string | null;
 }
