@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Plus, Trash2, Pencil, Check } from "lucide-react";
+import { ConfirmModal } from "@/ui/ConfirmModal";
 import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 
 interface GerenciarCargosModalProps {
@@ -68,14 +69,22 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
     setDescricao("");
   }
 
-  async function handleRemove(id: string) {
-    if (!confirm("Tem certeza que deseja excluir este cargo?")) return;
+  const [confirmDeleteCargoId, setConfirmDeleteCargoId] = useState<string | null>(null);
+
+  function handleRemove(id: string) {
+    setConfirmDeleteCargoId(id);
+  }
+
+  async function executeRemove() {
+    if (!confirmDeleteCargoId) return;
     try {
       setError("");
-      await cargosService.removerCargo(id);
+      await cargosService.removerCargo(confirmDeleteCargoId);
       await carregarCargos();
     } catch (err) {
       setError("Erro ao excluir cargo. Verifique se não há funcionários utilizando-o.");
+    } finally {
+      setConfirmDeleteCargoId(null);
     }
   }
 
@@ -175,6 +184,15 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!confirmDeleteCargoId}
+        title="Remover cargo?"
+        description="Esta ação removerá o cargo. Verifique se não há funcionários utilizando-o."
+        onConfirm={executeRemove}
+        onCancel={() => setConfirmDeleteCargoId(null)}
+        confirmText="Sim, remover"
+      />
     </div>
   );
 }

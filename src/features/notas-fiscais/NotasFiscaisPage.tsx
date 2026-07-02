@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { ConfirmModal } from "@/ui/ConfirmModal";
 import { contasReceberService, ContaReceberBackend } from "@/features/contas-receber/contasReceberService";
 import { notasFiscaisService, NotaFiscal } from "./notasFiscaisService";
 import { apiClient, getEmpresaIdFromToken } from "@/shared/api";
@@ -168,14 +169,22 @@ export default function NotasFiscaisPage() {
     }
   };
 
-  const handleDeletar = async (id: string) => {
-    if (!confirm("Remover esta nota fiscal?")) return;
+  const [confirmDeleteNfId, setConfirmDeleteNfId] = useState<string | null>(null);
+
+  const handleDeletar = (id: string) => {
+    setConfirmDeleteNfId(id);
+  };
+
+  const executeDeletar = async () => {
+    if (!confirmDeleteNfId) return;
     try {
-      await notasFiscaisService.deletar(id);
+      await notasFiscaisService.deletar(confirmDeleteNfId);
       toast.success("Nota fiscal removida.");
       await carregar();
     } catch (err: any) {
       toast.error("Erro: " + err.message);
+    } finally {
+      setConfirmDeleteNfId(null);
     }
   };
 
@@ -507,6 +516,15 @@ export default function NotasFiscaisPage() {
           </div>
         </div>
       )}
+      
+      <ConfirmModal
+        isOpen={!!confirmDeleteNfId}
+        title="Remover nota fiscal?"
+        description="Esta ação removerá a nota fiscal do sistema e não poderá ser desfeita."
+        onConfirm={executeDeletar}
+        onCancel={() => setConfirmDeleteNfId(null)}
+        confirmText="Sim, remover"
+      />
     </div>
   );
 }

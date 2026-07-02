@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { getEmpresaIdFromToken } from "@/shared/api";
 import { planoContasService, type ContaContabil, type TipoConta } from "./planoContasService";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/ui/ConfirmModal";
 
 const TIPOS: { value: TipoConta; label: string; color: string; bg: string }[] = [
   { value: "ATIVO", label: "Ativo", color: "#4edea3", bg: "rgba(78,222,163,0.12)" },
@@ -98,14 +100,23 @@ export default function PlanoContasPage() {
     }
   }
 
-  async function handleRemover(id: string) {
-    if (!confirm("Remover esta conta contabil?")) return;
+  const [confirmDeleteContaId, setConfirmDeleteContaId] = useState<string | null>(null);
+
+  function handleRemover(id: string) {
+    setConfirmDeleteContaId(id);
+  }
+
+  async function executeRemover() {
+    if (!confirmDeleteContaId) return;
     try {
       setError("");
-      await planoContasService.removerConta(id);
+      await planoContasService.removerConta(confirmDeleteContaId);
+      toast.success("Conta contábil removida com sucesso.");
       await carregarContas();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Nao foi possivel remover a conta.");
+      toast.error(err instanceof Error ? err.message : "Nao foi possivel remover a conta.");
+    } finally {
+      setConfirmDeleteContaId(null);
     }
   }
 
@@ -295,6 +306,15 @@ export default function PlanoContasPage() {
           </div>
         </div>
       </main>
+
+      <ConfirmModal
+        isOpen={!!confirmDeleteContaId}
+        title="Remover conta contábil?"
+        description="Esta ação removerá a conta contábil do sistema e não poderá ser desfeita."
+        onConfirm={executeRemover}
+        onCancel={() => setConfirmDeleteContaId(null)}
+        confirmText="Sim, remover"
+      />
     </div>
   );
 }
