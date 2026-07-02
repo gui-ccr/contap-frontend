@@ -1,28 +1,29 @@
 "use client";
 
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
-} from "recharts";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
 import type { MonthlyItem, CategoryItem } from "../types";
 
-function ChartTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-2xl px-4 py-3 shadow-2xl text-sm" style={{ background: "#1a1a1a" }}>
-      <p className="text-gray-400 font-medium mb-2">{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.name} className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-gray-400 text-xs">{p.name === "receita" ? "Receita" : "Despesa"}:</span>
-          <span className="text-white font-semibold text-xs">
-            {p.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+);
 
 interface MonthlyChartProps {
   data: MonthlyItem[];
@@ -30,14 +31,130 @@ interface MonthlyChartProps {
 }
 
 export function MonthlyChart({ data, categories }: MonthlyChartProps) {
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: '#1a1a1a',
+        titleColor: '#9ca3af',
+        bodyColor: '#ffffff',
+        padding: 12,
+        cornerRadius: 12,
+        callbacks: {
+          label: function(context: any) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
+        ticks: {
+          color: '#6b7280',
+          font: {
+            size: 11
+          }
+        }
+      },
+      y: {
+        grid: {
+          color: '#ffffff08',
+          drawBorder: false,
+        },
+        border: {
+          display: false,
+        },
+        ticks: {
+          color: '#6b7280',
+          font: {
+            size: 11
+          },
+          callback: function(value: any) {
+            return (value / 1000).toFixed(0) + 'k';
+          }
+        }
+      }
+    }
+  };
+
+  const chartData = {
+    labels: data.map(d => d.mes),
+    datasets: [
+      {
+        fill: true,
+        label: 'Receita',
+        data: data.map(d => d.receita),
+        borderColor: '#10b981',
+        backgroundColor: (context: any) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return null;
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+          gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+          return gradient;
+        },
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#10b981',
+        pointBorderColor: '#131313',
+        pointBorderWidth: 2,
+      },
+      {
+        fill: true,
+        label: 'Despesa',
+        data: data.map(d => d.despesa),
+        borderColor: '#f43f5e',
+        backgroundColor: (context: any) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return null;
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, 'rgba(244, 63, 94, 0.2)');
+          gradient.addColorStop(1, 'rgba(244, 63, 94, 0)');
+          return gradient;
+        },
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#f43f5e',
+        pointBorderColor: '#131313',
+        pointBorderWidth: 2,
+      },
+    ],
+  };
+
   return (
     <section className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-      {/* Area chart — 2/3 */}
       <div className="lg:col-span-2 rounded-3xl p-5" style={{ background: "#1e1e1e" }}>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-sm font-semibold text-white">Desempenho Mensal</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Receita vs Despesa — 2025</p>
+            <p className="text-xs text-gray-500 mt-0.5">Receita vs Despesa — 2026</p>
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
@@ -48,41 +165,15 @@ export function MonthlyChart({ data, categories }: MonthlyChartProps) {
             </span>
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-            <defs>
-              <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#f43f5e" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" vertical={false} />
-            <XAxis dataKey="mes" tick={{ fill: "#6b7280", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis
-              tick={{ fill: "#6b7280", fontSize: 11 }}
-              axisLine={false} tickLine={false}
-              tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-            />
-            <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#ffffff10" }} />
-            <Area type="monotone" dataKey="receita" stroke="#10b981" strokeWidth={2}
-              fill="url(#gradReceita)" dot={false}
-              activeDot={{ r: 5, fill: "#10b981", stroke: "#131313", strokeWidth: 2 }} />
-            <Area type="monotone" dataKey="despesa" stroke="#f43f5e" strokeWidth={2}
-              fill="url(#gradDespesa)" dot={false}
-              activeDot={{ r: 5, fill: "#f43f5e", stroke: "#131313", strokeWidth: 2 }} />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ height: 220, width: "100%" }}>
+          <Line options={options as any} data={chartData} />
+        </div>
       </div>
 
-      {/* Revenue by category — 1/3 */}
       <div className="rounded-3xl p-5" style={{ background: "#1e1e1e" }}>
         <div className="mb-5">
           <h2 className="text-sm font-semibold text-white">Receita por Categoria</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Distribuição — maio 2025</p>
+          <p className="text-xs text-gray-500 mt-0.5">Distribuição</p>
         </div>
         <div className="flex flex-col gap-5">
           {categories.map((cat) => (
@@ -100,6 +191,11 @@ export function MonthlyChart({ data, categories }: MonthlyChartProps) {
               <p className="text-[10px] text-gray-600 mt-1">{cat.pct}% do total</p>
             </div>
           ))}
+          {categories.length === 0 && (
+            <div className="text-sm text-gray-500 text-center mt-8">
+              Sem dados no mês atual
+            </div>
+          )}
         </div>
       </div>
     </section>

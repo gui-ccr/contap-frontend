@@ -45,10 +45,10 @@ export interface DashboardData {
 }
 
 export const dashboardService = {
-  async obterResumo(mes?: number, ano?: number): Promise<DashboardData> {
+  async obterResumo(dataInicio?: string, dataFim?: string): Promise<DashboardData> {
     const params: Record<string, string> = {};
-    if (mes) params["mes"] = String(mes);
-    if (ano) params["ano"] = String(ano);
+    if (dataInicio) params["data_inicio"] = dataInicio;
+    if (dataFim) params["data_fim"] = dataFim;
     return await apiClient.get<DashboardData>("/dashboard/resumo", params);
   },
 };

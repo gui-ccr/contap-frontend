@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DashboardHeader } from "./components/DashboardHeader";
+import { DashboardFilters } from "./components/DashboardFilters";
 import { KpiCards } from "./components/KpiCards";
 import { MonthlyChart } from "./components/MonthlyChart";
 import { CashFlowTable } from "./components/CashFlowTable";
@@ -11,8 +12,6 @@ import { PendingItems } from "./components/PendingItems";
 
 import { KpiItem, IndicatorItem } from "./types";
 import { dashboardService } from "./dashboardService";
-import { lancamentosService, LancamentoBackend } from "@/features/lancamentos/lancamentosService";
-import { contasReceberService } from "@/features/contas-receber/contasReceberService";
 import {
   Wallet,
   TrendingUp,
@@ -28,9 +27,9 @@ import {
 // Templates locais vazios/iniciais para a estrutura do Dashboard (sem dados fictícios de negócios)
 const KPI_DATA_TEMPLATE: KpiItem[] = [
   { id: 1, label: "Saldo Consolidado", value: "R$ 0,00", change: "", positive: true,  icon: Wallet,      detail: "Saldo em conta" },
-  { id: 2, label: "Receita do Mês",    value: "R$ 0,00", change: "",  positive: true,  icon: TrendingUp,  detail: "Mês atual"        },
-  { id: 3, label: "Despesas Totais",   value: "R$ 0,00",  change: "",  positive: false, icon: TrendingDown, detail: "Mês atual"       },
-  { id: 4, label: "Lucro Líquido",     value: "R$ 0,00",  change: "", positive: true,  icon: BarChart3,   detail: "Resultado"   },
+  { id: 2, label: "Receita Prevista",  value: "R$ 0,00", change: "",  positive: true,  icon: TrendingUp,  detail: "No período"        },
+  { id: 3, label: "Despesa Prevista",  value: "R$ 0,00", change: "",  positive: false, icon: TrendingDown, detail: "No período"       },
+  { id: 4, label: "Lucro do Período",  value: "R$ 0,00", change: "", positive: true,  icon: BarChart3,   detail: "Competência"   },
 ];
 
 const INDICATORS_TEMPLATE: IndicatorItem[] = [
@@ -50,6 +49,16 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Default to last 30 days
+  const [startDate, setStartDate] = useState<string>(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    return d.toISOString().split("T")[0];
+  });
+  const [endDate, setEndDate] = useState<string>(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
   const today = new Date().toLocaleDateString("pt-BR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
@@ -64,9 +73,8 @@ export default function DashboardPage() {
         setLoading(true);
         setError(null);
 
-        const agora = new Date();
         const [apiData] = await Promise.all([
-          dashboardService.obterResumo(agora.getMonth() + 1, agora.getFullYear()),
+          dashboardService.obterResumo(startDate, endDate),
         ]);
 
         const resumo = apiData.resumo;
@@ -80,7 +88,7 @@ export default function DashboardPage() {
             realValue = formatCurrency(resumo.receitasMes ?? 0);
           } else if (card.label.toLowerCase().includes("despesa")) {
             realValue = formatCurrency(resumo.despesasMes ?? 0);
-          } else if (card.label.toLowerCase().includes("líquido")) {
+          } else if (card.label.toLowerCase().includes("lucro")) {
             realValue = formatCurrency(resumo.lucroLiquido ?? 0);
             card.positive = (resumo.lucroLiquido ?? 0) >= 0;
           }
@@ -120,16 +128,24 @@ export default function DashboardPage() {
             status: "Confirmado",
           }));
           setCashFlowRows(mappedCashFlow);
+        } else {
+          setRecentTransactions([]);
+          setCashFlowRows([]);
         }
 
         // 4. Gráfico mensal (vem do desempenhoAnual)
         if (apiData.desempenhoAnual?.length > 0) {
           const mesesAbreviados = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-          const monthlyMap = mesesAbreviados.map((label, i) => {
-            const entry = apiData.desempenhoAnual.find(d => d.mes === i + 1);
-            return { mes: label, receita: entry?.receitas ?? 0, despesa: entry?.despesas ?? 0 };
+          const monthlyMap = apiData.desempenhoAnual.map((d) => {
+            return {
+              mes: `${mesesAbreviados[d.mes - 1]}/${String(d.ano).substring(2)}`,
+              receita: d.receitas ?? 0,
+              despesa: d.despesas ?? 0
+            };
           });
           setMonthlyData(monthlyMap);
+        } else {
+          setMonthlyData([]);
         }
 
         // 5. Categorias de receita
@@ -142,6 +158,8 @@ export default function DashboardPage() {
             color: colors[index % colors.length],
           }));
           setCategories(mappedCategories);
+        } else {
+          setCategories([]);
         }
 
         // 6. Pendências operacionais
@@ -160,6 +178,8 @@ export default function DashboardPage() {
             };
           });
           setPendingItems(mappedPending);
+        } else {
+          setPendingItems([]);
         }
 
       } catch (err: any) {
@@ -169,8 +189,10 @@ export default function DashboardPage() {
       }
     }
 
-    loadDashboardData();
-  }, []);
+    if (startDate && endDate) {
+      loadDashboardData();
+    }
+  }, [startDate, endDate]);
 
 
 
@@ -179,10 +201,19 @@ export default function DashboardPage() {
     <main className="flex-1 overflow-auto px-4 py-6 md:px-6 md:py-8 text-white">
       <DashboardHeader today={today} />
       
+      <DashboardFilters 
+        startDate={startDate} 
+        endDate={endDate} 
+        onChangeRange={(start, end) => {
+          setStartDate(start);
+          setEndDate(end);
+        }} 
+      />
+      
       {loading && (
         <div className="py-4 text-sm text-gray-400 animate-pulse flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          Sincronizando métricas em tempo real...
+          Sincronizando métricas do período...
         </div>
       )}
 
