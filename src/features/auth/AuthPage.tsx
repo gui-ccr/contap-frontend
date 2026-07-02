@@ -24,6 +24,15 @@ export function AuthPage() {
     setLoading(true);
 
     try {
+      if (!isLoginMode) {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+        if (!passwordRegex.test(password)) {
+          setApiError("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+          setLoading(false);
+          return;
+        }
+      }
+
       if (isLoginMode) {
         // Efetua login
         const response = await apiClient.post<{ token: string; refresh_token: string; empresa_id?: string }>("/auth/login", {

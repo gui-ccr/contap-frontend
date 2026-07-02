@@ -30,6 +30,11 @@ export function RecoveryPage() {
       setPasswordError("As senhas introduzidas não coincidem.");
       return;
     }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setPasswordError("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+      return;
+    }
     setPasswordError("");
     setStep("success");
     setTimeout(() => router.push("/login"), 3000);

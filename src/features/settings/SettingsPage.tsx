@@ -269,17 +269,39 @@ function ProfileSettings() {
 
   const save = async () => {
     if (!usuario) return;
+    if (password || confirm) {
+      if (password !== confirm) {
+        alert("As senhas não coincidem.");
+        return;
+      }
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+      if (!passwordRegex.test(password)) {
+        alert("A senha deve ter pelo menos 6 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+        return;
+      }
+    }
+
     setState("loading");
     try {
+      if (password) {
+        const { getSupabaseClient } = await import("@/shared/supabaseClient");
+        const supabase = getSupabaseClient();
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw new Error(error.message);
+      }
+
       await apiClient.put(`/auth/usuarios/${usuario.id}`, {
         nome: name,
         cargo: role,
       });
       await refreshUserData();
+      setPassword("");
+      setConfirm("");
       setState("saved");
       setTimeout(() => setState("idle"), 2000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || "Erro ao atualizar perfil.");
       setState("idle");
     }
   };
