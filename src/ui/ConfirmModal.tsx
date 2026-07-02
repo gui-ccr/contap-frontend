@@ -26,7 +26,10 @@ export function ConfirmModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-[90vw] sm:w-full max-w-md shrink-0 rounded-3xl overflow-hidden shadow-2xl relative" style={{ background: "#1e1e1e" }}>
+      <div 
+        className="rounded-3xl overflow-hidden shadow-2xl relative shrink-0" 
+        style={{ background: "#1e1e1e", width: "100%", maxWidth: "400px", minWidth: "300px" }}
+      >
         
         {/* Fechar no canto */}
         <button 

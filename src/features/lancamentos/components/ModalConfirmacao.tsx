@@ -21,7 +21,10 @@ export default function ModalConfirmacao({ isOpen, dados, onFechar, onConfirmar 
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl" style={{ background: "#1e1e1e" }}>
+      <div 
+        className="rounded-3xl overflow-hidden shadow-2xl shrink-0" 
+        style={{ background: "#1e1e1e", width: "100%", maxWidth: "400px", minWidth: "300px" }}
+      >
 
         {/* Topo */}
         <div

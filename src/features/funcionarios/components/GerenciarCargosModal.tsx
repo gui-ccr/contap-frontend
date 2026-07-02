@@ -97,8 +97,8 @@ export function GerenciarCargosModal({ onClose }: GerenciarCargosModalProps) {
       />
 
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden"
-        style={{ background: "#1a1a1a" }}
+        className="relative flex flex-col rounded-3xl shadow-2xl overflow-hidden shrink-0"
+        style={{ background: "#1a1a1a", width: "100%", maxWidth: "672px", minWidth: "320px", maxHeight: "90vh" }}
       >
         <div
           className="flex items-center justify-between px-6 py-5 shrink-0"
