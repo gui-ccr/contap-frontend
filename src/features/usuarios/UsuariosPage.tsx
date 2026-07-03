@@ -9,7 +9,6 @@ import { UsuariosToolbar } from "./components/UsuariosToolbar";
 import { UsuariosPagination } from "./components/UsuariosPagination";
 import { usuariosService } from "./usuariosService";
 import { funcionariosService } from "@/features/funcionarios/funcionariosService";
-import { getEmpresaIdFromToken } from "@/shared/api";
 import type { Usuario, UsuarioBackend } from "./types/types";
 import { ConfirmDeleteModal } from "@/ui/ConfirmDeleteModal";
 
@@ -111,10 +110,6 @@ export default function UsuariosPage() {
   const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   async function handleSave(data: NovoUsuarioData) {
-    const empresaId = getEmpresaIdFromToken();
-    if (!empresaId) {
-      throw new Error("Empresa nao encontrada no token. Faca login novamente.");
-    }
     let finalUrl: string | null | undefined = undefined;
     let createdUsuarioId = editingUsuario?.id;
 
@@ -137,7 +132,6 @@ export default function UsuariosPage() {
         nome: data.nome,
         email: data.email,
         senha: cpfNum,
-        empresa_id: empresaId,
         cargo: data.cargo,
       });
       createdUsuarioId = created.id;

@@ -14,8 +14,8 @@ export interface ListarNotificacoesResponse {
 }
 
 class NotificacoesService {
-  async listar(empresaId: string): Promise<ListarNotificacoesResponse> {
-    const data = await apiClient.get<ListarNotificacoesResponse>(`/notificacoes/${empresaId}`);
+  async listar(): Promise<ListarNotificacoesResponse> {
+    const data = await apiClient.get<ListarNotificacoesResponse>(`/notificacoes`);
     return data;
   }
 

@@ -24,7 +24,6 @@ export interface CriarUsuarioPayload {
   nome: string;
   email: string;
   senha?: string;
-  empresa_id: string;
   cargo: string;
   ativo?: boolean;
   foto_url?: string | null;

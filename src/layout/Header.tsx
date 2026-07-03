@@ -24,7 +24,7 @@ export default function Header() {
   const loadNotifs = async () => {
     if (!empresa?.id) return;
     try {
-      const data = await notificacoesService.listar(empresa.id);
+      const data = await notificacoesService.listar();
       setNotifications(data.notificacoes);
       setUnreadCount(data.naoLidas);
     } catch (error) {
