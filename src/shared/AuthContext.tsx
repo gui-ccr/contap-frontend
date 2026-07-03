@@ -4,6 +4,8 @@ import React, { createContext, useContext, useEffect } from "react";
 import { apiClient } from "./api";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PUBLIC_ROUTES } from "./publicRoutes";
+import { clearSessionCookie, setSessionCookie } from "./sessionCookie";
 
 export interface IUsuario {
   id: string;
@@ -31,13 +33,12 @@ interface IAuthContextData {
 }
 
 const AuthContext = createContext<IAuthContextData>({} as IAuthContextData);
-const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const isPublicRoute = AUTH_ROUTES.includes(pathname);
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
   const { data, isLoading, refetch, isError } = useQuery({
     queryKey: ["auth-me"],
@@ -55,9 +56,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isPublicRoute && isError) {
+      // Sessão inválida/expirada: limpa a flag para o middleware voltar a
+      // barrar rotas protegidas no próximo carregamento.
+      clearSessionCookie();
       router.push("/login");
     }
   }, [isError, isPublicRoute, router]);
+
+  useEffect(() => {
+    if (data) {
+      setSessionCookie();
+    }
+  }, [data]);
 
   const showLoadingScreen = !isPublicRoute && (isLoading || isError);
 

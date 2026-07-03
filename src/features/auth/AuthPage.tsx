@@ -7,6 +7,7 @@ import { AuthBackground } from "./components/AuthBackground";
 import { AuthHeader } from "./components/AuthHeader";
 import { AuthForm } from "./components/AuthForm";
 import { apiClient } from "@/shared/api";
+import { setSessionCookie } from "@/shared/sessionCookie";
 
 export function AuthPage() {
   const router = useRouter();
@@ -51,6 +52,7 @@ export function AuthPage() {
           if (response.empresa_id) {
             localStorage.setItem("empresaId", response.empresa_id);
           }
+          setSessionCookie();
           router.push("/dashboard" as never);
         } else {
           throw new Error("Token não recebido na resposta do servidor.");
@@ -78,6 +80,7 @@ export function AuthPage() {
           if (loginResponse.empresa_id) {
             localStorage.setItem("empresaId", loginResponse.empresa_id);
           }
+          setSessionCookie();
           router.push("/cadastro-empresa" as never);
         } else {
           setIsLoginMode(true);

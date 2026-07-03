@@ -8,6 +8,8 @@ import Image from "next/image";
 import type { Route } from "next";
 import Header from "./Header";
 import { useAuth } from "@/shared/AuthContext";
+import { clearSessionCookie } from "@/shared/sessionCookie";
+import { PUBLIC_ROUTES } from "@/shared/publicRoutes";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "fi-rr-apps", label: "Dashboard", href: "/dashboard" as Route },
@@ -26,8 +28,6 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "fi-rr-user-shield", label: "Usuários", href: "/usuarios" as Route },
   { icon: "fi-rr-settings", label: "Configurações", href: "/configuracoes" as Route },
 ];
-
-const AUTH_ROUTES = ["/", "/login", "/cadastro-empresa", "/recuperar-senha", "/lgpd", "/landing"];
 
 function NavLinks({
   pathname,
@@ -116,6 +116,7 @@ function NavLinks({
           // Chaves legadas de versões antigas do fluxo de auth
           localStorage.removeItem("token");
           localStorage.removeItem("refresh_token");
+          clearSessionCookie();
         }}
         className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-colors hover:bg-white/5"
         style={{ color: "#6b7280" }}
@@ -132,7 +133,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const { empresa, loading } = useAuth();
 
-  if (AUTH_ROUTES.includes(pathname)) return <>{children}</>;
+  if (PUBLIC_ROUTES.includes(pathname)) return <>{children}</>;
 
   const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
   const names = companyName.split(" "); const firstName = names[0] || "Conta";
