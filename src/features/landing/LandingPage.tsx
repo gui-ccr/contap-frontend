@@ -44,22 +44,22 @@ const PRICING: Record<Period, PlanPrices> = {
 
 const PROBLEMS = [
   {
-    icon: "table_chart",
+    icon: "fi-rr-table",
     title: "Planilhas que não escalam",
     desc: "Excel quebra com volume. Fórmulas erram. Dados se perdem. O que era solução vira problema rapidamente.",
   },
   {
-    icon: "shuffle",
+    icon: "fi-rr-shuffle",
     title: "Dados espalhados por toda parte",
     desc: "Banco aqui, nota fiscal lá, folha de pagamento em outro lugar. Consolidar tudo consome horas preciosas.",
   },
   {
-    icon: "visibility_off",
+    icon: "fi-rr-eye-crossed",
     title: "Zero visibilidade em tempo real",
     desc: "O fechamento do mês vira um pesadelo. Decisões são tomadas no escuro, sem dados confiáveis à mão.",
   },
   {
-    icon: "hourglass_empty",
+    icon: "fi-rr-hourglass-end",
     title: "Tempo perdido em tarefas manuais",
     desc: "Lançamentos repetitivos, relatórios feitos à mão, conciliações que demoram horas. Tempo que podia ser estratégia.",
   },
@@ -67,37 +67,37 @@ const PROBLEMS = [
 
 const FEATURES = [
   {
-    icon: "receipt_long",
+    icon: "fi-rr-receipt",
     title: "Lançamentos Inteligentes",
     desc: "Categorize e registre transações com agilidade. Histórico completo com filtros avançados por data e conta.",
     color: "#4edea3",
   },
   {
-    icon: "trending_up",
+    icon: "fi-rr-arrow-trend-up",
     title: "DRE em Tempo Real",
     desc: "Demonstração do Resultado do Exercício atualizada automaticamente. Decisões baseadas em dados reais.",
     color: "#c0c1ff",
   },
   {
-    icon: "account_balance",
+    icon: "fi-rr-bank",
     title: "Balanço Patrimonial",
     desc: "Ativo, Passivo e Patrimônio Líquido organizados e prontos para auditoria a qualquer momento.",
     color: "#4edea3",
   },
   {
-    icon: "group",
+    icon: "fi-rr-users-alt",
     title: "Gestão de Funcionários",
     desc: "Cadastro completo, cargos e informações do time em um só lugar, integrado à gestão financeira.",
     color: "#c0c1ff",
   },
   {
-    icon: "dashboard",
+    icon: "fi-rr-apps",
     title: "Dashboard Executivo",
     desc: "KPIs financeiros, fluxo de caixa e indicadores de saúde da empresa em uma visão unificada.",
     color: "#4edea3",
   },
   {
-    icon: "security",
+    icon: "fi-rr-shield-check",
     title: "Conformidade com LGPD",
     desc: "Dados protegidos, direito de exclusão garantido. Sua empresa em conformidade total com a lei.",
     color: "#c0c1ff",
@@ -468,19 +468,19 @@ function AppPreview() {
             {
               label: "Receita",
               value: "R$ 125.000",
-              icon: "trending_up",
+              icon: "fi-rr-arrow-trend-up",
               color: "#4edea3",
             },
             {
               label: "Despesas",
               value: "R$ 64.000",
-              icon: "trending_down",
+              icon: "fi-rr-arrow-trend-down",
               color: "#ffb3b0",
             },
             {
               label: "Lucro Líquido",
               value: "R$ 61.000",
-              icon: "account_balance",
+              icon: "fi-rr-bank",
               color: "#c0c1ff",
             },
           ].map((k) => (
@@ -499,7 +499,7 @@ function AppPreview() {
                 >
                   {k.label}
                 </span>
-                <i className={`fi ${k.icon} text-[14px]`} style={{ color: k.color, fontVariationSettings: '"FILL" 1' }}
+                <i className={`fi ${k.icon} text-[14px]`} style={{ color: k.color }}
                 ></i>
               </div>
               <span
@@ -553,19 +553,19 @@ function AppPreview() {
               desc: "Venda de Produto",
               value: "+ R$ 8.500",
               type: "positive",
-              icon: "add_circle",
+              icon: "fi-rr-add-circle",
             },
             {
               desc: "Aluguel escritório",
               value: "- R$ 3.200",
               type: "negative",
-              icon: "home_work",
+              icon: "fi-rr-building",
             },
             {
               desc: "Prestação de serviço",
               value: "+ R$ 4.200",
               type: "positive",
-              icon: "handshake",
+              icon: "fi-rr-handshake",
             },
           ].map((t, i) => (
             <div
@@ -792,7 +792,7 @@ const FAQ_ITEMS = [
 function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
   const [open, setOpen] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const iconRef = useRef<HTMLSpanElement>(null);
+  const iconRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -837,13 +837,11 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
         >
           {q}
         </span>
-        <span
+        <i
           ref={iconRef}
-          className="material-symbols-outlined shrink-0 transition-colors"
+          className="fi fi-rr-plus shrink-0 transition-colors"
           style={{ color: open ? "#4edea3" : "#555", fontSize: "20px" }}
-        >
-          add
-        </span>
+        ></i>
       </button>
 
       <div ref={bodyRef} style={{ height: 0, overflow: "hidden", opacity: 0 }}>
