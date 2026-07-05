@@ -1,5 +1,6 @@
 import { TextInput } from "@/ui/TextInput";
 import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { Eye, EyeOff } from "lucide-react";
 
 interface AuthFormProps {
   isLoginMode: boolean;
@@ -30,10 +31,10 @@ export function AuthForm({
     <button
       type="button"
       onClick={onTogglePassword}
-      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5 cursor-pointer"
+      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none cursor-pointer flex items-center justify-center mt-1 mr-1"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
-      <i className={`fi ${showPassword ? "visibility" : "visibility_off"} text-[20px]`}></i>
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
     </button>
   );
 
