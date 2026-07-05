@@ -10,6 +10,8 @@ interface AuthFormProps {
   onNameChange: (v: string) => void;
   onEmailChange: (v: string) => void;
   onPasswordChange: (v: string) => void;
+  rememberMe?: boolean;
+  onRememberMeChange?: (v: boolean) => void;
   onTogglePassword: () => void;
   onToggleMode: () => void;
   onForgotPassword: () => void;
@@ -20,6 +22,7 @@ export function AuthForm({
   isLoginMode,
   name, email, password, showPassword,
   onNameChange, onEmailChange, onPasswordChange,
+  rememberMe, onRememberMeChange,
   onTogglePassword, onToggleMode, onForgotPassword,
   onSubmit,
 }: AuthFormProps) {
@@ -91,6 +94,21 @@ export function AuthForm({
         />
         {!isLoginMode && <PasswordStrengthIndicator password={password} />}
       </div>
+
+      {isLoginMode && (
+        <div className="flex items-center gap-2 mt-[-4px]">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            checked={rememberMe}
+            onChange={(e) => onRememberMeChange?.(e.target.checked)}
+            className="w-4 h-4 rounded border-white/10 bg-surface-container-high text-primary focus:ring-primary/50 focus:ring-1 outline-none cursor-pointer"
+          />
+          <label htmlFor="rememberMe" className="text-label-sm text-on-surface-variant cursor-pointer select-none">
+            Lembrar meu e-mail
+          </label>
+        </div>
+      )}
 
       <div className="pt-sm flex flex-col gap-base">
         <button

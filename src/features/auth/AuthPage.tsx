@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AuthBackground } from "./components/AuthBackground";
@@ -18,6 +18,15 @@ export function AuthPage() {
   const [password, setPassword] = useState("");
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("@contaup:remember_me_email");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,6 +59,13 @@ export function AuthPage() {
             refresh_token: response.refresh_token,
           });
           setSessionCookie();
+
+          if (rememberMe) {
+            localStorage.setItem("@contaup:remember_me_email", email);
+          } else {
+            localStorage.removeItem("@contaup:remember_me_email");
+          }
+
           router.push("/dashboard" as never);
         } else {
           throw new Error("Token não recebido na resposta do servidor.");
@@ -111,6 +127,8 @@ export function AuthPage() {
             onNameChange={setName}
             onEmailChange={setEmail}
             onPasswordChange={setPassword}
+            rememberMe={rememberMe}
+            onRememberMeChange={setRememberMe}
             onTogglePassword={() => setShowPassword((v) => !v)}
             onToggleMode={() => setIsLoginMode((v) => !v)}
             onForgotPassword={() => router.push("/recuperar-senha" as never)}
