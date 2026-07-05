@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { ShieldCheck, Smartphone, LogOut } from "lucide-react";
 import { Toggle, SettingsCard, SectionHeader, SaveButton, useSave } from "./settingsUi";
+import { apiClient } from "@/shared/api";
+import { toast } from "sonner";
 
 const INITIAL_SESSIONS = [
   { id: 1, device: "Chrome — Windows 11", location: "São Paulo, BR", time: "Agora", current: true },
@@ -12,7 +14,8 @@ const INITIAL_SESSIONS = [
 
 export function SecuritySettings() {
   const [twoFactor, setTwoFactor] = useState(false);
-  const [sessions, setSessions] = useState(INITIAL_SESSIONS);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const saved = localStorage.getItem("@contaup:security_prefs");
@@ -22,6 +25,19 @@ export function SecuritySettings() {
         if (parsed.twoFactor !== undefined) setTwoFactor(parsed.twoFactor);
       } catch (e) {}
     }
+
+    async function fetchSessoes() {
+      try {
+        const data = await apiClient.get<any[]>("/auth/sessoes");
+        setHistory(data);
+      } catch (err) {
+        console.error("Erro ao carregar sessões", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void fetchSessoes();
   }, []);
 
   const handleSave = () => {
@@ -30,15 +46,16 @@ export function SecuritySettings() {
 
   const { state, save } = useSave(handleSave);
 
-  const handleEncerrarSessao = (id: number) => {
-    setSessions((prev) => prev.filter((s) => s.id !== id));
+  const handleDesconectarTodas = async () => {
+    try {
+      if (!confirm("Tem certeza que deseja desconectar de todos os dispositivos? Você precisará fazer login novamente.")) return;
+      await apiClient.post("/auth/sessoes/desconectar-todas");
+      toast.success("Todos os dispositivos foram desconectados com sucesso!");
+      window.location.href = "/login";
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao desconectar dispositivos");
+    }
   };
-
-  const loginHistory = [
-    { date: "28/05 — 09:14", device: "Chrome · Windows", status: "ok" },
-    { date: "27/05 — 18:02", device: "iPhone · Safari", status: "ok" },
-    { date: "26/05 — 11:47", device: "Firefox · macOS", status: "fail" },
-  ];
 
   return (
     <SettingsCard>
@@ -72,74 +89,49 @@ export function SecuritySettings() {
         <Toggle checked={twoFactor} onChange={() => setTwoFactor(!twoFactor)} />
       </div>
 
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-        Sessões Ativas
-      </p>
-      <div className="flex flex-col gap-2 mb-6">
-        {sessions.map((s) => (
-          <div
-            key={s.id}
-            className="flex items-center justify-between px-4 py-3 rounded-2xl"
-            style={{ background: "#242424" }}
-          >
-            <div className="flex items-center gap-3">
-              <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ background: s.current ? "#10b981" : "#4b5563" }}
-              />
+      <div className="flex flex-col gap-2">
+        {loading ? (
+          <p className="text-sm text-gray-500 py-4">Carregando histórico...</p>
+        ) : history.length === 0 ? (
+          <p className="text-sm text-gray-500 py-4">Nenhum login registrado.</p>
+        ) : (
+          history.map((l) => (
+            <div
+              key={l.id}
+              className="flex items-center justify-between px-4 py-3 rounded-2xl"
+              style={{ background: "#242424" }}
+            >
               <div>
-                <p className="text-xs font-semibold text-white">{s.device}</p>
+                <p className="text-xs font-semibold text-white">
+                  {new Date(l.time).toLocaleString("pt-BR")}
+                </p>
                 <p className="text-[10px] text-gray-500">
-                  {s.location} · {s.time}
+                  {l.device} · {l.location}
                 </p>
               </div>
-            </div>
-            {s.current ? (
               <span
                 className="text-[10px] font-semibold px-2.5 py-1 rounded-xl"
-                style={{ background: "#10b98118", color: "#10b981" }}
+                style={{
+                  background: l.status === "ok" ? "#10b98118" : "#f4375418",
+                  color: l.status === "ok" ? "#10b981" : "#f43754",
+                }}
               >
-                Este dispositivo
+                {l.status === "ok" ? "✓ Sucesso" : "✗ Falha"}
               </span>
-            ) : (
-              <button
-                onClick={() => handleEncerrarSessao(s.id)}
-                className="text-[10px] font-semibold px-3 py-1 rounded-xl hover:opacity-70 transition-opacity cursor-pointer"
-                style={{ background: "#f4375420", color: "#f43754" }}
-              >
-                <LogOut size={11} className="inline mr-1" />
-                Encerrar
-              </button>
-            )}
-          </div>
-        ))}
+            </div>
+          ))
+        )}
       </div>
 
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-        Histórico de Login
-      </p>
-      <div className="flex flex-col gap-2">
-        {loginHistory.map((l, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-between px-4 py-3 rounded-2xl"
-            style={{ background: "#242424" }}
-          >
-            <div>
-              <p className="text-xs font-semibold text-white">{l.date}</p>
-              <p className="text-[10px] text-gray-500">{l.device}</p>
-            </div>
-            <span
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-xl"
-              style={{
-                background: l.status === "ok" ? "#10b98118" : "#f4375418",
-                color: l.status === "ok" ? "#10b981" : "#f43754",
-              }}
-            >
-              {l.status === "ok" ? "✓ Sucesso" : "✗ Falha"}
-            </span>
-          </div>
-        ))}
+      <div className="mt-6">
+        <button
+          onClick={handleDesconectarTodas}
+          className="w-full sm:w-auto text-xs font-semibold px-4 py-2.5 rounded-2xl hover:opacity-70 transition-opacity cursor-pointer flex items-center justify-center gap-2"
+          style={{ background: "#f4375420", color: "#f43754" }}
+        >
+          <LogOut size={13} />
+          Desconectar de Todos os Dispositivos
+        </button>
       </div>
       
       <SaveButton state={state} onClick={save} />
