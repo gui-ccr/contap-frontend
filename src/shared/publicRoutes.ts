@@ -1,7 +1,6 @@
 export const PUBLIC_ROUTES = [
   "/",
   "/login",
-  "/cadastro-empresa",
   "/recuperar-senha",
   "/lgpd",
   "/landing",

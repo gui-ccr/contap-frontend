@@ -22,22 +22,29 @@ const axiosInstance = axios.create({
   }
 });
 
-axiosInstance.interceptors.request.use(async (config) => {
-  if (typeof window !== "undefined") {
-    try {
-      // O SDK do Supabase é a única fonte de verdade da sessão:
-      // getSession() já renova o access token expirado usando o refresh token
-      // persistido. Nunca chamar setSession com tokens guardados manualmente —
-      // refresh tokens são de uso único e reusar um antigo derruba a sessão.
-      const supabase = getSupabaseClient();
-      const { data: { session } } = await supabase.auth.getSession();
+const AUTH_EXEMPT_ENDPOINTS = ["/auth/login", "/auth/registrar-dono"];
 
-      if (session?.access_token) {
-        config.headers.Authorization = `Bearer ${session.access_token}`;
-      }
-    } catch (err) {
-      console.warn("Erro ao obter sessao supabase:", err);
+axiosInstance.interceptors.request.use(async (config) => {
+  const isExempt = AUTH_EXEMPT_ENDPOINTS.some((endpoint) => config.url?.startsWith(endpoint));
+  if (isExempt) {
+    return config;
+  }
+
+  if (typeof window !== "undefined") {
+    // O SDK do Supabase é a única fonte de verdade da sessão:
+    // getSession() já renova o access token expirado usando o refresh token
+    // persistido. Nunca chamar setSession com tokens guardados manualmente —
+    // refresh tokens são de uso único e reusar um antigo derruba a sessão.
+    const supabase = getSupabaseClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      // Fail-closed: sem sessão válida, não deixa a requisição seguir sem
+      // Authorization (isso só produzia um 401 confuso vindo do backend).
+      return Promise.reject(new Error("Sessão expirada. Faça login novamente."));
     }
+
+    config.headers.Authorization = `Bearer ${session.access_token}`;
   }
   return config;
 });
