@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { SelectField, Toggle, SettingsCard, SectionHeader, SaveButton, useSave } from "./settingsUi";
 
@@ -13,7 +13,23 @@ export function SystemPreferences() {
     alerta: true,
     marketing: false,
   });
-  const { state, save } = useSave();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("@contaup:system_prefs");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.language) setLanguage(parsed.language);
+        if (parsed.notifs) setNotifs(parsed.notifs);
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem("@contaup:system_prefs", JSON.stringify({ language, notifs }));
+  };
+
+  const { state, save } = useSave(handleSave);
 
   const toggleNotif = (key: keyof typeof notifs) =>
     setNotifs((n) => ({ ...n, [key]: !n[key] }));

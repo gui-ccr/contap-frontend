@@ -1,35 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldCheck, Smartphone, LogOut } from "lucide-react";
-import { Toggle, SettingsCard, SectionHeader } from "./settingsUi";
+import { Toggle, SettingsCard, SectionHeader, SaveButton, useSave } from "./settingsUi";
+
+const INITIAL_SESSIONS = [
+  { id: 1, device: "Chrome — Windows 11", location: "São Paulo, BR", time: "Agora", current: true },
+  { id: 2, device: "Safari — iPhone 15", location: "São Paulo, BR", time: "2h atrás", current: false },
+  { id: 3, device: "Firefox — macOS", location: "Campinas, BR", time: "Ontem, 14:30", current: false },
+];
 
 export function SecuritySettings() {
   const [twoFactor, setTwoFactor] = useState(false);
+  const [sessions, setSessions] = useState(INITIAL_SESSIONS);
 
-  const sessions = [
-    {
-      id: 1,
-      device: "Chrome — Windows 11",
-      location: "São Paulo, BR",
-      time: "Agora",
-      current: true,
-    },
-    {
-      id: 2,
-      device: "Safari — iPhone 15",
-      location: "São Paulo, BR",
-      time: "2h atrás",
-      current: false,
-    },
-    {
-      id: 3,
-      device: "Firefox — macOS",
-      location: "Campinas, BR",
-      time: "Ontem, 14:30",
-      current: false,
-    },
-  ];
+  useEffect(() => {
+    const saved = localStorage.getItem("@contaup:security_prefs");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.twoFactor !== undefined) setTwoFactor(parsed.twoFactor);
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem("@contaup:security_prefs", JSON.stringify({ twoFactor }));
+  };
+
+  const { state, save } = useSave(handleSave);
+
+  const handleEncerrarSessao = (id: number) => {
+    setSessions((prev) => prev.filter((s) => s.id !== id));
+  };
 
   const loginHistory = [
     { date: "28/05 — 09:14", device: "Chrome · Windows", status: "ok" },
@@ -100,6 +103,7 @@ export function SecuritySettings() {
               </span>
             ) : (
               <button
+                onClick={() => handleEncerrarSessao(s.id)}
                 className="text-[10px] font-semibold px-3 py-1 rounded-xl hover:opacity-70 transition-opacity cursor-pointer"
                 style={{ background: "#f4375420", color: "#f43754" }}
               >
@@ -137,6 +141,8 @@ export function SecuritySettings() {
           </div>
         ))}
       </div>
+      
+      <SaveButton state={state} onClick={save} />
     </SettingsCard>
   );
 }

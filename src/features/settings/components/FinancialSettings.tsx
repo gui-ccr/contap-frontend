@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Wallet, Key, Plus, Trash2, Copy } from "lucide-react";
 import { SelectField, SettingsCard, SectionHeader, SaveButton, useSave } from "./settingsUi";
 
@@ -29,7 +29,24 @@ export function FinancialSettings() {
     "Impostos",
   ]);
   const [newCat, setNewCat] = useState("");
-  const { state, save } = useSave();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("@contaup:financial_prefs");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.closing) setClosing(parsed.closing);
+        if (parsed.categories) setCategories(parsed.categories);
+        if (parsed.apiKeys) setApiKeys(parsed.apiKeys);
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem("@contaup:financial_prefs", JSON.stringify({ closing, categories, apiKeys }));
+  };
+
+  const { state, save } = useSave(handleSave);
 
   const addCategory = () => {
     if (newCat.trim()) {
@@ -135,6 +152,15 @@ export function FinancialSettings() {
         ))}
       </div>
       <button
+        onClick={() => {
+          const newKey = {
+            id: Date.now(),
+            name: "Nova Chave API",
+            key: `sk_live_${Math.random().toString(36).substr(2, 9)}••••••••••${Math.random().toString(36).substr(2, 4)}`,
+            created: new Date().toLocaleDateString('pt-BR')
+          };
+          setApiKeys([...apiKeys, newKey]);
+        }}
         className="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-2xl hover:opacity-70 transition-opacity cursor-pointer"
         style={{ background: "#10b98118", color: "#10b981" }}
       >

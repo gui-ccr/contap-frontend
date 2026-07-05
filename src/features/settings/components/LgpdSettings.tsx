@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import type { Route } from "next";
+import { toast } from "sonner";
+
 import {
   User, Building2, SlidersHorizontal, ShieldCheck, Wallet,
   Check, FileText, ArrowRight, Info, Download, UserX,
@@ -82,14 +82,16 @@ export function LgpdSettings() {
             </p>
           </div>
         </div>
-        <Link
-          href={"/solicitar-exclusao-dados" as Route}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-opacity hover:opacity-80"
+        <button
+          onClick={() => {
+            toast.success("Solicitação de exclusão de dados enviada com sucesso. Nossa equipe entrará em contato em até 48 horas.");
+          }}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-opacity hover:opacity-80 cursor-pointer"
           style={{ background: "#f4375420", color: "#f43754" }}
         >
           Solicitar exclusão
           <ArrowRight size={13} />
-        </Link>
+        </button>
       </div>
     </SettingsCard>
   );

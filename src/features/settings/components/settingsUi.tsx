@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, ChevronDown, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export type SaveState = "idle" | "loading" | "saved";
 
@@ -195,14 +196,16 @@ export function SaveButton({
 // ─────────────────────────────────────────────────────────────
 // HOOK: simula save com feedback visual
 // ─────────────────────────────────────────────────────────────
-export function useSave() {
+export function useSave(onSave?: () => void) {
   const [state, setState] = useState<SaveState>("idle");
   const save = () => {
     setState("loading");
     setTimeout(() => {
+      onSave?.();
       setState("saved");
+      toast.success("Configurações salvas com sucesso!");
       setTimeout(() => setState("idle"), 2000);
-    }, 1400);
+    }, 600);
   };
   return { state, save };
 }
