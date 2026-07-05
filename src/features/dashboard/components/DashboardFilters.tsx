@@ -1,5 +1,7 @@
 import { Calendar } from "lucide-react";
-
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 interface DashboardFiltersProps {
   startDate: string;
   endDate: string;
@@ -53,18 +55,14 @@ export function DashboardFilters({ startDate, endDate, onChangeRange }: Dashboar
 
       <div className="flex items-center gap-2 w-full md:w-auto">
         <Calendar size={14} className="text-gray-500" />
-        <input 
-          type="date" 
-          value={startDate}
-          onChange={(e) => onChangeRange(e.target.value, endDate)}
-          className="bg-transparent border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[#10b981]"
+        <DatePicker
+          value={startDate ? parseDate(startDate) : null}
+          onChange={(v: DateValue | null) => onChangeRange(v ? v.toString() : "", endDate)}
         />
         <span className="text-gray-500 text-xs">até</span>
-        <input 
-          type="date" 
-          value={endDate}
-          onChange={(e) => onChangeRange(startDate, e.target.value)}
-          className="bg-transparent border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[#10b981]"
+        <DatePicker
+          value={endDate ? parseDate(endDate) : null}
+          onChange={(v: DateValue | null) => onChangeRange(startDate, v ? v.toString() : "")}
         />
       </div>
     </div>

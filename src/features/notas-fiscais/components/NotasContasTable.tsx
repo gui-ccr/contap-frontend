@@ -9,6 +9,7 @@ export interface ContaComNotas {
   titulo: string;
   dataAlvo: string;
   valor: number;
+  valor_pago?: number | null;
   liquidado: boolean;
   statusLiquidado: string;
   statusPendente: string;
@@ -93,10 +94,21 @@ export function NotasContasTable({ titulo, contas, notas, loading, totalSemNF, o
                 <tr key={c.id} className="border-t border-outline-variant/20">
                   <td className="py-4 text-on-surface">{c.titulo}</td>
                   <td className="py-4 text-on-surface-variant/80">{formatDate(c.dataAlvo)}</td>
-                  <td className="py-4 text-right text-on-surface font-medium tabular-nums">{formatCurrency(c.valor)}</td>
+                  <td className="py-4 text-right text-on-surface font-medium tabular-nums">
+                    {c.liquidado && c.valor_pago && c.valor_pago !== c.valor ? (
+                      <div className="flex flex-col items-end">
+                        <span className="text-on-surface-variant/50 line-through text-[0.7rem] leading-none mb-0.5">{formatCurrency(c.valor)}</span>
+                        <span>{formatCurrency(c.valor_pago)}</span>
+                      </div>
+                    ) : (
+                      formatCurrency(c.valor)
+                    )}
+                  </td>
                   <td className="py-4 text-center">
                     {c.liquidado ? (
                       <span className="px-2 py-1 bg-primary/10 text-primary rounded text-label-sm font-medium">{c.statusLiquidado}</span>
+                    ) : c.statusPendente === "Vencido" ? (
+                      <span className="px-2 py-1 bg-error/10 text-error rounded text-label-sm font-medium">{c.statusPendente}</span>
                     ) : (
                       <span className="px-2 py-1 bg-amber-500/10 text-amber-400 rounded text-label-sm font-medium">{c.statusPendente}</span>
                     )}

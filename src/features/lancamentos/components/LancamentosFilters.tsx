@@ -1,4 +1,7 @@
 import { Filter, X } from "lucide-react";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 interface Conta {
   value: string;
@@ -40,12 +43,9 @@ export function LancamentosFilters({
           <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
             Data Inicial
           </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => onStartDate(e.target.value)}
-            className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
-            style={inputStyle}
+          <DatePicker
+            value={startDate ? parseDate(startDate) : null}
+            onChange={(v: DateValue | null) => onStartDate(v ? v.toString() : "")}
           />
         </div>
 
@@ -53,12 +53,9 @@ export function LancamentosFilters({
           <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
             Data Final
           </label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => onEndDate(e.target.value)}
-            className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
-            style={inputStyle}
+          <DatePicker
+            value={endDate ? parseDate(endDate) : null}
+            onChange={(v: DateValue | null) => onEndDate(v ? v.toString() : "")}
           />
         </div>
 

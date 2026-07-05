@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api";
 
-export type TipoConta = "ATIVO" | "PASSIVO" | "PL" | "RECEITA" | "DESPESA";
+export type TipoConta = "ATIVO" | "PASSIVO" | "PL" | "RECEITA" | "DESPESA" | "CUSTO";
 
 export interface ContaContabil {
   id: string;

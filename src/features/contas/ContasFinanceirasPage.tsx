@@ -28,6 +28,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
   const [dataInicio, setDataInicio] = useState(primeiroDiaDoMes);
   const [dataFim, setDataFim] = useState(ultimoDiaDoMes);
   const [tipoFiltro, setTipoFiltro] = useState("");
+  const [valorMinimo, setValorMinimo] = useState("");
+  const [valorMaximo, setValorMaximo] = useState("");
 
   const carregar = useCallback(async () => {
     try {
@@ -77,6 +79,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
     if (tipoFiltro && c.tipo !== tipoFiltro) return false;
     if (dataInicio && c.dataAlvo < dataInicio) return false;
     if (dataFim && c.dataAlvo > dataFim) return false;
+    if (valorMinimo && c.valor < Number(valorMinimo)) return false;
+    if (valorMaximo && c.valor > Number(valorMaximo)) return false;
     return true;
   });
 
@@ -119,6 +123,10 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
             onDataFim={setDataFim}
             tipoFiltro={tipoFiltro}
             onTipoFiltro={setTipoFiltro}
+            valorMinimo={valorMinimo}
+            onValorMinimo={setValorMinimo}
+            valorMaximo={valorMaximo}
+            onValorMaximo={setValorMaximo}
             planoContas={planoContas}
             statusLiquidado={config.statusLiquidado}
           />

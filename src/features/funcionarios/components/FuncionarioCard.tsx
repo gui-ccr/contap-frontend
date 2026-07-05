@@ -1,5 +1,6 @@
 import { Pencil, Trash2, Mail, CreditCard, Calendar, User, CircleDot } from "lucide-react";
 import type { Funcionario } from "../types/types";
+import { formatCpfCnpj } from "@/utils/format";
 
 interface FuncionarioCardProps {
   f: Funcionario;
@@ -68,7 +69,7 @@ export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
         </div>
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><CreditCard size={11}/> Documento</p>
-          <p className="text-xs font-medium text-gray-300 truncate">{f.cpf_cnpj || "—"}</p>
+          <p className="text-xs font-medium text-gray-300 truncate">{f.cpf_cnpj ? formatCpfCnpj(f.cpf_cnpj) : "—"}</p>
         </div>
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><User size={11}/> Salário</p>
@@ -77,9 +78,9 @@ export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
           </p>
         </div>
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><Calendar size={11}/> Pagamento</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1 flex items-center gap-1.5"><Calendar size={11}/> Admissão</p>
           <p className="text-sm font-bold text-gray-200">
-            Dia {f.dia_pagamento}
+            {f.data_admissao ? new Date(f.data_admissao + "T00:00:00").toLocaleDateString('pt-BR') : "—"}
           </p>
         </div>
       </div>

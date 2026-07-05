@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import type { Funcionario } from "../types/types";
+import { formatCpfCnpj } from "@/utils/format";
 
 
 
@@ -46,13 +47,13 @@ export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
         </span>
       </td>
       <td className="hidden md:table-cell px-4 py-3 text-xs font-mono" style={{ color: "#6b7280" }}>
-        {f.cpf_cnpj}
+        {f.cpf_cnpj ? formatCpfCnpj(f.cpf_cnpj) : "—"}
       </td>
       <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(f.salario)}
       </td>
       <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
-        Dia {f.dia_pagamento}
+        {f.data_admissao ? new Date(f.data_admissao + "T00:00:00").toLocaleDateString('pt-BR') : "—"}
       </td>
       <td className="px-4 py-3">
         <div className="flex gap-1 justify-end">

@@ -1,6 +1,9 @@
 import { X } from "lucide-react";
 import { Field, Input, Select, Button } from "@/ui/forms";
 import type { ContaContabil } from "@/features/plano-contas/planoContasService";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 export type FiltroStatus = "todos" | "pendente" | "liquidado";
 
@@ -13,6 +16,10 @@ interface ContasFiltersProps {
   onDataFim: (v: string) => void;
   tipoFiltro: string;
   onTipoFiltro: (v: string) => void;
+  valorMinimo: string;
+  onValorMinimo: (v: string) => void;
+  valorMaximo: string;
+  onValorMaximo: (v: string) => void;
   planoContas: ContaContabil[];
   statusLiquidado: string;
 }
@@ -22,6 +29,8 @@ export function ContasFilters({
   dataInicio, onDataInicio,
   dataFim, onDataFim,
   tipoFiltro, onTipoFiltro,
+  valorMinimo, onValorMinimo,
+  valorMaximo, onValorMaximo,
   planoContas, statusLiquidado,
 }: ContasFiltersProps) {
   const abas: { key: FiltroStatus; label: string }[] = [
@@ -50,10 +59,16 @@ export function ContasFilters({
 
       <div className="flex-1 flex flex-wrap gap-4">
         <Field label="Data inicial" className="flex-1 min-w-[120px]">
-          <Input type="date" value={dataInicio} onChange={(e) => onDataInicio(e.target.value)} />
+          <DatePicker
+            value={dataInicio ? parseDate(dataInicio) : null}
+            onChange={(v: DateValue | null) => onDataInicio(v ? v.toString() : "")}
+          />
         </Field>
         <Field label="Data final" className="flex-1 min-w-[120px]">
-          <Input type="date" value={dataFim} onChange={(e) => onDataFim(e.target.value)} />
+          <DatePicker
+            value={dataFim ? parseDate(dataFim) : null}
+            onChange={(v: DateValue | null) => onDataFim(v ? v.toString() : "")}
+          />
         </Field>
         <Field label="Tipo de conta" className="flex-1 min-w-[140px]">
           <Select value={tipoFiltro} onChange={(e) => onTipoFiltro(e.target.value)}>
@@ -63,12 +78,30 @@ export function ContasFilters({
             ))}
           </Select>
         </Field>
+        <Field label="Valor Min." className="flex-1 min-w-[90px]">
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="0,00"
+            value={valorMinimo}
+            onChange={(e) => onValorMinimo(e.target.value)}
+          />
+        </Field>
+        <Field label="Valor Max." className="flex-1 min-w-[90px]">
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="0,00"
+            value={valorMaximo}
+            onChange={(e) => onValorMaximo(e.target.value)}
+          />
+        </Field>
       </div>
 
-      {(dataInicio || dataFim || tipoFiltro) && (
+      {(dataInicio || dataFim || tipoFiltro || valorMinimo || valorMaximo) && (
         <Button
           variant="ghost"
-          onClick={() => { onDataInicio(""); onDataFim(""); onTipoFiltro(""); }}
+          onClick={() => { onDataInicio(""); onDataFim(""); onTipoFiltro(""); onValorMinimo(""); onValorMaximo(""); }}
         >
           <X size={14} /> Limpar
         </Button>

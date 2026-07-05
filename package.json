@@ -9,8 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@internationalized/date": "^3.12.2",
+    "@react-stately/utils": "^3.12.1",
     "@supabase/supabase-js": "^2.105.4",
     "@tanstack/react-query": "^5.101.2",
+    "@untitledui/icons": "^0.0.22",
     "axios": "^1.18.1",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
@@ -18,6 +21,8 @@
     "lucide-react": "^1.17.0",
     "next": "16.2.6",
     "react": "19.2.4",
+    "react-aria": "^3.50.0",
+    "react-aria-components": "^1.19.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4",
     "sonner": "^2.0.7",

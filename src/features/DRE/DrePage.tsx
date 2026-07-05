@@ -161,12 +161,17 @@ export function DrePage() {
                 </h4>
                 
                 <div className="flex flex-col gap-xs">
-                  {reportData.despesas.length === 0 ? (
-                    <p className="text-sm text-on-surface-variant italic">Nenhuma despesa lançada no período.</p>
+                  {reportData.custos.length === 0 && reportData.despesas.length === 0 ? (
+                    <p className="text-sm text-on-surface-variant italic">Nenhum custo ou despesa lançado no período.</p>
                   ) : (
-                    reportData.despesas.map((item: FinancialEntry) => (
-                      <FinancialRow key={item.codigo} label={item.nome} value={item.saldo} type="negative" />
-                    ))
+                    <>
+                      {reportData.custos.map((item: FinancialEntry) => (
+                        <FinancialRow key={item.codigo} label={item.nome} value={item.saldo} type="negative" />
+                      ))}
+                      {reportData.despesas.map((item: FinancialEntry) => (
+                        <FinancialRow key={item.codigo} label={item.nome} value={item.saldo} type="negative" />
+                      ))}
+                    </>
                   )}
                 </div>
               </div>
@@ -174,7 +179,7 @@ export function DrePage() {
               <div className="mt-md pt-sm border-t border-white/5 flex justify-between items-center">
                 <span className="text-label-sm text-secondary font-medium">Total de Deduções e Despesas</span>
                 <span className="font-mono text-body-md font-bold text-on-surface">
-                  - {formatCurrency(reportData.totalDespesas)}
+                  - {formatCurrency(reportData.totalDespesas + reportData.totalCustos)}
                 </span>
               </div>
             </div>

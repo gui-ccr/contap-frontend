@@ -7,6 +7,9 @@ import { lancamentosService } from '../lancamentosService';
 import { getEmpresaIdFromToken } from '@/shared/api';
 import { Field, Input, Select, Button } from '@/ui/forms';
 import { formatCurrencyInput, parseCurrency } from '@/utils/format';
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 interface NovoLancamentoFormProps {
   onLancamentoCriado?: () => void;
@@ -109,12 +112,9 @@ export default function NovoLancamentoForm({ onLancamentoCriado }: NovoLancament
           </div>
 
           <Field label="Data do lançamento" required>
-            <Input
-              type="date"
-              name="data"
-              value={form.data}
-              onChange={handleInputChange}
-              required
+            <DatePicker
+              value={form.data ? parseDate(form.data) : null}
+              onChange={(v: DateValue | null) => setForm(prev => ({ ...prev, data: v ? v.toString() : "" }))}
             />
           </Field>
 

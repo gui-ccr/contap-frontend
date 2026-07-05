@@ -6,6 +6,9 @@ import { Field, Input, Select, Button } from "@/ui/forms";
 import { formatCurrencyInput, parseCurrency } from "@/utils/format";
 import type { ContaFinanceira, ContaFinanceiraPayload } from "../types";
 import type { ContaContabil } from "@/features/plano-contas/planoContasService";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 interface ContaFormModalProps {
   open: boolean;
@@ -91,11 +94,9 @@ export function ContaFormModal({
         </div>
 
         <Field label={campoDataLabel} required>
-          <Input
-            type="date"
-            value={form.dataAlvo}
-            onChange={(e) => setForm((p) => ({ ...p, dataAlvo: e.target.value }))}
-            required
+          <DatePicker
+            value={form.dataAlvo ? parseDate(form.dataAlvo) : null}
+            onChange={(v: DateValue | null) => setForm((p) => ({ ...p, dataAlvo: v ? v.toString() : "" }))}
           />
         </Field>
 

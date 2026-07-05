@@ -7,14 +7,16 @@ import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
 import { Field, Input, Select, Button, FormAlert } from "@/ui/forms";
 import { AvatarPicker } from "@/ui/forms/AvatarPicker";
 import { formatCpfCnpj, formatCurrencyInput, parseCurrency } from "@/utils/format";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 export interface NovoFuncionarioData {
   nome: string;
   email?: string;
   cpf_cnpj: string;
   salario: number;
-  dia_pagamento: number;
-  data_base_pagamento?: string;
+  data_admissao: string;
   cargo: string;
   foto_url?: string;
   fotoFile?: File | null;
@@ -32,8 +34,7 @@ const FORM_EMPTY: NovoFuncionarioData = {
   email: "",
   cpf_cnpj: "",
   salario: 0,
-  dia_pagamento: 1,
-  data_base_pagamento: "",
+  data_admissao: "",
   cargo: "",
 };
 
@@ -132,15 +133,12 @@ export function NovoFuncionarioModal({ onClose, onSave, initialData }: NovoFunci
               placeholder="R$ 0,00"
             />
           </Field>
-          <Field label="Dia do pagamento" required hint="Gera a conta a pagar do salário todo mês nesse dia.">
-            <Input
-              required
-              type="date"
-              value={form.data_base_pagamento || ""}
-              onChange={(e) => {
-                const val = e.target.value;
-                const dia = val ? parseInt(val.split("-")[2], 10) : 1;
-                setForm((f) => ({ ...f, data_base_pagamento: val, dia_pagamento: dia }));
+          <Field label="Data de Admissão" required hint="O primeiro salário será pago no quinto dia útil do mês seguinte, proporcional aos dias trabalhados.">
+            <DatePicker
+              value={form.data_admissao ? parseDate(form.data_admissao) : null}
+              onChange={(v: DateValue | null) => {
+                const val = v ? v.toString() : "";
+                setForm((f) => ({ ...f, data_admissao: val }));
               }}
             />
           </Field>

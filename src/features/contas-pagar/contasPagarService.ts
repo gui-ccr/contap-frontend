@@ -9,6 +9,7 @@ export interface ContaPagarBackend {
   data_vencimento: string;
   pago: boolean;
   data_pagamento: string | null;
+  valor_pago?: number | null;
 }
 
 export interface CriarContaPagarPayload {
@@ -38,7 +39,7 @@ export const contasPagarService = {
     return await apiClient.put<ContaPagarBackend>(`/contas-pagar/${id}`, payload);
   },
 
-  async baixarConta(id: string): Promise<void> {
-    await apiClient.patch(`/contas-pagar/${id}/pagar`);
+  async baixarConta(id: string, valor_pago?: number): Promise<void> {
+    await apiClient.patch(`/contas-pagar/${id}/pagar`, { valor_pago });
   },
 };

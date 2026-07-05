@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { ConfirmModal } from "@/ui/ConfirmModal";
-import { Field, Input, Button } from "@/ui/forms";
+import { Field, Input, Button, Select } from "@/ui/forms";
 import { contasReceberService, ContaReceberBackend } from "@/features/contas-receber/contasReceberService";
 import { notasFiscaisService, NotaFiscal } from "./notasFiscaisService";
 import { apiClient, getEmpresaIdFromToken } from "@/shared/api";
@@ -12,6 +12,9 @@ import { primeiroDiaDoMes, ultimoDiaDoMes } from "@/features/contas/dateUtils";
 import { UsuariosPagination } from "@/features/usuarios/components/UsuariosPagination";
 import { AnexarNotaModal, type AnexarNotaFormData } from "./components/AnexarNotaModal";
 import { NotasContasTable, type ContaComNotas } from "./components/NotasContasTable";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 interface ContaPagar {
   id: string;
@@ -36,6 +39,9 @@ interface ModalState {
   tipo: Tab;
   referencia_id: string;
   descricao: string;
+  liquidado: boolean;
+  valorOriginal: number;
+  statusPendente: string;
 }
 
 export default function NotasFiscaisPage() {
@@ -45,13 +51,41 @@ export default function NotasFiscaisPage() {
   const [notas, setNotas] = useState<NotaFiscal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [modal, setModal] = useState<ModalState>({ open: false, tipo: "conta_receber", referencia_id: "", descricao: "" });
+  const [modal, setModal] = useState<ModalState>({ open: false, tipo: "conta_receber", referencia_id: "", descricao: "", liquidado: false, valorOriginal: 0, statusPendente: "Pendente" });
   const [confirmDeleteNfId, setConfirmDeleteNfId] = useState<string | null>(null);
 
   const [dataInicio, setDataInicio] = useState(primeiroDiaDoMes);
   const [dataFim, setDataFim] = useState(ultimoDiaDoMes);
+  const [filtroStatus, setFiltroStatus] = useState("todas");
+  const [valorMinimo, setValorMinimo] = useState("");
+  const [valorMaximo, setValorMaximo] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
+
+  const aplicarFiltro = (tipo: string) => {
+    const hoje = new Date();
+    if (tipo === "este_mes") {
+      setDataInicio(new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split("T")[0]);
+      setDataFim(new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).toISOString().split("T")[0]);
+    } else if (tipo === "mes_passado") {
+      setDataInicio(new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1).toISOString().split("T")[0]);
+      setDataFim(new Date(hoje.getFullYear(), hoje.getMonth(), 0).toISOString().split("T")[0]);
+    } else if (tipo === "ultimos_30") {
+      const start = new Date();
+      start.setDate(start.getDate() - 30);
+      setDataInicio(start.toISOString().split("T")[0]);
+      setDataFim(hoje.toISOString().split("T")[0]);
+    } else if (tipo === "hoje") {
+      setDataInicio(hoje.toISOString().split("T")[0]);
+      setDataFim(hoje.toISOString().split("T")[0]);
+    } else if (tipo === "limpar") {
+      setDataInicio("");
+      setDataFim("");
+      setValorMinimo("");
+      setValorMaximo("");
+    }
+    setPage(1);
+  };
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -89,7 +123,7 @@ export default function NotasFiscaisPage() {
 
       if (darBaixaId && tipoBaixa && descBaixa) {
         setTab(tipoBaixa);
-        setModal({ open: true, tipo: tipoBaixa, referencia_id: darBaixaId, descricao: descBaixa });
+        setModal({ open: true, tipo: tipoBaixa, referencia_id: darBaixaId, descricao: descBaixa, liquidado: false, valorOriginal: 0, statusPendente: "Vencido" });
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
@@ -108,13 +142,18 @@ export default function NotasFiscaisPage() {
         emitida_em: data.emitida_em || undefined,
       });
 
-      if (modal.tipo === "conta_pagar") {
-        const { contasPagarService } = await import("@/features/contas-pagar/contasPagarService");
-        await contasPagarService.baixarConta(modal.referencia_id);
+      if (!modal.liquidado) {
+        if (modal.tipo === "conta_pagar") {
+          const { contasPagarService } = await import("@/features/contas-pagar/contasPagarService");
+          await contasPagarService.baixarConta(modal.referencia_id, data.novo_valor);
+        } else {
+          await contasReceberService.baixarConta(modal.referencia_id, data.novo_valor);
+        }
+        toast.success("Conta baixada com sucesso e nota fiscal anexada!");
       } else {
-        await contasReceberService.baixarConta(modal.referencia_id);
+        toast.success("Nota fiscal anexada com sucesso!");
       }
-      toast.success("Conta baixada com sucesso e nota fiscal anexada!");
+
       setModal((m) => ({ ...m, open: false }));
       await carregar();
     } catch (err) {
@@ -144,9 +183,10 @@ export default function NotasFiscaisPage() {
             titulo: c.origem,
             dataAlvo: c.data_previsao,
             valor: c.valor,
+            valor_pago: c.valor_pago,
             liquidado: c.recebido,
             statusLiquidado: "Recebido",
-            statusPendente: "Pendente",
+            statusPendente: new Date(c.data_previsao) < new Date(new Date().setHours(0,0,0,0)) ? "Vencido" : "Pendente",
           }))
       : contasPagar
           .filter((c) => (!dataInicio || c.data_vencimento >= dataInicio) && (!dataFim || c.data_vencimento <= dataFim))
@@ -155,20 +195,34 @@ export default function NotasFiscaisPage() {
             titulo: c.descricao,
             dataAlvo: c.data_vencimento,
             valor: c.valor,
+            valor_pago: c.valor_pago,
             liquidado: c.pago,
             statusLiquidado: "Pago",
-            statusPendente: "Em aberto",
+            statusPendente: new Date(c.data_vencimento) < new Date(new Date().setHours(0,0,0,0)) ? "Vencido" : "Em aberto",
           }));
 
-  const totalPages = Math.max(1, Math.ceil(linhas.length / pageSize));
+  const linhasFiltradas = linhas.filter(c => {
+    if (filtroStatus === "com_nf") return notas.some(n => n.referencia_id === c.id);
+    if (filtroStatus === "sem_nf") return !notas.some(n => n.referencia_id === c.id);
+    if (filtroStatus === "vencidas") return c.statusPendente === "Vencido" && !c.liquidado;
+    if (filtroStatus === "pendentes") return !c.liquidado;
+    if (filtroStatus === "liquidadas") return c.liquidado;
+    return true;
+  }).filter(c => {
+    if (valorMinimo && c.valor < Number(valorMinimo)) return false;
+    if (valorMaximo && c.valor > Number(valorMaximo)) return false;
+    return true;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(linhasFiltradas.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paginated = linhas.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const paginated = linhasFiltradas.slice((safePage - 1) * pageSize, safePage * pageSize);
   const totalSemNF = linhas.filter((c) => !notas.some((n) => n.referencia_id === c.id)).length;
 
   const kpis = [
-    { label: "Total de notas", value: notas.length, destaque: true },
-    { label: "Contas a receber", value: contasReceber.length },
-    { label: "Contas a pagar", value: contasPagar.length },
+    { label: "Resultados da Pesquisa", value: linhasFiltradas.length, destaque: true },
+    { label: tab === "conta_receber" ? "Total Histórico (A Receber)" : "Total Histórico (A Pagar)", value: tab === "conta_receber" ? contasReceber.length : contasPagar.length },
+    { label: "Total de NF Anexadas", value: notas.length },
   ];
 
   return (
@@ -210,18 +264,62 @@ export default function NotasFiscaisPage() {
             ))}
           </div>
 
-          <div className="bg-surface-container p-4 rounded-2xl flex flex-col sm:flex-row flex-wrap gap-4 items-end border border-outline-variant/30">
-            <Field label="Data inicial" className="flex-1 min-w-[120px]">
-              <Input type="date" value={dataInicio} onChange={(e) => { setDataInicio(e.target.value); setPage(1); }} />
+          <div className="bg-surface-container p-4 rounded-2xl border border-outline-variant/30 space-y-4">
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-label-sm uppercase tracking-widest text-on-surface-variant/70 mr-2">Filtros Rápidos:</span>
+              <button onClick={() => aplicarFiltro("hoje")} className="px-3 py-1.5 rounded-lg text-body-sm bg-surface-container-high hover:bg-surface-container-highest transition cursor-pointer">Hoje</button>
+              <button onClick={() => aplicarFiltro("este_mes")} className="px-3 py-1.5 rounded-lg text-body-sm bg-surface-container-high hover:bg-surface-container-highest transition cursor-pointer">Este Mês</button>
+              <button onClick={() => aplicarFiltro("mes_passado")} className="px-3 py-1.5 rounded-lg text-body-sm bg-surface-container-high hover:bg-surface-container-highest transition cursor-pointer">Mês Passado</button>
+              <button onClick={() => aplicarFiltro("ultimos_30")} className="px-3 py-1.5 rounded-lg text-body-sm bg-surface-container-high hover:bg-surface-container-highest transition cursor-pointer">Últimos 30 Dias</button>
+              <button onClick={() => aplicarFiltro("limpar")} className="px-3 py-1.5 rounded-lg text-body-sm text-primary hover:bg-primary/10 transition cursor-pointer font-medium ml-auto">Todas</button>
+            </div>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-end pt-2 border-t border-outline-variant/30">
+              <Field label="Data inicial" className="flex-1 min-w-[120px]">
+              <DatePicker
+                value={dataInicio ? parseDate(dataInicio) : null}
+                onChange={(v: DateValue | null) => { setDataInicio(v ? v.toString() : ""); setPage(1); }}
+              />
             </Field>
             <Field label="Data final" className="flex-1 min-w-[120px]">
-              <Input type="date" value={dataFim} onChange={(e) => { setDataFim(e.target.value); setPage(1); }} />
+              <DatePicker
+                value={dataFim ? parseDate(dataFim) : null}
+                onChange={(v: DateValue | null) => { setDataFim(v ? v.toString() : ""); setPage(1); }}
+              />
             </Field>
-            {(dataInicio || dataFim) && (
-              <Button variant="ghost" onClick={() => { setDataInicio(""); setDataFim(""); setPage(1); }}>
-                <X size={14} /> Limpar
-              </Button>
-            )}
+            <Field label="Status / Tipo" className="flex-1 min-w-[150px]">
+              <Select value={filtroStatus} onChange={(e) => { setFiltroStatus(e.target.value); setPage(1); }}>
+                <option value="todas">Todas as Contas</option>
+                <option value="sem_nf">Sem Nota Fiscal</option>
+                <option value="com_nf">Com Nota Fiscal</option>
+                <option value="pendentes">Em Aberto / Pendentes</option>
+                <option value="vencidas">Vencidas</option>
+                <option value="liquidadas">Pagas / Recebidas</option>
+              </Select>
+            </Field>
+            <Field label="Valor Min." className="flex-1 min-w-[90px]">
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0,00"
+                value={valorMinimo}
+                onChange={(e) => { setValorMinimo(e.target.value); setPage(1); }}
+              />
+            </Field>
+            <Field label="Valor Max." className="flex-1 min-w-[90px]">
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0,00"
+                value={valorMaximo}
+                onChange={(e) => { setValorMaximo(e.target.value); setPage(1); }}
+              />
+            </Field>
+              {(dataInicio || dataFim || filtroStatus !== "todas" || valorMinimo || valorMaximo) && (
+                <Button variant="ghost" onClick={() => { aplicarFiltro("limpar"); setFiltroStatus("todas"); }}>
+                  <X size={14} /> Limpar Filtros
+                </Button>
+              )}
+            </div>
           </div>
 
           <NotasContasTable
@@ -230,15 +328,15 @@ export default function NotasFiscaisPage() {
             notas={notas}
             loading={loading}
             totalSemNF={totalSemNF}
-            onAnexar={(c) => setModal({ open: true, tipo: tab, referencia_id: c.id, descricao: c.titulo })}
+            onAnexar={(c) => setModal({ open: true, tipo: tab, referencia_id: c.id, descricao: c.titulo, liquidado: c.liquidado, valorOriginal: c.valor, statusPendente: c.statusPendente })}
             onDeletarNota={setConfirmDeleteNfId}
           />
 
-          {!loading && linhas.length > 0 && (
+          {!loading && linhasFiltradas.length > 0 && (
             <UsuariosPagination
               page={safePage}
               totalPages={totalPages}
-              total={linhas.length}
+              total={linhasFiltradas.length}
               pageSize={pageSize}
               onPage={setPage}
             />
@@ -249,6 +347,9 @@ export default function NotasFiscaisPage() {
       <AnexarNotaModal
         open={modal.open}
         descricao={modal.descricao}
+        liquidado={modal.liquidado}
+        valorOriginal={modal.valorOriginal}
+        statusPendente={modal.statusPendente}
         onClose={() => setModal((m) => ({ ...m, open: false }))}
         onSubmit={handleAnexar}
       />

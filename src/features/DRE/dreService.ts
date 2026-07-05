@@ -12,8 +12,10 @@ export interface DreData {
   dataFim: string;
   receitas: FinancialEntry[];
   despesas: FinancialEntry[];
+  custos: FinancialEntry[];
   totalReceitas: number;
   totalDespesas: number;
+  totalCustos: number;
   resultadoLiquido: number;
 }
 

@@ -117,14 +117,13 @@ export default function UsuariosPage() {
       const cpfNum = data.cpf_cnpj ? data.cpf_cnpj.replace(/\D/g, "") : "123456";
 
       if (data.modo === "novo") {
-        const diaPagamento = data.data_base_pagamento ? parseInt(data.data_base_pagamento.split("-")[2], 10) : 1;
         await funcionariosService.criarFuncionario({
           nome: data.nome,
           email: data.email,
           cargo: data.cargo,
           cpf_cnpj: cpfNum,
           salario: data.salario || 0,
-          dia_pagamento: diaPagamento,
+          data_admissao: data.data_admissao || new Date().toISOString().split('T')[0],
         });
       }
 

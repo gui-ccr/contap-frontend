@@ -36,7 +36,7 @@ function normalizeFuncionario(f: FuncionarioBackend): Funcionario {
     email: f.email,
     cpf_cnpj: f.cpf_cnpj ?? "",
     salario: f.salario ?? 0,
-    dia_pagamento: f.dia_pagamento ?? 1,
+    data_admissao: f.data_admissao ?? new Date().toISOString().split('T')[0],
     cargo: f.cargo,
     iniciais: initials(f.nome),
     cor: getCargoColor(f.cargo),
@@ -129,7 +129,7 @@ export default function FuncionariosPage() {
         cargo: data.cargo,
         cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
         salario: data.salario,
-        dia_pagamento: data.dia_pagamento,
+        data_admissao: data.data_admissao,
       });
       createdFuncId = created.id;
     }
@@ -147,7 +147,7 @@ export default function FuncionariosPage() {
         cargo: data.cargo,
         cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
         salario: data.salario,
-        dia_pagamento: data.dia_pagamento,
+        data_admissao: data.data_admissao,
         ...(finalUrl !== undefined && { foto_url: finalUrl }),
       });
     } else if (finalUrl !== undefined && createdFuncId) {
@@ -235,10 +235,10 @@ export default function FuncionariosPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Dia Pag.", ""].map((h) => (
+                      {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Admissão", ""].map((h) => (
                         <th
                           key={h}
-                          className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Dia Pag."].includes(h) ? " hidden md:table-cell" : ""}`}
+                          className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Admissão"].includes(h) ? " hidden md:table-cell" : ""}`}
                           style={{ color: "#6b7280", background: "#1a1a1a" }}
                         >
                           {h}
@@ -290,8 +290,7 @@ export default function FuncionariosPage() {
                   email: editingFuncionario.email,
                   cpf_cnpj: editingFuncionario.cpf_cnpj,
                   salario: editingFuncionario.salario,
-                  dia_pagamento: editingFuncionario.dia_pagamento,
-                  data_base_pagamento: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(editingFuncionario.dia_pagamento).padStart(2, '0')}`,
+                  data_admissao: editingFuncionario.data_admissao,
                   cargo: editingFuncionario.cargo,
                   foto_url: editingFuncionario.foto_url,
                 }

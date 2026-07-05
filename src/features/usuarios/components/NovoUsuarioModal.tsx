@@ -9,6 +9,9 @@ import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
 import { Field, Input, Select, Button, FormAlert } from "@/ui/forms";
 import { AvatarPicker } from "@/ui/forms/AvatarPicker";
 import { formatCpfCnpj, formatCurrencyInput, parseCurrency } from "@/utils/format";
+import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { parseDate } from "@internationalized/date";
+import type { DateValue } from "react-aria-components";
 
 export interface NovoUsuarioData {
   modo: "novo" | "existente" | "editar";
@@ -17,7 +20,7 @@ export interface NovoUsuarioData {
   cargo: string;
   cpf_cnpj?: string;
   salario?: number;
-  data_base_pagamento?: string;
+  data_admissao?: string;
   funcionario_id?: string;
   ativo?: boolean;
   foto_url?: string;
@@ -38,7 +41,7 @@ const FORM_EMPTY: NovoUsuarioData = {
   cargo: "",
   cpf_cnpj: "",
   salario: 0,
-  data_base_pagamento: "",
+  data_admissao: "",
   funcionario_id: "",
 };
 
@@ -192,7 +195,7 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-body-sm flex-1">
                   <p className="text-on-surface font-semibold sm:col-span-2">{funcionarioSelecionado.nome}</p>
                   <p className="text-on-surface-variant/70">E-mail: <span className="text-on-surface">{funcionarioSelecionado.email}</span></p>
-                  <p className="text-on-surface-variant/70">Cargo: <span className="text-on-surface">{funcionarioSelecionado.cargo || "—"}</span></p>
+                  <p className="text-on-surface-variant/70">Cargo: <span className="text-on-surface">{cargos.find(c => c.id === funcionarioSelecionado.cargo)?.nome || funcionarioSelecionado.cargo || "—"}</span></p>
                   <p className="text-on-surface-variant/70">CPF/CNPJ: <span className="text-on-surface">{formatCpfCnpj(funcionarioSelecionado.cpf_cnpj || "") || "—"}</span></p>
                   <p className="text-on-surface-variant/70">Salário: <span className="text-on-surface">{funcionarioSelecionado.salario ? formatCurrencyInput(funcionarioSelecionado.salario) : "—"}</span></p>
                 </div>
@@ -296,12 +299,10 @@ export function NovoUsuarioModal({ onClose, onSave, initialData }: NovoUsuarioMo
                       placeholder="R$ 0,00"
                     />
                   </Field>
-                  <Field label="Dia do pagamento" required>
-                    <Input
-                      required
-                      type="date"
-                      value={form.data_base_pagamento || ""}
-                      onChange={(e) => handleChange("data_base_pagamento", e.target.value)}
+                  <Field label="Data de Admissão" required>
+                    <DatePicker
+                      value={form.data_admissao ? parseDate(form.data_admissao) : null}
+                      onChange={(v: DateValue | null) => handleChange("data_admissao", v ? v.toString() : "")}
                     />
                   </Field>
                 </div>
