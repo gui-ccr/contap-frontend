@@ -24,6 +24,7 @@ interface ContaPagar {
   data_vencimento: string;
   pago: boolean;
   data_pagamento: string | null;
+  valor_pago: number | null;
 }
 
 async function listarContasPagar(): Promise<ContaPagar[]> {
