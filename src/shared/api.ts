@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { getSupabaseClient } from "@/shared/supabaseClient";
 
-let BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://contaup-api.vercel.app";
+let BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nginx-production-6d15.up.railway.app";
 
 if (typeof window !== "undefined") {
   // Se estivermos em um ambiente de produção real (domínio público)
@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
     !window.location.hostname.includes("127.0.0.1") &&
     BASE_URL.includes("localhost")
   ) {
-    BASE_URL = "https://contaup-api.vercel.app";
+    BASE_URL = "https://nginx-production-6d15.up.railway.app";
   }
 }
 

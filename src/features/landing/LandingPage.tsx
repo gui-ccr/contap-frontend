@@ -331,7 +331,7 @@ function Navbar() {
             { id: "precos", label: "Preços" },
             { id: "faq", label: "FAQ" },
             {
-              href: "https://contaup-api.vercel.app/",
+              href: process.env.NEXT_PUBLIC_API_URL || "https://nginx-production-6d15.up.railway.app",
               label: "Documentação API",
             },
           ].map((l) => {
