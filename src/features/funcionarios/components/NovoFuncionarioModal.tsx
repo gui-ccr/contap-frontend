@@ -11,6 +11,19 @@ import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 
+export interface IConfigFolha {
+  descontos: {
+    inss: { calculo_automatico: boolean; valor_fixo: number | null };
+    fgts: { calculo_automatico: boolean };
+    irrf: { dependentes: number | string };
+  };
+  beneficios: {
+    vale_transporte: { ativo: boolean; valor_desconto: number };
+    vale_refeicao: { ativo: boolean; valor_desconto: number };
+    plano_saude: { ativo: boolean; valor_desconto: number };
+  };
+}
+
 export interface NovoFuncionarioData {
   nome: string;
   email?: string;
@@ -18,6 +31,7 @@ export interface NovoFuncionarioData {
   salario: number;
   data_admissao: string;
   cargo: string;
+  config_folha?: IConfigFolha;
   foto_url?: string;
   fotoFile?: File | null;
   removerFoto?: boolean;
@@ -36,10 +50,37 @@ const FORM_EMPTY: NovoFuncionarioData = {
   salario: 0,
   data_admissao: "",
   cargo: "",
+  config_folha: {
+    descontos: {
+      inss: { calculo_automatico: true, valor_fixo: null },
+      fgts: { calculo_automatico: true },
+      irrf: { dependentes: 0 }
+    },
+    beneficios: {
+      vale_transporte: { ativo: false, valor_desconto: 0 },
+      vale_refeicao: { ativo: false, valor_desconto: 0 },
+      plano_saude: { ativo: false, valor_desconto: 0 }
+    }
+  }
 };
 
+function getSafeConfig(config?: any): IConfigFolha {
+  return {
+    descontos: {
+      inss: { calculo_automatico: config?.descontos?.inss?.calculo_automatico ?? true, valor_fixo: config?.descontos?.inss?.valor_fixo ?? null },
+      fgts: { calculo_automatico: config?.descontos?.fgts?.calculo_automatico ?? true },
+      irrf: { dependentes: config?.descontos?.irrf?.dependentes ?? 0 }
+    },
+    beneficios: {
+      vale_transporte: { ativo: config?.beneficios?.vale_transporte?.ativo ?? false, valor_desconto: config?.beneficios?.vale_transporte?.valor_desconto ?? 0 },
+      vale_refeicao: { ativo: config?.beneficios?.vale_refeicao?.ativo ?? false, valor_desconto: config?.beneficios?.vale_refeicao?.valor_desconto ?? 0 },
+      plano_saude: { ativo: config?.beneficios?.plano_saude?.ativo ?? false, valor_desconto: config?.beneficios?.plano_saude?.valor_desconto ?? 0 }
+    }
+  };
+}
+
 export function NovoFuncionarioModal({ onClose, onSave, initialData }: NovoFuncionarioModalProps) {
-  const [form, setForm] = useState<NovoFuncionarioData>(initialData || FORM_EMPTY);
+  const [form, setForm] = useState<NovoFuncionarioData>(initialData ? { ...initialData, config_folha: getSafeConfig(initialData.config_folha) } : FORM_EMPTY);
   const [cargos, setCargos] = useState<CargoBackend[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -68,7 +109,15 @@ export function NovoFuncionarioModal({ onClose, onSave, initialData }: NovoFunci
     try {
       setSaving(true);
       setError("");
-      await onSave(form);
+
+      // Ensure dependentes is a number before saving
+      const dataToSave = { ...form };
+      if (dataToSave.config_folha?.descontos?.irrf) {
+        dataToSave.config_folha.descontos.irrf.dependentes = 
+          Number(dataToSave.config_folha.descontos.irrf.dependentes) || 0;
+      }
+
+      await onSave(dataToSave);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível salvar o funcionário.");
@@ -152,6 +201,89 @@ export function NovoFuncionarioModal({ onClose, onSave, initialData }: NovoFunci
               {cargos.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
             </Select>
           </Field>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/5">
+          <h3 className="text-sm font-semibold mb-4 text-gray-200">Configurações de Folha (Impostos e Benefícios)</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Dependentes (IRRF)" hint="Quantidade de dependentes para dedução legal.">
+              <Input
+                inputMode="numeric"
+                value={form.config_folha?.descontos?.irrf?.dependentes?.toString() ?? "0"}
+                onChange={(e) => setForm(f => {
+                  const safeConfig = getSafeConfig(f.config_folha);
+                  const rawValue = e.target.value.replace(/\D/g, '');
+                  return {
+                    ...f,
+                    config_folha: {
+                      ...safeConfig,
+                      descontos: { ...safeConfig.descontos, irrf: { dependentes: rawValue } }
+                    }
+                  };
+                })}
+              />
+            </Field>
+
+            <Field label="Desconto Vale Transporte (R$)">
+              <Input
+                inputMode="numeric"
+                value={formatCurrencyInput(form.config_folha?.beneficios?.vale_transporte?.valor_desconto ?? 0)}
+                onChange={(e) => setForm(f => {
+                  const safeConfig = getSafeConfig(f.config_folha);
+                  return {
+                    ...f,
+                    config_folha: {
+                      ...safeConfig,
+                      beneficios: {
+                        ...safeConfig.beneficios,
+                        vale_transporte: { ativo: true, valor_desconto: parseCurrency(e.target.value) }
+                      }
+                    }
+                  };
+                })}
+              />
+            </Field>
+
+            <Field label="Desconto Vale Refeição (R$)">
+              <Input
+                inputMode="numeric"
+                value={formatCurrencyInput(form.config_folha?.beneficios?.vale_refeicao?.valor_desconto ?? 0)}
+                onChange={(e) => setForm(f => {
+                  const safeConfig = getSafeConfig(f.config_folha);
+                  return {
+                    ...f,
+                    config_folha: {
+                      ...safeConfig,
+                      beneficios: {
+                        ...safeConfig.beneficios,
+                        vale_refeicao: { ativo: true, valor_desconto: parseCurrency(e.target.value) }
+                      }
+                    }
+                  };
+                })}
+              />
+            </Field>
+
+            <Field label="Desconto Plano de Saúde (R$)">
+              <Input
+                inputMode="numeric"
+                value={formatCurrencyInput(form.config_folha?.beneficios?.plano_saude?.valor_desconto ?? 0)}
+                onChange={(e) => setForm(f => {
+                  const safeConfig = getSafeConfig(f.config_folha);
+                  return {
+                    ...f,
+                    config_folha: {
+                      ...safeConfig,
+                      beneficios: {
+                        ...safeConfig.beneficios,
+                        plano_saude: { ativo: true, valor_desconto: parseCurrency(e.target.value) }
+                      }
+                    }
+                  };
+                })}
+              />
+            </Field>
+          </div>
         </div>
 
         {error && <FormAlert>{error}</FormAlert>}

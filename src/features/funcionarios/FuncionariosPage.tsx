@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { NovoFuncionarioModal, type NovoFuncionarioData } from "./components/NovoFuncionarioModal";
 import { GerenciarCargosModal } from "./components/GerenciarCargosModal";
+import { FecharFolhaModal } from "./components/FecharFolhaModal";
+import { FolhaPagamentoTab } from "./components/FolhaPagamentoTab";
 import { FuncionarioCard } from "./components/FuncionarioCard";
 import { FuncionarioRow } from "./components/FuncionarioRow";
 import { FuncionariosHeader } from "./components/FuncionariosHeader";
@@ -42,6 +44,7 @@ function normalizeFuncionario(f: FuncionarioBackend): Funcionario {
     cor: getCargoColor(f.cargo),
     ativo: true,
     foto_url: f.foto_url,
+    config_folha: f.config_folha,
   };
 }
 
@@ -53,6 +56,7 @@ export default function FuncionariosPage() {
   const [editingFuncionario, setEditingFuncionario] = useState<Funcionario | null>(null);
   const [deleteConfirmInfo, setDeleteConfirmInfo] = useState<{ id: string; nome: string } | null>(null);
   const [cargosModalOpen, setCargosModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"gestao" | "folha">("gestao");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [loading, setLoading] = useState(true);
@@ -130,6 +134,7 @@ export default function FuncionariosPage() {
         cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
         salario: data.salario,
         data_admissao: data.data_admissao,
+        config_folha: data.config_folha,
       });
       createdFuncId = created.id;
     }
@@ -148,6 +153,7 @@ export default function FuncionariosPage() {
         cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
         salario: data.salario,
         data_admissao: data.data_admissao,
+        config_folha: data.config_folha,
         ...(finalUrl !== undefined && { foto_url: finalUrl }),
       });
     } else if (finalUrl !== undefined && createdFuncId) {
@@ -184,94 +190,119 @@ export default function FuncionariosPage() {
             onCargos={() => setCargosModalOpen(true)}
           />
 
-          <FuncionariosToolbar
-            search={search}
-            viewMode={viewMode}
-            onSearch={(value) => {
-              setSearch(value);
-              setPage(1);
-            }}
-            onViewMode={setViewMode}
-          />
+          <div className="flex items-center gap-6 border-b border-white/10 pb-2">
+            <button
+              onClick={() => setActiveTab("gestao")}
+              className={`text-sm font-semibold transition-colors pb-2 -mb-2 border-b-2 ${
+                activeTab === "gestao" ? "text-white border-[#4edea3]" : "text-gray-500 border-transparent hover:text-gray-300"
+              }`}
+            >
+              Gestão de Funcionários
+            </button>
+            <button
+              onClick={() => setActiveTab("folha")}
+              className={`text-sm font-semibold transition-colors pb-2 -mb-2 border-b-2 ${
+                activeTab === "folha" ? "text-white border-[#4edea3]" : "text-gray-500 border-transparent hover:text-gray-300"
+              }`}
+            >
+              Folha de Pagamento
+            </button>
+          </div>
 
-          {error && (
-            <div className="rounded-2xl px-4 py-3 text-sm font-medium" style={{ background: "rgba(239,68,68,0.12)", color: "#fca5a5" }}>
-              {error}
-            </div>
-          )}
+          {activeTab === "folha" ? (
+            <FolhaPagamentoTab />
+          ) : (
+            <>
+              <FuncionariosToolbar
+                search={search}
+                viewMode={viewMode}
+                onSearch={(value) => {
+                  setSearch(value);
+                  setPage(1);
+                }}
+                onViewMode={setViewMode}
+              />
 
-          {loading && (
-            <div className="rounded-3xl p-12 text-center text-sm" style={{ background: "#1e1e1e", color: "#6b7280" }}>
-              Carregando funcionarios...
-            </div>
-          )}
+              {error && (
+                <div className="rounded-2xl px-4 py-3 text-sm font-medium" style={{ background: "rgba(239,68,68,0.12)", color: "#fca5a5" }}>
+                  {error}
+                </div>
+              )}
 
-          {!loading && filtered.length === 0 && (
-            <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
-              <i className="fi fi-rr-user-slash text-5xl" style={{ color: "#6b7280" }}></i>
-              <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
-            </div>
-          )}
+              {loading && (
+                <div className="rounded-3xl p-12 text-center text-sm" style={{ background: "#1e1e1e", color: "#6b7280" }}>
+                  Carregando funcionarios...
+                </div>
+              )}
 
-          {!loading && viewMode === "grid" && filtered.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {paginated.map((f) => (
-                <FuncionarioCard
-                  key={f.id}
-                  f={f}
-                  onRemove={handleRemove}
-                  onEdit={(f) => {
-                    setEditingFuncionario(f);
-                    setModalOpen(true);
-                  }}
+              {!loading && filtered.length === 0 && (
+                <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
+                  <i className="fi fi-rr-user-slash text-5xl" style={{ color: "#6b7280" }}></i>
+                  <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
+                </div>
+              )}
+
+              {!loading && viewMode === "grid" && filtered.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {paginated.map((f) => (
+                    <FuncionarioCard
+                      key={f.id}
+                      f={f}
+                      onRemove={handleRemove}
+                      onEdit={(f) => {
+                        setEditingFuncionario(f);
+                        setModalOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {!loading && viewMode === "list" && filtered.length > 0 && (
+                <div className="rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                          {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Admissão", ""].map((h) => (
+                            <th
+                              key={h}
+                              className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Admissão"].includes(h) ? " hidden md:table-cell" : ""}`}
+                              style={{ color: "#6b7280", background: "#1a1a1a" }}
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginated.map((f) => (
+                          <FuncionarioRow
+                            key={f.id}
+                            f={f}
+                            onRemove={handleRemove}
+                            onEdit={(f) => {
+                              setEditingFuncionario(f);
+                              setModalOpen(true);
+                            }}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {!loading && filtered.length > 0 && (
+                <FuncionariosPagination
+                  page={safePage}
+                  totalPages={totalPages}
+                  total={filtered.length}
+                  pageSize={pageSize}
+                  onPage={setPage}
                 />
-              ))}
-            </div>
-          )}
-
-          {!loading && viewMode === "list" && filtered.length > 0 && (
-            <div className="rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Admissão", ""].map((h) => (
-                        <th
-                          key={h}
-                          className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Admissão"].includes(h) ? " hidden md:table-cell" : ""}`}
-                          style={{ color: "#6b7280", background: "#1a1a1a" }}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginated.map((f) => (
-                      <FuncionarioRow
-                        key={f.id}
-                        f={f}
-                        onRemove={handleRemove}
-                        onEdit={(f) => {
-                          setEditingFuncionario(f);
-                          setModalOpen(true);
-                        }}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {!loading && filtered.length > 0 && (
-            <FuncionariosPagination
-              page={safePage}
-              totalPages={totalPages}
-              total={filtered.length}
-              pageSize={pageSize}
-              onPage={setPage}
-            />
+              )}
+            </>
           )}
         </div>
       </main>
@@ -293,6 +324,7 @@ export default function FuncionariosPage() {
                   data_admissao: editingFuncionario.data_admissao,
                   cargo: editingFuncionario.cargo,
                   foto_url: editingFuncionario.foto_url,
+                  config_folha: editingFuncionario.config_folha,
                 }
               : undefined
           }

@@ -19,6 +19,10 @@ export const funcionariosService = {
     await apiClient.delete(`/funcionarios/${id}${query}`);
   },
 
+  async listarHolerites(mes: number, ano: number): Promise<any[]> {
+    return await apiClient.get<any[]>(`/funcionarios/folha/holerites?mes=${mes}&ano=${ano}`);
+  },
+
   async uploadFotoFuncionario(file: File, funcionarioId: string): Promise<string> {
     const { getSupabaseClient } = await import("@/shared/supabaseClient");
     const { getEmpresaIdFromToken } = await import("@/shared/api");

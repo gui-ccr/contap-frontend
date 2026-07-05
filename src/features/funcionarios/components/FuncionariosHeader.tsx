@@ -12,7 +12,7 @@ export function FuncionariosHeader({ ativos, total, onNovo, onCargos }: Funciona
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: "#e5e2e1" }}>
-          Gestão de Funcionários
+          Recursos Humanos (RH)
         </h1>
         <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
           {ativos} ativo{ativos !== 1 ? "s" : ""} · {total} no total
