@@ -41,6 +41,9 @@ axiosInstance.interceptors.request.use(async (config) => {
     if (!session?.access_token) {
       // Fail-closed: sem sessão válida, não deixa a requisição seguir sem
       // Authorization (isso só produzia um 401 confuso vindo do backend).
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
       return Promise.reject(new Error("Sessão expirada. Faça login novamente."));
     }
 
@@ -61,6 +64,16 @@ axiosInstance.interceptors.response.use(
     return data;
   },
   (error: AxiosError) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      const supabase = getSupabaseClient();
+      void supabase.auth.signOut().finally(() => {
+        if (!window.location.pathname.includes("/login")) {
+          window.location.href = "/login";
+        }
+      });
+      return Promise.reject(new Error("Sessão expirada. Faça login novamente."));
+    }
+
     const data = error.response?.data as any;
     const errorMessage = data?.error || data?.message || data?.details || error.message || "Ocorreu um erro na requisição.";
     return Promise.reject(new Error(errorMessage));
