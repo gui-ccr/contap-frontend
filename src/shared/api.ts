@@ -92,9 +92,6 @@ export const apiClient = {
 export function getEmpresaIdFromToken(): string | null {
   if (typeof window === "undefined") return null;
 
-  const storedEmpresaId = localStorage.getItem("empresaId");
-  if (storedEmpresaId) return storedEmpresaId;
-
   try {
     // Sessão persistida pelo SDK do Supabase (ver storageKey em supabaseClient.ts)
     const raw = localStorage.getItem("contaup-auth");
@@ -103,7 +100,7 @@ export function getEmpresaIdFromToken(): string | null {
     const token: string | undefined = session?.access_token;
     if (!token) return null;
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.empresaId || payload.user_metadata?.empresa_id || null;
+    return payload.empresaId || payload.user_metadata?.empresa_id || payload.app_metadata?.empresa_id || null;
   } catch (err) {
     console.error("Erro ao decodificar token", err);
     return null;

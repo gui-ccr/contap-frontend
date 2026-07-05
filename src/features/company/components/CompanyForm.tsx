@@ -52,6 +52,9 @@ export function CompanyForm() {
         cnpj: cleanCnpj,
       });
 
+      const { getSupabaseClient } = await import("@/shared/supabaseClient");
+      await getSupabaseClient().auth.refreshSession();
+
       router.push("/dashboard" as never);
     } catch (err: any) {
       setApiError(err.message || "Erro ao cadastrar a empresa.");

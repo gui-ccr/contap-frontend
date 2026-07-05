@@ -49,9 +49,6 @@ export function AuthPage() {
             access_token: response.token,
             refresh_token: response.refresh_token,
           });
-          if (response.empresa_id) {
-            localStorage.setItem("empresaId", response.empresa_id);
-          }
           setSessionCookie();
           router.push("/dashboard" as never);
         } else {
@@ -77,9 +74,6 @@ export function AuthPage() {
             access_token: loginResponse.token,
             refresh_token: loginResponse.refresh_token,
           });
-          if (loginResponse.empresa_id) {
-            localStorage.setItem("empresaId", loginResponse.empresa_id);
-          }
           setSessionCookie();
           router.push("/cadastro-empresa" as never);
         } else {

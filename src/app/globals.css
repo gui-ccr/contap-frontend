@@ -143,6 +143,13 @@ html {
   color-scheme: dark;
 }
 
+/* Ajuste global de escala para telas de notebook (ex: 1366x768) */
+@media (max-width: 1400px), (max-height: 800px) {
+  html {
+    font-size: 14px;
+  }
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-on-surface);

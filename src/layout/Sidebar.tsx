@@ -106,24 +106,28 @@ function NavLinks({
       </div>
 
       {/* Logout */}
-      <Link
-        href="/login"
+      <button
+        type="button"
         onClick={async () => {
           onNavigate?.();
-          const { getSupabaseClient } = await import("@/shared/supabaseClient");
-          await getSupabaseClient().auth.signOut();
+          try {
+            const { getSupabaseClient } = await import("@/shared/supabaseClient");
+            await getSupabaseClient().auth.signOut();
+          } catch (e) {
+            console.error("Erro ao fazer signout no supabase", e);
+          }
           localStorage.removeItem("empresaId");
-          // Chaves legadas de versões antigas do fluxo de auth
           localStorage.removeItem("token");
           localStorage.removeItem("refresh_token");
           clearSessionCookie();
+          window.location.href = "/login";
         }}
-        className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-colors hover:bg-white/5"
+        className="flex w-full items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-colors hover:bg-white/5 cursor-pointer text-left"
         style={{ color: "#6b7280" }}
       >
         <LogOut size={17} />
         Sair
-      </Link>
+      </button>
     </>
   );
 }
