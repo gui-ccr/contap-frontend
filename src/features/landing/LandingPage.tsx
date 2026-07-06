@@ -407,7 +407,7 @@ function Navbar() {
             Entrar
           </Link>
           <Link
-            href={"/cadastro-empresa" as Route}
+            href={"/login?mode=cadastro" as Route}
             className="font-bold rounded-xl hover:scale-[1.03] transition-all"
             style={{
               background: "#4edea3",
@@ -730,7 +730,7 @@ function PricingCard({
       </ul>
 
       <Link
-        href={"/cadastro-empresa" as Route}
+        href={"/login?mode=cadastro" as Route}
         className="block text-center py-3.5 rounded-xl font-bold text-[14px] transition-all"
         style={
           highlight
@@ -998,7 +998,7 @@ export function LandingPage() {
         ]}
         actionItems={[
           { label: 'Entrar', link: '/login' },
-          { label: 'Cadastrar', link: '/cadastro-empresa', primary: true }
+          { label: 'Cadastrar', link: '/login?mode=cadastro', primary: true }
         ]}
       />
 
@@ -1056,7 +1056,7 @@ export function LandingPage() {
           {/* CTAs */}
           <div className="lp-hero-ctas flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
-              href={"/cadastro-empresa" as Route}
+              href={"/login?mode=cadastro" as Route}
               className="inline-flex items-center justify-center gap-2 font-bold text-[15px] px-8 py-4 rounded-2xl transition-all hover:scale-[1.03] hover:opacity-95"
               style={{
                 background: "#4edea3",
@@ -1480,7 +1480,7 @@ export function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href={"/cadastro-empresa" as Route}
+                  href={"/login?mode=cadastro" as Route}
                   className="inline-flex items-center justify-center gap-2 font-bold text-[16px] px-10 py-4 rounded-2xl transition-all hover:scale-[1.02] hover:opacity-95"
                   style={{
                     background: "#4edea3",
@@ -1621,7 +1621,7 @@ export function LandingPage() {
                   </li>
                   <li>
                     <Link
-                      href={"/cadastro-empresa" as Route}
+                      href={"/login?mode=cadastro" as Route}
                       className="text-[13px] transition-colors"
                       style={{ color: "#4edea3" }}
                       onMouseEnter={(e) =>

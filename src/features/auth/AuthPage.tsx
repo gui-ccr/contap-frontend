@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthBackground } from "./components/AuthBackground";
 import { AuthHeader } from "./components/AuthHeader";
@@ -11,7 +11,10 @@ import { setSessionCookie } from "@/shared/sessionCookie";
 
 export function AuthPage() {
   const router = useRouter();
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const searchParams = useSearchParams();
+  const [isLoginMode, setIsLoginMode] = useState(
+    searchParams.get("mode") !== "cadastro",
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -130,7 +133,13 @@ export function AuthPage() {
             rememberMe={rememberMe}
             onRememberMeChange={setRememberMe}
             onTogglePassword={() => setShowPassword((v) => !v)}
-            onToggleMode={() => setIsLoginMode((v) => !v)}
+            onToggleMode={() => {
+              const next = !isLoginMode;
+              setIsLoginMode(next);
+              router.replace(
+                (next ? "/login" : "/login?mode=cadastro") as never,
+              );
+            }}
             onForgotPassword={() => router.push("/recuperar-senha" as never)}
             onSubmit={handleSubmit}
             isLoading={loading}
