@@ -24,7 +24,7 @@ const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
     href: "/balanco-patrimonial" as Route
   },
   { icon: "fi-rr-document-signed", label: "DRE", href: "/dre" as Route },
-  { icon: "fi-rr-users-alt", label: "Funcionários (RH)", href: "/funcionarios" as Route },
+  { icon: "fi-rr-users-alt", label: "RH", href: "/funcionarios" as Route },
   { icon: "fi-rr-user-shield", label: "Usuários", href: "/usuarios" as Route },
   { icon: "fi-rr-settings", label: "Configurações", href: "/configuracoes" as Route },
 ];

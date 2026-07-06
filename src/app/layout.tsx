@@ -52,6 +52,7 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn-uicons.flaticon.com/2.4.2/uicons-regular-rounded/css/uicons-regular-rounded.css"
           precedence="default"
+          crossOrigin="anonymous"
         />
       </head>
       <body className="min-h-screen">
