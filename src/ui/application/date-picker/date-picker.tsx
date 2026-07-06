@@ -6,7 +6,7 @@ import { Calendar as CalendarIcon } from "@untitledui/icons";
 import { useDateFormatter } from "react-aria";
 import type { DatePickerProps as AriaDatePickerProps, DateValue } from "react-aria-components";
 import { DatePicker as AriaDatePicker, Dialog as AriaDialog, Group as AriaGroup, Popover as AriaPopover } from "react-aria-components";
-import { Button, type ButtonProps } from "@/src/ui/base/buttons/button";
+import { Button, type ButtonProps } from "@/ui/base/buttons/button";
 import { cx } from "@/utils/cx";
 import { Calendar } from "./calendar";
 
@@ -31,7 +31,7 @@ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply, 
     const formattedDate = value ? formatter.format(value.toDate(getLocalTimeZone())) : "Select date";
 
     return (
-        <AriaDatePicker aria-label="Date picker" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue} className={cx("w-full", props.className)}>
+        <AriaDatePicker aria-label="Date picker" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue} className={cx("w-full", props.className as string)}>
             <AriaGroup className="w-full">
                 <Button size={size} color="secondary" iconLeading={CalendarIcon} className="w-full justify-start">
                     {formattedDate}

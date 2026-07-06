@@ -12,7 +12,7 @@ import { primeiroDiaDoMes, ultimoDiaDoMes } from "@/features/contas/dateUtils";
 import { UsuariosPagination } from "@/features/usuarios/components/UsuariosPagination";
 import { AnexarNotaModal, type AnexarNotaFormData } from "./components/AnexarNotaModal";
 import { NotasContasTable, type ContaComNotas } from "./components/NotasContasTable";
-import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 

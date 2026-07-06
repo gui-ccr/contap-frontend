@@ -15,8 +15,8 @@ import {
     Heading as AriaHeading,
     useSlottedContext,
 } from "react-aria-components";
-import { Button } from "@/src/ui/base/buttons/button";
-import { InputDateBase } from "@/src/ui/base/input/input-date";
+import { Button } from "@/ui/base/buttons/button";
+import { InputDateBase } from "@/ui/base/input/input-date";
 import { cx } from "@/utils/cx";
 import { CalendarCell } from "./cell";
 
@@ -24,7 +24,7 @@ export const CalendarContextProvider = ({ children }: PropsWithChildren) => {
     const [value, setValue] = useState<DateValue | null>(null);
     const [focusedValue, setFocusedValue] = useState<DateValue | undefined>();
 
-    return <AriaCalendarContext.Provider value={{ value, onChange: (v: DateValue) => setValue(v), focusedValue, onFocusChange: (v: DateValue) => setFocusedValue(v) }}>{children}</AriaCalendarContext.Provider>;
+    return <AriaCalendarContext.Provider value={{ value: value as any, onChange: (v: any) => setValue(v), focusedValue: focusedValue as any, onFocusChange: (v: any) => setFocusedValue(v) }}>{children}</AriaCalendarContext.Provider>;
 };
 
 interface CalendarProps extends AriaCalendarProps<DateValue> {

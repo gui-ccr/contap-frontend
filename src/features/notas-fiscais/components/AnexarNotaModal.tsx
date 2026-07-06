@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
 import { Field, Input, Button } from "@/ui/forms";
-import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 

@@ -7,7 +7,7 @@ import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
 import { Field, Input, Select, Button, FormAlert } from "@/ui/forms";
 import { AvatarPicker } from "@/ui/forms/AvatarPicker";
 import { formatCpfCnpj, formatCurrencyInput, parseCurrency } from "@/utils/format";
-import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 
