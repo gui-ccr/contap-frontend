@@ -331,7 +331,7 @@ function Navbar() {
             { id: "precos", label: "Preços" },
             { id: "faq", label: "FAQ" },
             {
-              href: process.env.NEXT_PUBLIC_API_URL || "https://nginx-production-6d15.up.railway.app",
+              href: "/api-docs",
               label: "Documentação API",
             },
           ].map((l) => {
@@ -746,7 +746,7 @@ function PricingCard({
           if (!highlight) e.currentTarget.style.background = "transparent";
         }}
       >
-        Escolher Plano
+        Começar Teste Gratis
       </Link>
     </div>
   );
