@@ -5,29 +5,34 @@ import { Endpoint } from "../docsData";
 import { cx } from "@/utils/cx";
 import { DataTable } from "./DataTable";
 import { CodeBlock } from "./CodeBlock";
+import { Lock, Unlock } from "lucide-react";
 
 export function EndpointCard({ ep, moduloId }: { ep: Endpoint; moduloId: string }) {
-  const methodColors: Record<string, string> = {
-    GET: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
-    POST: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
-    PUT: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
-    PATCH: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
-    DELETE: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  const methodStyles: Record<string, { text: string; bar: string }> = {
+    GET: { text: "text-tertiary", bar: "bg-tertiary" },
+    POST: { text: "text-primary", bar: "bg-primary" },
+    PUT: { text: "text-secondary", bar: "bg-secondary" },
+    PATCH: { text: "text-secondary", bar: "bg-secondary" },
+    DELETE: { text: "text-error", bar: "bg-error" },
   };
 
-  const methodClass = methodColors[ep.metodo] || methodColors.GET;
+  const method = methodStyles[ep.metodo] || methodStyles.GET;
   const anchorId = `${moduloId}-${ep.metodo}-${ep.path.replace(/[^a-zA-Z0-9-]/g, '-')}`;
+  const isPublic = /p[uú]blic/i.test(ep.auth);
 
   return (
-    <article id={anchorId} className="bg-surface-container-low rounded-2xl border border-outline-variant/40 shadow-sm mb-10 overflow-hidden group scroll-mt-28">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border-b border-outline-variant/40 bg-surface-container">
-        <div className="flex items-center gap-3">
-          <span className={cx("px-2.5 py-1 text-xs font-bold rounded-md uppercase tracking-wider", methodClass)}>
+    <article id={anchorId} className="relative rounded-2xl border border-outline-variant/40 shadow-sm mb-10 overflow-hidden group scroll-mt-28 bg-surface-container-low">
+      <span className={cx("absolute left-0 top-0 bottom-0 w-1", method.bar)} />
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pl-6 pr-5 py-5 border-b border-outline-variant/40 bg-surface-container">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className={cx("text-xs font-extrabold uppercase tracking-widest shrink-0", method.text)}>
             {ep.metodo}
           </span>
-          <code className="font-mono text-sm font-semibold text-on-surface">{ep.path}</code>
+          <code className="font-mono text-sm font-semibold text-on-surface truncate">{ep.path}</code>
         </div>
-        <span className="text-xs font-medium text-on-surface-variant flex items-center gap-1">
+        <span className="text-xs font-medium text-on-surface-variant flex items-center gap-1.5 shrink-0">
+          {isPublic ? <Unlock className="size-3.5" /> : <Lock className="size-3.5" />}
           {ep.auth}
         </span>
       </div>
@@ -65,7 +70,7 @@ export function EndpointCard({ ep, moduloId }: { ep: Endpoint; moduloId: string 
             {ep.bodyExemplo && (
               <>
                 <h4 className="text-xs font-semibold text-on-surface-variant mb-2 mt-4">Exemplo</h4>
-                <CodeBlock code={ep.bodyExemplo} />
+                <CodeBlock code={ep.bodyExemplo} label="request.json" />
               </>
             )}
           </div>
@@ -74,7 +79,7 @@ export function EndpointCard({ ep, moduloId }: { ep: Endpoint; moduloId: string 
             <h3 className="text-sm font-bold uppercase tracking-wider text-on-surface mb-4">
               Resposta ({ep.respostaStatus})
             </h3>
-            <CodeBlock code={ep.respostaExemplo} />
+            <CodeBlock code={ep.respostaExemplo} label={`${ep.respostaStatus} response.json`} />
 
             {ep.erros && ep.erros.length > 0 && (
               <div className="mt-8">
