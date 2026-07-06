@@ -133,6 +133,7 @@ export function AuthPage() {
             onToggleMode={() => setIsLoginMode((v) => !v)}
             onForgotPassword={() => router.push("/recuperar-senha" as never)}
             onSubmit={handleSubmit}
+            isLoading={loading}
           />
 
           <div className="text-center">

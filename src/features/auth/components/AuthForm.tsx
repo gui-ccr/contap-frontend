@@ -18,6 +18,7 @@ interface AuthFormProps {
   onToggleMode: () => void;
   onForgotPassword: () => void;
   onSubmit: (e: React.FormEvent) => void;
+  isLoading?: boolean;
 }
 
 export function AuthForm({
@@ -26,7 +27,7 @@ export function AuthForm({
   onNameChange, onEmailChange, onPasswordChange,
   rememberMe, onRememberMeChange,
   onTogglePassword, onToggleMode, onForgotPassword,
-  onSubmit,
+  onSubmit, isLoading,
 }: AuthFormProps) {
   const passwordToggle = (
     <Button
@@ -118,10 +119,14 @@ export function AuthForm({
         <Button
           variant="primary"
           type="submit"
+          disabled={isLoading}
           className="w-full py-3 shadow-lg shadow-primary/20"
         >
-          {isLoginMode ? "Entrar no Sistema" : "Criar Conta"}
-          <span className="material-symbols-outlined text-[18px]" />
+          {isLoading ? (
+            <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+          ) : null}
+          {isLoginMode ? (isLoading ? "Entrando..." : "Entrar no Sistema") : (isLoading ? "Criando Conta..." : "Criar Conta")}
+          {!isLoading && <span className="material-symbols-outlined text-[18px]" />}
         </Button>
 
         <Button
