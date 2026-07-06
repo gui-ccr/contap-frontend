@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/ui/forms";
 import { AuthBackground } from "./components/AuthBackground";
 import { StepRequestCode } from "./components/StepRequestCode";
 import { StepResetPassword } from "./components/StepResetPassword";
@@ -85,14 +86,15 @@ export function RecoveryPage() {
 
         {step !== "success" && (
           <div className="text-center border-t border-outline-variant/10 pt-4">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={() => step === "reset" ? setStep("request") : router.push("/login")}
-              className="inline-flex items-center gap-2 text-label-sm text-primary hover:text-primary-fixed transition-colors font-medium cursor-pointer"
+              className="!text-primary hover:!text-primary-fixed"
             >
               <i className="fi fi-rr-arrow-left text-[16px]"></i>
               {step === "reset" ? "Voltar para o passo anterior" : "Voltar para o Login"}
-            </button>
+            </Button>
           </div>
         )}
       </div>

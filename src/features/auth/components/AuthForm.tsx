@@ -1,6 +1,7 @@
 import { TextInput } from "@/ui/TextInput";
 import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/ui/forms";
 
 interface AuthFormProps {
   isLoginMode: boolean;
@@ -28,14 +29,15 @@ export function AuthForm({
   onSubmit,
 }: AuthFormProps) {
   const passwordToggle = (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       onClick={onTogglePassword}
-      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none cursor-pointer flex items-center justify-center mt-1 mr-1"
+      className="!px-2 !py-2 mt-1 mr-1 text-on-surface-variant/50 hover:text-on-surface-variant"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </button>
+    </Button>
   );
 
   return (
@@ -72,13 +74,14 @@ export function AuthForm({
             Senha
           </label>
           {isLoginMode && (
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={onForgotPassword}
-              className="text-label-sm text-primary hover:text-primary-fixed transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+              className="!text-label-sm !text-primary hover:!text-primary-fixed !px-2 !py-1"
             >
               Esqueci minha senha
-            </button>
+            </Button>
           )}
         </div>
         <TextInput
@@ -112,21 +115,23 @@ export function AuthForm({
       )}
 
       <div className="pt-sm flex flex-col gap-base">
-        <button
+        <Button
+          variant="primary"
           type="submit"
-          className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
+          className="w-full py-3 shadow-lg shadow-primary/20"
         >
           {isLoginMode ? "Entrar no Sistema" : "Criar Conta"}
           <span className="material-symbols-outlined text-[18px]" />
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="ghost"
           type="button"
           onClick={onToggleMode}
-          className="text-label-sm text-primary hover:text-primary-fixed transition-colors cursor-pointer"
+          className="!text-primary hover:!text-primary-fixed"
         >
           {isLoginMode ? "Não tem uma conta? Cadastre-se" : "Já possui conta? Fazer Login"}
-        </button>
+        </Button>
       </div>
     </form>
   );

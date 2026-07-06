@@ -1,5 +1,6 @@
 import { FormEvent } from "react";
 import { TextInput } from "@/ui/TextInput";
+import { Button } from "@/ui/forms";
 
 interface StepRequestCodeProps {
   email: string;
@@ -22,13 +23,14 @@ export function StepRequestCode({ email, onEmailChange, onSubmit }: StepRequestC
         autoComplete="email"
       />
       <div className="pt-2">
-        <button
+        <Button
+          variant="primary"
           type="submit"
-          className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
+          className="w-full py-3 shadow-lg shadow-primary/20"
         >
           Gerar Código de Verificação
           <i className="fi fi-rr-arrow-right text-[18px]"></i>
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -1,6 +1,7 @@
 import { FormEvent } from "react";
 import { TextInput } from "@/ui/TextInput";
 import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { Button } from "@/ui/forms";
 
 interface StepResetPasswordProps {
   code: string;
@@ -22,14 +23,15 @@ export function StepResetPassword({
   onTogglePassword, onSubmit,
 }: StepResetPasswordProps) {
   const passwordToggle = (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       onClick={onTogglePassword}
-      className="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors focus:outline-none pt-1.5"
+      className="!px-2 !py-2 pt-1.5 text-on-surface-variant/50 hover:text-on-surface-variant"
       aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
     >
       <i className={`fi fi-rr-${showPassword ? "eye" : "eye-crossed"} text-[20px]`}></i>
-    </button>
+    </Button>
   );
 
   return (
@@ -78,13 +80,14 @@ export function StepResetPassword({
       )}
 
       <div className="pt-2">
-        <button
+        <Button
+          variant="primary"
           type="submit"
-          className="w-full bg-primary hover:bg-primary-fixed active:scale-[0.98] text-on-primary text-label-md py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-base shadow-lg shadow-primary/20 cursor-pointer"
+          className="w-full py-3 shadow-lg shadow-primary/20"
         >
           Redefinir Senha e Entrar
           <i className="fi fi-rr-check-circle text-[18px]"></i>
-        </button>
+        </Button>
       </div>
     </form>
   );
