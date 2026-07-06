@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect } from "react";
 import { apiClient } from "./api";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { PUBLIC_ROUTES } from "./publicRoutes";
 import { clearSessionCookie, setSessionCookie } from "./sessionCookie";
 
@@ -37,7 +37,6 @@ const AuthContext = createContext<IAuthContextData>({} as IAuthContextData);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
   const { data, isLoading, refetch, isError } = useQuery({

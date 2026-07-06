@@ -16,7 +16,7 @@ export function ConfirmDeleteModal({ open, onClose, onConfirm, title, itemName }
 
   useEffect(() => {
     if (open) {
-      setExcluirContas(false);
+      setTimeout(() => setExcluirContas(false), 0);
     }
   }, [open]);
 

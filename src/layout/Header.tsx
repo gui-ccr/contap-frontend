@@ -33,9 +33,11 @@ export default function Header() {
   };
 
   useEffect(() => {
-    loadNotifs();
-    const id = setInterval(loadNotifs, 30_000); // refresh every 30s
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadNotifs();
+    const id = setInterval(() => { void loadNotifs(); }, 30_000); // refresh every 30s
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresa?.id]);
 
   useEffect(() => {
@@ -58,8 +60,8 @@ export default function Header() {
     setUnreadCount((c) => Math.max(0, c - 1));
     try {
       await notificacoesService.marcarComoLida(notif.id);
-    } catch (e) {
-      loadNotifs();
+    } catch {
+      void loadNotifs();
     }
   };
 

@@ -31,9 +31,9 @@ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply, 
     const formattedDate = value ? formatter.format(value.toDate(getLocalTimeZone())) : "Select date";
 
     return (
-        <AriaDatePicker aria-label="Date picker" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue}>
-            <AriaGroup>
-                <Button size={size} color="secondary" iconLeading={CalendarIcon}>
+        <AriaDatePicker aria-label="Date picker" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue} className={cx("w-full", props.className)}>
+            <AriaGroup className="w-full">
+                <Button size={size} color="secondary" iconLeading={CalendarIcon} className="w-full justify-start">
                     {formattedDate}
                 </Button>
             </AriaGroup>

@@ -19,9 +19,11 @@ export function SystemPreferences() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.language) setLanguage(parsed.language);
-        if (parsed.notifs) setNotifs(parsed.notifs);
-      } catch (e) {}
+        if (parsed.language) setTimeout(() => setLanguage(parsed.language), 0);
+        if (parsed.notifs) setTimeout(() => setNotifs(parsed.notifs), 0);
+      } catch {
+        // ignore
+      }
     }
   }, []);
 

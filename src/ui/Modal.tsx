@@ -15,7 +15,7 @@ export function Modal({ open, onClose, children, maxWidth = "500px" }: ModalProp
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setTimeout(() => setMounted(true), 0);
     return () => setMounted(false);
   }, []);
 

@@ -74,31 +74,33 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(new Error("Sessão expirada. Faça login novamente."));
     }
 
-    const data = error.response?.data as any;
-    const errorMessage = data?.error || data?.message || data?.details || error.message || "Ocorreu um erro na requisição.";
-    return Promise.reject(new Error(errorMessage));
+    const data = error.response?.data as Record<string, unknown> | undefined;
+    const errorMessage = typeof data === "object" && data !== null
+      ? (data.error || data.message || data.details || error.message)
+      : error.message || "Ocorreu um erro na requisição.";
+    return Promise.reject(new Error(String(errorMessage)));
   }
 );
 
 export const apiClient = {
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return await axiosInstance.get<any, T>(endpoint, { params });
+  async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
+    return await axiosInstance.get<unknown, T>(endpoint, { params });
   },
 
   async post<T>(endpoint: string, body?: unknown): Promise<T> {
-    return await axiosInstance.post<any, T>(endpoint, body);
+    return await axiosInstance.post<unknown, T>(endpoint, body);
   },
 
   async put<T>(endpoint: string, body?: unknown): Promise<T> {
-    return await axiosInstance.put<any, T>(endpoint, body);
+    return await axiosInstance.put<unknown, T>(endpoint, body);
   },
 
   async patch<T>(endpoint: string, body?: unknown): Promise<T> {
-    return await axiosInstance.patch<any, T>(endpoint, body);
+    return await axiosInstance.patch<unknown, T>(endpoint, body);
   },
 
   async delete<T>(endpoint: string): Promise<T> {
-    return await axiosInstance.delete<any, T>(endpoint);
+    return await axiosInstance.delete<unknown, T>(endpoint);
   }
 };
 

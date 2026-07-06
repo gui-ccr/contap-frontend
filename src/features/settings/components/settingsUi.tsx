@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, ChevronDown, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/ui/forms";
 
 export type SaveState = "idle" | "loading" | "saved";
 
@@ -41,13 +42,14 @@ export function Field({
           style={{ background: "#242424" }}
         />
         {isPassword && (
-          <button
+          <Button
+            variant="ghost"
             type="button"
             onClick={() => setShow(!show)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 !px-2 !py-2 text-gray-500 hover:text-gray-300"
           >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -122,10 +124,7 @@ export function Toggle({
 /** Card container de seção */
 export function SettingsCard({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="rounded-3xl p-6 transition-all"
-      style={{ background: "#1e1e1e" }}
-    >
+    <div className="rounded-3xl p-6 transition-all bg-surface-container-low">
       {children}
     </div>
   );
@@ -137,7 +136,7 @@ export function SectionHeader({
   title,
   subtitle,
 }: {
-  icon: any;
+  icon: React.ElementType;
   title: string;
   subtitle: string;
 }) {
@@ -170,16 +169,12 @@ export function SaveButton({
       className="flex justify-end mt-6 pt-5"
       style={{ borderTop: "1px solid #2a2a2a" }}
     >
-      <button
+      <Button
+        variant="primary"
         onClick={onClick}
         disabled={state === "loading"}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-60 shadow-lg min-w-40 justify-center  cursor-pointer"
-        style={{
-          background:
-            state === "saved"
-              ? "#059669"
-              : "linear-gradient(135deg,#10b981,#059669)",
-        }}
+        className="shadow-lg min-w-40"
+        style={state === "saved" ? { background: "var(--color-primary-fixed)", color: "var(--color-on-primary)" } : {}}
       >
         {state === "loading" && <Loader2 size={15} className="animate-spin" />}
         {state === "saved" && <Check size={15} />}
@@ -188,7 +183,7 @@ export function SaveButton({
           : state === "saved"
             ? "Salvo!"
             : "Salvar alterações"}
-      </button>
+      </Button>
     </div>
   );
 }
