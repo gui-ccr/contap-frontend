@@ -1,4 +1,5 @@
 import { Search, LayoutGrid, List } from "lucide-react";
+import { Input, Button } from "@/ui/forms";
 
 interface FuncionariosToolbarProps {
   search: string;
@@ -18,44 +19,32 @@ export function FuncionariosToolbar({
       <div className="relative flex-1">
         <Search
           size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2"
-          style={{ color: "#6b7280" }}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60"
         />
-        <input
+        <Input
           value={search}
           onChange={(e) => onSearch(e.target.value)}
           placeholder="Buscar por nome, e-mail ou cargo..."
-          className="w-full rounded-2xl pl-9 pr-4 py-2.5 text-sm outline-none transition-all cursor-pointer"
-          style={{
-            background: "#1e1e1e",
-            border: "1px solid rgba(255,255,255,0.06)",
-            color: "#e5e2e1",
-          }}
+          className="!pl-9"
         />
       </div>
 
       <div className="flex justify-end sm:justify-start">
-        <div className="flex items-center rounded-2xl p-1 shrink-0 bg-[#1e1e1e]">
+        <div className="flex items-center rounded-xl p-1 shrink-0 bg-surface-container-low border border-outline-variant/20">
           <button
             onClick={() => onViewMode("grid")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer "
-            style={
-              viewMode === "grid"
-                ? { background: "#4edea318", color: "#4edea3" }
-                : { color: "#6b7280" }
-            }
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === "grid" ? "bg-primary/10 text-primary" : "text-on-surface-variant/60 hover:text-on-surface"
+            }`}
           >
             <LayoutGrid size={14} />
             <span className="hidden sm:inline">Cards</span>
           </button>
           <button
             onClick={() => onViewMode("list")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-            style={
-              viewMode === "list"
-                ? { background: "#4edea318", color: "#4edea3" }
-                : { color: "#6b7280" }
-            }
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === "list" ? "bg-primary/10 text-primary" : "text-on-surface-variant/60 hover:text-on-surface"
+            }`}
           >
             <List size={14} />
             <span className="hidden sm:inline">Lista</span>

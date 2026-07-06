@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { Button } from "@/ui/forms";
 
 interface FuncionariosHeaderProps {
   ativos: number;
@@ -11,29 +12,21 @@ export function FuncionariosHeader({ ativos, total, onNovo, onCargos }: Funciona
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: "#e5e2e1" }}>
+        <h1 className="text-headline-md font-bold tracking-tight text-on-surface">
           Recursos Humanos (RH)
         </h1>
-        <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
+        <p className="text-body-sm mt-1 text-on-surface-variant/70">
           {ativos} ativo{ativos !== 1 ? "s" : ""} · {total} no total
         </p>
       </div>
       <div className="flex gap-2 self-start sm:self-auto">
-        <button
-          onClick={onCargos}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all hover:bg-white/5 cursor-pointer"
-          style={{ color: "#e5e2e1", border: "1px solid rgba(255,255,255,0.08)" }}
-        >
+        <Button variant="tonal" onClick={onCargos} className="shadow-sm">
           Cargos
-        </button>
-        <button
-          onClick={onNovo}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 shadow-lg cursor-pointer"
-          style={{ background: "#4edea3", color: "#003824" }}
-        >
+        </Button>
+        <Button variant="primary" onClick={onNovo} className="shadow-lg">
           <Plus size={15} strokeWidth={2.5} />
           Novo Funcionário
-        </button>
+        </Button>
       </div>
     </div>
   );

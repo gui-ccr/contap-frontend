@@ -190,19 +190,19 @@ export default function FuncionariosPage() {
             onCargos={() => setCargosModalOpen(true)}
           />
 
-          <div className="flex items-center gap-6 border-b border-white/10 pb-2">
+          <div className="flex items-center gap-6 border-b border-outline-variant/20 pb-2">
             <button
               onClick={() => setActiveTab("gestao")}
-              className={`text-sm font-semibold transition-colors pb-2 -mb-2 border-b-2 ${
-                activeTab === "gestao" ? "text-white border-[#4edea3]" : "text-gray-500 border-transparent hover:text-gray-300"
+              className={`text-label-md font-semibold transition-colors pb-2 -mb-2 border-b-2 cursor-pointer ${
+                activeTab === "gestao" ? "text-on-surface border-primary" : "text-on-surface-variant/60 border-transparent hover:text-on-surface-variant"
               }`}
             >
               Gestão de Funcionários
             </button>
             <button
               onClick={() => setActiveTab("folha")}
-              className={`text-sm font-semibold transition-colors pb-2 -mb-2 border-b-2 ${
-                activeTab === "folha" ? "text-white border-[#4edea3]" : "text-gray-500 border-transparent hover:text-gray-300"
+              className={`text-label-md font-semibold transition-colors pb-2 -mb-2 border-b-2 cursor-pointer ${
+                activeTab === "folha" ? "text-on-surface border-primary" : "text-on-surface-variant/60 border-transparent hover:text-on-surface-variant"
               }`}
             >
               Folha de Pagamento
@@ -230,15 +230,15 @@ export default function FuncionariosPage() {
               )}
 
               {loading && (
-                <div className="rounded-3xl p-12 text-center text-sm" style={{ background: "#1e1e1e", color: "#6b7280" }}>
+                <div className="rounded-3xl p-12 text-center text-body-sm bg-surface-container-low text-on-surface-variant/70">
                   Carregando funcionarios...
                 </div>
               )}
 
               {!loading && filtered.length === 0 && (
-                <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3" style={{ background: "#1e1e1e" }}>
-                  <i className="fi fi-rr-user-slash text-5xl" style={{ color: "#6b7280" }}></i>
-                  <p className="text-sm font-medium" style={{ color: "#6b7280" }}>Nenhum funcionario encontrado</p>
+                <div className="rounded-3xl p-12 flex flex-col items-center justify-center gap-3 bg-surface-container-low">
+                  <i className="fi fi-rr-user-slash text-5xl text-on-surface-variant/50"></i>
+                  <p className="text-body-sm font-medium text-on-surface-variant/70">Nenhum funcionario encontrado</p>
                 </div>
               )}
 
@@ -259,16 +259,15 @@ export default function FuncionariosPage() {
               )}
 
               {!loading && viewMode === "list" && filtered.length > 0 && (
-                <div className="rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
+                <div className="rounded-3xl overflow-hidden bg-surface-container-low">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                        <tr className="border-b border-outline-variant/10 bg-surface-container">
                           {["Funcionario", "Cargo", "CPF/CNPJ", "Salário", "Admissão", ""].map((h) => (
                             <th
                               key={h}
-                              className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Admissão"].includes(h) ? " hidden md:table-cell" : ""}`}
-                              style={{ color: "#6b7280", background: "#1a1a1a" }}
+                              className={`px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant/60${h === "" ? " text-right" : ""}${["CPF/CNPJ", "Salário", "Admissão"].includes(h) ? " hidden md:table-cell" : ""}`}
                             >
                               {h}
                             </th>

@@ -1,6 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 import type { Funcionario } from "../types/types";
 import { formatCpfCnpj } from "@/utils/format";
+import { Button } from "@/ui/forms";
 
 
 
@@ -21,12 +22,7 @@ function cargoLabel(cargo: string) {
 
 export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
   return (
-    <tr
-      className="transition-colors border-b"
-      style={{ borderColor: "rgba(255,255,255,0.04)" }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-    >
+    <tr className="transition-colors border-b border-outline-variant/10 hover:bg-on-surface/[0.02]">
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           <div
@@ -36,8 +32,8 @@ export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
             {f.iniciais}
           </div>
           <div>
-            <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>{f.nome}</p>
-            <p className="text-xs" style={{ color: "#6b7280" }}>{f.email}</p>
+            <p className="text-body-sm font-semibold text-on-surface">{f.nome}</p>
+            <p className="text-label-sm text-on-surface-variant/70">{f.email}</p>
           </div>
         </div>
       </td>
@@ -46,33 +42,33 @@ export function FuncionarioRow({ f, onRemove, onEdit }: FuncionarioRowProps) {
           {cargoLabel(f.cargo)}
         </span>
       </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-mono" style={{ color: "#6b7280" }}>
+      <td className="hidden md:table-cell px-4 py-3 text-xs font-mono text-on-surface-variant/70">
         {f.cpf_cnpj ? formatCpfCnpj(f.cpf_cnpj) : "—"}
       </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
+      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium text-on-surface-variant/70">
         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(f.salario)}
       </td>
-      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium" style={{ color: "#6b7280" }}>
+      <td className="hidden md:table-cell px-4 py-3 text-xs font-medium text-on-surface-variant/70">
         {f.data_admissao ? new Date(f.data_admissao + "T00:00:00").toLocaleDateString('pt-BR') : "—"}
       </td>
       <td className="px-4 py-3">
         <div className="flex gap-1 justify-end">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onEdit?.(f)}
-            className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-white/10"
-            style={{ color: "#6b7280" }}
+            className="!w-7 !h-7 !p-0 !rounded-xl"
           >
             <Pencil size={13} />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onRemove?.(f.id)}
-            className="w-7 h-7 rounded-xl flex items-center justify-center transition-colors hover:bg-red-500/10"
-            style={{ color: "#6b7280" }}
+            className="!w-7 !h-7 !p-0 !rounded-xl hover:!text-error hover:!bg-error/10"
           >
             <Trash2 size={13} />
-          </button>
+          </Button>
         </div>
       </td>
     </tr>

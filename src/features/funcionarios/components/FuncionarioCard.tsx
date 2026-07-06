@@ -1,6 +1,7 @@
 import { Pencil, Trash2, Mail, CreditCard, Calendar, User, CircleDot } from "lucide-react";
 import type { Funcionario } from "../types/types";
 import { formatCpfCnpj } from "@/utils/format";
+import { Button } from "@/ui/forms";
 
 interface FuncionarioCardProps {
   f: Funcionario;
@@ -20,8 +21,7 @@ function cargoLabel(cargo: string) {
 export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
   return (
     <div
-      className="rounded-3xl p-5 flex flex-col gap-5 group transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden"
-      style={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.04)" }}
+      className="rounded-3xl p-5 flex flex-col gap-5 group transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden bg-surface-container border border-outline-variant/10"
     >
       {/* Background Gradient Effect */}
       <div 
@@ -85,27 +85,26 @@ export function FuncionarioCard({ f, onRemove, onEdit }: FuncionarioCardProps) {
         </div>
       </div>
 
-      <div
-        className="flex items-center justify-end pt-4 relative z-10 mt-auto"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
+      <div className="flex items-center justify-end pt-4 relative z-10 mt-auto border-t border-outline-variant/10">
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onEdit?.(f)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:bg-white/10"
-            style={{ color: "#9ca3af" }} title="Editar"
+            className="!px-3 !py-1.5 !rounded-xl"
+            title="Editar"
           >
             <Pencil size={13} /> Editar
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onRemove?.(f.id)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:bg-red-500/10 hover:text-red-400"
-            style={{ color: "#9ca3af" }} title="Remover"
+            className="!px-3 !py-1.5 !rounded-xl hover:!text-error hover:!bg-error/10"
+            title="Remover"
           >
             <Trash2 size={13} /> Remover
-          </button>
+          </Button>
         </div>
       </div>
     </div>
