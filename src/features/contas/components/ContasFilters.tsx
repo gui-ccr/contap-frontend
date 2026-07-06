@@ -43,17 +43,14 @@ export function ContasFilters({
     <div className="bg-surface-container p-4 rounded-2xl flex flex-col sm:flex-row flex-wrap gap-4 items-end border border-outline-variant/30">
       <div className="flex gap-1 p-1 rounded-xl bg-surface-container-low">
         {abas.map(({ key, label }) => (
-          <button
+          <Button
             key={key}
+            variant={filter === key ? "primary" : "ghost"}
             onClick={() => onFilter(key)}
-            className={`cursor-pointer px-4 py-2 rounded-lg text-label-sm font-semibold transition-all ${
-              filter === key
-                ? "bg-primary text-on-primary"
-                : "text-on-surface-variant/60 hover:text-on-surface"
-            }`}
+            className="!px-4 !py-2 !rounded-lg"
           >
             {label}
-          </button>
+          </Button>
         ))}
       </div>
 

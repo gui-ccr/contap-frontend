@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { dreService, gerarPeriodosDre, FinancialEntry } from "./dreService";
+import { Button } from "@/ui/forms";
 
 interface FinancialRowProps {
   label: string;
@@ -95,13 +96,10 @@ export function DrePage() {
               <i className="fi fi-rr-expand-more absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] z-0 pointer-events-none"></i>
             </div>
 
-            <button 
-              style={{ cursor: "pointer" }}
-              className="bg-white/[0.03] hover:bg-white/[0.07] active:scale-98 border border-white/5 text-on-surface py-2.5 px-4 rounded-xl text-label-md font-medium transition-all flex items-center gap-2 cursor-pointer select-none"
-            >
+            <Button variant="tonal" className="!px-4 !py-2.5 !rounded-xl shadow-sm">
               <i className="fi fi-rr-download text-[18px] cursor-pointer"></i>
               Exportar
-            </button>
+            </Button>
           </div>
         </div>
 

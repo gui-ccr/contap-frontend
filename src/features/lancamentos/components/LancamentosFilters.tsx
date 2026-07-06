@@ -1,4 +1,5 @@
 import { Filter, X } from "lucide-react";
+import { Field, Select, Button } from "@/ui/forms";
 import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
@@ -25,74 +26,47 @@ export function LancamentosFilters({
   onStartDate, onEndDate, onConta,
   onClear, onApply,
 }: LancamentosFiltersProps) {
-  const inputStyle = {
-    background: "#242424",
-    border: "1px solid rgba(255,255,255,0.06)",
-    color: "#e5e2e1",
-  };
-
   return (
-    <div className="rounded-3xl p-4 md:p-6" style={{ background: "#1e1e1e" }}>
-      <div className="flex items-center gap-2 mb-4">
-        <Filter size={15} style={{ color: "#4edea3" }} />
-        <span className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>Filtros</span>
+    <div className="bg-surface-container p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <Filter size={15} className="text-primary" />
+        <span className="text-label-sm font-semibold text-on-surface">Filtros</span>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
-            Data Inicial
-          </label>
+      <div className="flex flex-wrap gap-4">
+        <Field label="Data Inicial" className="flex-1 min-w-[140px]">
           <DatePicker
             value={startDate ? parseDate(startDate) : null}
             onChange={(v: DateValue | null) => onStartDate(v ? v.toString() : "")}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
-            Data Final
-          </label>
+        <Field label="Data Final" className="flex-1 min-w-[140px]">
           <DatePicker
             value={endDate ? parseDate(endDate) : null}
             onChange={(v: DateValue | null) => onEndDate(v ? v.toString() : "")}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-1.5 col-span-2">
-          <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
-            Conta
-          </label>
-          <select
+        <Field label="Conta" className="flex-[2] min-w-[200px]">
+          <Select
             value={conta}
             onChange={(e) => onConta(e.target.value)}
-            className="rounded-xl px-3 py-2 text-sm outline-none appearance-none"
-            style={inputStyle}
           >
             {contas.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </Field>
       </div>
 
-      <div className="mt-4 flex justify-end gap-2">
-        <button
-          onClick={onClear}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-medium transition-all hover:bg-white/5 cursor-pointer"
-          style={{ color: "#6b7280", border: "1px solid rgba(255,255,255,0.08)" }}
-        >
-          <X size={13} />
-          Limpar
-        </button>
-        <button
-          onClick={onApply}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-semibold transition-all hover:opacity-90 cursor-pointer"
-          style={{ background: "#4edea3", color: "#003824" }}
-        >
-          <Filter size={13} />
-          Aplicar
-        </button>
+      <div className="flex justify-end gap-2">
+        <Button variant="ghost" onClick={onClear}>
+          <X size={14} /> Limpar
+        </Button>
+        <Button variant="primary" onClick={onApply}>
+          <Filter size={14} /> Aplicar
+        </Button>
       </div>
     </div>
   );

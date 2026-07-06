@@ -4,6 +4,7 @@ import { formatDate } from "../dateUtils";
 import { formatCurrency } from "@/utils/format";
 import type { ContaFinanceira } from "../types";
 import type { ContaContabil } from "@/features/plano-contas/planoContasService";
+import { Button } from "@/ui/forms";
 
 interface ContasTableProps {
   contas: ContaFinanceira[];
@@ -95,18 +96,20 @@ export function ContasTable({
                     <div className="flex items-center justify-end gap-2">
                       {!c.liquidado ? (
                         <>
-                          <button
+                          <Button
+                            variant="tonal"
                             onClick={() => onEdit(c)}
-                            className="cursor-pointer px-3 py-1.5 rounded-lg text-label-sm font-semibold bg-on-surface/5 text-on-surface transition-all hover:bg-on-surface/10 active:scale-95"
+                            className="!px-3 !py-1.5 !rounded-lg"
                           >
                             Editar
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="primary"
                             onClick={() => onBaixar(c)}
-                            className="cursor-pointer px-3 py-1.5 rounded-lg text-label-sm font-semibold bg-primary text-on-primary transition-all hover:brightness-110 active:scale-95"
+                            className="!px-3 !py-1.5 !rounded-lg"
                           >
                             Dar baixa
-                          </button>
+                          </Button>
                         </>
                       ) : (
                         c.dataLiquidacao && (
