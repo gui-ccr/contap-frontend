@@ -6,6 +6,8 @@ import type { Route } from "next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import StaggeredMenu from "./StaggeredMenu";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -653,17 +655,19 @@ function PricingCard({
 
   return (
     <div
-      className="stagger-card relative flex flex-col rounded-2xl p-8 glass-panel"
+      className="stagger-card relative flex flex-col p-8 glass-panel"
       style={
         highlight
           ? {
               border: "1px solid rgba(78,222,163,0.30)",
-              background: "rgba(39,39,42,0.55)",
               boxShadow: "0 0 60px rgba(78,222,163,0.08)",
+              borderRadius: "16px",
+              background: "rgba(39,39,42,0.55)",
             }
           : {
-              border: "1px solid rgba(255,255,255,0.06)",
-              background: "rgba(39,39,42,0.45)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "16px",
+              background: "rgba(39,39,42,0.35)",
             }
       }
     >
@@ -718,7 +722,7 @@ function PricingCard({
             className="flex items-center gap-2.5 text-[14px]"
             style={{ color: highlight ? "#e5e2e1" : "#bbcabf" }}
           >
-            <i className="fi fi-rr-check-circle text-[16px] shrink-0" style={{ color: "#4edea3", fontVariationSettings: '"FILL" 1' }}
+            <i className="fi fi-rr-check-circle text-[16px] shrink-0" style={{ color: "#4edea3", fontVariationSettings: '"FILL" 1', }}
             ></i>
             {f}
           </li>
@@ -976,7 +980,27 @@ export function LandingPage() {
       className="min-h-screen text-on-surface overflow-x-hidden"
       style={{ background: "#1e1e22" }}
     >
-      <Navbar />
+      <StaggeredMenu 
+        isFixed={true} 
+        logoUrl="/contauplogo.png"
+        displayItemNumbering={false}
+        colors={['#1c1c1f', '#003824', '#4edea3']}
+        accentColor="#4edea3"
+        menuButtonColor="#e9e9ef"
+        openMenuButtonColor="#e9e9ef"
+        items={[
+          { label: 'Início', ariaLabel: 'Início', link: '#inicio' },
+          { label: 'Problemas', ariaLabel: 'Problemas', link: '#problemas' },
+          { label: 'Solução', ariaLabel: 'Solução', link: '#solucoes' },
+          { label: 'Preços', ariaLabel: 'Preços', link: '#precos' },
+          { label: 'FAQ', ariaLabel: 'FAQ', link: '#faq' },
+          { label: 'API Docs', ariaLabel: 'Documentação da API', link: '/api-docs' }
+        ]}
+        actionItems={[
+          { label: 'Entrar', link: '/login' },
+          { label: 'Cadastrar', link: '/cadastro-empresa', primary: true }
+        ]}
+      />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section
@@ -1147,11 +1171,12 @@ export function LandingPage() {
             {PROBLEMS.map((p, i) => (
               <div
                 key={i}
-                className="stagger-card group rounded-2xl p-7 glass-panel transition-all duration-300 cursor-default"
+                className="stagger-card group p-7 glass-panel transition-all duration-300 cursor-default"
                 style={{
-                  background: "rgba(39,39,42,0.5)",
                   border: "1px solid rgba(255,255,255,0.06)",
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+                  borderRadius: "16px",
+                  background: "rgba(39,39,42,0.5)",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.borderColor = "rgba(255,179,176,0.25)")
@@ -1233,11 +1258,12 @@ export function LandingPage() {
             {FEATURES.map((f, i) => (
               <div
                 key={i}
-                className="stagger-card group rounded-2xl p-7 glass-panel transition-all duration-300 cursor-default"
+                className="stagger-card group p-7 glass-panel transition-all duration-300 cursor-default"
                 style={{
-                  background: "rgba(39,39,42,0.45)",
                   border: "1px solid rgba(255,255,255,0.06)",
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+                  borderRadius: "16px",
+                  background: "rgba(39,39,42,0.45)",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.borderColor = `${f.color}28`)

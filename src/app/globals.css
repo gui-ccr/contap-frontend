@@ -192,3 +192,11 @@ body {
   color: var(--color-on-surface);
   font-family: var(--font-sans);
 }
+
+/* Fix global para alinhamento dos ícones do Flaticon (UIcons) */
+i[class^="fi-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(1.5px);
+}
