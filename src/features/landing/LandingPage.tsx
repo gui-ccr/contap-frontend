@@ -746,7 +746,7 @@ function PricingCard({
           if (!highlight) e.currentTarget.style.background = "transparent";
         }}
       >
-        Começar Teste Gratis
+        Começar Teste
       </Link>
     </div>
   );
