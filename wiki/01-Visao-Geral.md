@@ -3,6 +3,8 @@
 Bem-vindo à documentação oficial do repositório Frontend do projeto ContaUp.
 Esta aplicação é a interface gráfica (Client-Side) responsável por entregar a experiência ao usuário final, consumindo as APIs REST protegidas do nosso Backend.
 
+![Diagrama de Arquitetura e Conexões](./design-system.png)
+
 ## 🎯 Objetivo
 Prover uma interface rápida, responsiva e alinhada com as melhores práticas de UI/UX para a gestão contábil (Contas a Pagar/Receber, Balanços, DRE e Funcionários).
 
