@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
+import { Modal, ModalHeader, ModalFooter } from "@/ui/modals/Modal";
 import { Field, Select, Button, FormAlert } from "@/ui/forms";
 import { apiClient } from "@/shared/api";
 import { FileText } from "lucide-react";

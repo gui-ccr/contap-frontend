@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import { TextInput } from "@/ui/TextInput";
+import { TextInput } from "@/ui/forms/TextInput";
 import { Button } from "@/ui/forms";
 
 interface StepRequestCodeProps {

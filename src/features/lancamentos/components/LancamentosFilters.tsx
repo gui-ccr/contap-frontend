@@ -1,6 +1,6 @@
 import { Filter, X } from "lucide-react";
 import { Field, Select, Button } from "@/ui/forms";
-import { DatePicker } from "@/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/aria/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 

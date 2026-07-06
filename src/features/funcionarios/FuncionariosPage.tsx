@@ -11,7 +11,7 @@ import { FuncionariosHeader } from "./components/FuncionariosHeader";
 import { FuncionariosToolbar } from "./components/FuncionariosToolbar";
 import { FuncionariosPagination } from "./components/FuncionariosPagination";
 import { funcionariosService } from "./funcionariosService";
-import { ConfirmDeleteModal } from "@/ui/ConfirmDeleteModal";
+import { ConfirmDeleteModal } from "@/ui/modals/ConfirmDeleteModal";
 import { getEmpresaIdFromToken } from "@/shared/api";
 import type { Funcionario, FuncionarioBackend } from "./types/types";
 

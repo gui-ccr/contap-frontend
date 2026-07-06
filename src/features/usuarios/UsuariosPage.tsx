@@ -10,7 +10,7 @@ import { UsuariosPagination } from "./components/UsuariosPagination";
 import { usuariosService } from "./usuariosService";
 import { funcionariosService } from "@/features/funcionarios/funcionariosService";
 import type { Usuario, UsuarioBackend } from "./types/types";
-import { ConfirmDeleteModal } from "@/ui/ConfirmDeleteModal";
+import { ConfirmDeleteModal } from "@/ui/modals/ConfirmDeleteModal";
 
 const CORES = ["#4edea3", "#6366f1", "#f59e0b", "#ec4899", "#14b8a6", "#f97316", "#a855f7", "#0ea5e9"];
 

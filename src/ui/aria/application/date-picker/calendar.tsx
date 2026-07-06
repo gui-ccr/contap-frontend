@@ -15,8 +15,8 @@ import {
     Heading as AriaHeading,
     useSlottedContext,
 } from "react-aria-components";
-import { Button } from "@/ui/base/buttons/button";
-import { InputDateBase } from "@/ui/base/input/input-date";
+import { Button } from "@/ui/aria/base/buttons/button";
+import { InputDateBase } from "@/ui/aria/base/input/input-date";
 import { cx } from "@/utils/cx";
 import { CalendarCell } from "./cell";
 

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Pencil, Check } from "lucide-react";
-import { ConfirmModal } from "@/ui/ConfirmModal";
-import { Modal, ModalHeader } from "@/ui/Modal";
+import { ConfirmModal } from "@/ui/modals/ConfirmModal";
+import { Modal, ModalHeader } from "@/ui/modals/Modal";
 import { Input, Button, FormAlert } from "@/ui/forms";
 import { cargosService, type CargoBackend } from "@/features/cargos/cargosService";
 

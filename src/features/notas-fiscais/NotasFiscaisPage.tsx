@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
-import { ConfirmModal } from "@/ui/ConfirmModal";
+import { ConfirmModal } from "@/ui/modals/ConfirmModal";
 import { Field, Input, Button, Select } from "@/ui/forms";
 import { contasReceberService, ContaReceberBackend } from "@/features/contas-receber/contasReceberService";
 import { notasFiscaisService, NotaFiscal } from "./notasFiscaisService";
@@ -12,7 +12,7 @@ import { primeiroDiaDoMes, ultimoDiaDoMes } from "@/features/contas/dateUtils";
 import { UsuariosPagination } from "@/features/usuarios/components/UsuariosPagination";
 import { AnexarNotaModal, type AnexarNotaFormData } from "./components/AnexarNotaModal";
 import { NotasContasTable, type ContaComNotas } from "./components/NotasContasTable";
-import { DatePicker } from "@/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/aria/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 

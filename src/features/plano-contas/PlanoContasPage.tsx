@@ -5,7 +5,7 @@ import { Plus, Search, Trash2 } from "lucide-react";
 import { getEmpresaIdFromToken } from "@/shared/api";
 import { planoContasService, type ContaContabil, type TipoConta } from "./planoContasService";
 import { toast } from "sonner";
-import { ConfirmModal } from "@/ui/ConfirmModal";
+import { ConfirmModal } from "@/ui/modals/ConfirmModal";
 
 const TIPOS: { value: TipoConta; label: string; color: string; bg: string }[] = [
   { value: "ATIVO", label: "Ativo", color: "#4edea3", bg: "rgba(78,222,163,0.12)" },

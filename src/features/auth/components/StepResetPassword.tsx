@@ -1,6 +1,6 @@
 import { FormEvent } from "react";
-import { TextInput } from "@/ui/TextInput";
-import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { TextInput } from "@/ui/forms/TextInput";
+import { PasswordStrengthIndicator } from "@/ui/forms/PasswordStrengthIndicator";
 import { Button } from "@/ui/forms";
 
 interface StepResetPasswordProps {

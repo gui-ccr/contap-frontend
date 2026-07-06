@@ -7,7 +7,7 @@ import { lancamentosService } from '../lancamentosService';
 import { getEmpresaIdFromToken } from '@/shared/api';
 import { Field, Input, Select, Button } from '@/ui/forms';
 import { formatCurrencyInput, parseCurrency } from '@/utils/format';
-import { DatePicker } from "@/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/aria/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 

@@ -6,7 +6,7 @@ import { User, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/shared/AuthContext";
 import { apiClient } from "@/shared/api";
-import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { PasswordStrengthIndicator } from "@/ui/forms/PasswordStrengthIndicator";
 import { Field, SettingsCard, SectionHeader, SaveButton, type SaveState } from "./settingsUi";
 
 export function ProfileSettings() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, ModalHeader, ModalFooter } from "@/ui/Modal";
+import { Modal, ModalHeader, ModalFooter } from "@/ui/modals/Modal";
 import { Button } from "@/ui/forms";
 import { formatCurrency } from "@/utils/format";
 import { Printer } from "lucide-react";

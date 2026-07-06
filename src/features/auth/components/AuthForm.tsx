@@ -1,5 +1,5 @@
-import { TextInput } from "@/ui/TextInput";
-import { PasswordStrengthIndicator } from "@/ui/PasswordStrengthIndicator";
+import { TextInput } from "@/ui/forms/TextInput";
+import { PasswordStrengthIndicator } from "@/ui/forms/PasswordStrengthIndicator";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/ui/forms";
 

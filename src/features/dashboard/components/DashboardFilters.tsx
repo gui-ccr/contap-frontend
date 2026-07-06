@@ -1,5 +1,5 @@
 import { Calendar } from "lucide-react";
-import { DatePicker } from "@/ui/application/date-picker/date-picker";
+import { DatePicker } from "@/ui/aria/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
 import { Button } from "@/ui/forms";

@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { TextInput } from "@/ui/TextInput";
+import { TextInput } from "@/ui/forms/TextInput";
 import { apiClient } from "@/shared/api";
 
 function formatCNPJ(value: string): string {
