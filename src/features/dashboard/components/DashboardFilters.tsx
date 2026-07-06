@@ -2,6 +2,7 @@ import { Calendar } from "lucide-react";
 import { DatePicker } from "@/src/ui/application/date-picker/date-picker";
 import { parseDate } from "@internationalized/date";
 import type { DateValue } from "react-aria-components";
+import { Button } from "@/ui/forms";
 interface DashboardFiltersProps {
   startDate: string;
   endDate: string;
@@ -23,32 +24,36 @@ export function DashboardFilters({ startDate, endDate, onChangeRange }: Dashboar
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-3 mb-6 bg-[#1a1a1a] p-3 rounded-2xl border border-white/5">
+    <div className="flex flex-col md:flex-row items-center gap-3 mb-6 bg-surface-container-low p-3 rounded-2xl border border-outline-variant/20">
       <div className="flex items-center gap-2">
-        <button 
+        <Button 
+          variant="tonal"
           onClick={() => handleShortcut(1)}
-          className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#252525] hover:bg-[#303030] text-gray-300 transition-colors"
+          className="!px-3 !py-1.5 !text-xs"
         >
           30 Dias
-        </button>
-        <button 
+        </Button>
+        <Button 
+          variant="tonal"
           onClick={() => handleShortcut(3)}
-          className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#252525] hover:bg-[#303030] text-gray-300 transition-colors"
+          className="!px-3 !py-1.5 !text-xs"
         >
           3 Meses
-        </button>
-        <button 
+        </Button>
+        <Button 
+          variant="tonal"
           onClick={() => handleShortcut(6)}
-          className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#252525] hover:bg-[#303030] text-gray-300 transition-colors"
+          className="!px-3 !py-1.5 !text-xs"
         >
           6 Meses
-        </button>
-        <button 
+        </Button>
+        <Button 
+          variant="tonal"
           onClick={() => handleShortcut(12)}
-          className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#252525] hover:bg-[#303030] text-gray-300 transition-colors"
+          className="!px-3 !py-1.5 !text-xs"
         >
           12 Meses
-        </button>
+        </Button>
       </div>
 
       <div className="w-px h-6 bg-white/10 hidden md:block mx-2" />

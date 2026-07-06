@@ -1,4 +1,5 @@
 import type { CashFlowRow } from "../types";
+import { Button } from "@/ui/forms";
 
 function StatusBadge({ status }: { status: string }) {
   const ok = status === "Confirmado";
@@ -18,18 +19,18 @@ interface CashFlowTableProps {
 
 export function CashFlowTable({ rows }: CashFlowTableProps) {
   return (
-    <section className="mb-6 rounded-3xl overflow-hidden" style={{ background: "#1e1e1e" }}>
+    <section className="mb-6 rounded-3xl overflow-hidden bg-surface-container-low">
       <div className="flex items-center justify-between px-5 py-4">
         <div>
           <h2 className="text-sm font-semibold text-white">Fluxo de Caixa</h2>
           <p className="text-xs text-gray-500 mt-0.5">Últimos lançamentos</p>
         </div>
-        <button
-          className="text-xs font-medium px-3 py-1.5 rounded-xl hover:bg-white/5 transition-colors"
-          style={{ color: "#10b981" }}
+        <Button
+          variant="ghost"
+          className="!text-xs !text-primary hover:!bg-primary/10 !px-3 !py-1.5"
         >
           Ver todos →
-        </button>
+        </Button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

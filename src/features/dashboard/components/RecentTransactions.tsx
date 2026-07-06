@@ -1,4 +1,5 @@
 import type { RecentItem } from "../types";
+import { Button } from "@/ui/forms";
 
 interface RecentTransactionsProps {
   transactions: RecentItem[];
@@ -6,15 +7,15 @@ interface RecentTransactionsProps {
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
-    <div className="rounded-3xl p-5" style={{ background: "#1e1e1e" }}>
+    <div className="rounded-3xl p-5 bg-surface-container-low">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-sm font-semibold text-white">Movimentações Recentes</h2>
           <p className="text-xs text-gray-500 mt-0.5">Últimos lançamentos</p>
         </div>
-        <button className="text-xs font-medium hover:opacity-70 transition-opacity" style={{ color: "#10b981" }}>
+        <Button variant="ghost" className="!text-xs !text-primary !px-2 !py-1 hover:!bg-primary/10">
           Ver todas →
-        </button>
+        </Button>
       </div>
       <div className="flex flex-col divide-y divide-white/[0.04]">
         {transactions.map((tx) => (
