@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import { LancamentosFilters } from "./components/LancamentosFilters";
 import { LancamentosTable } from "./components/LancamentosTable";
-import { BanknoteArrowUp } from "lucide-react";
+import { Download } from "lucide-react";
 import { lancamentosService, LancamentoBackend } from "./lancamentosService";
+import { exportLivroDiarioToPDF } from "@/utils/pdfExport";
+import { toast } from "sonner";
+import { Button } from "@/ui/forms";
 
 const CONTAS = [
   { value: "all", label: "Todas as Contas" },
@@ -20,9 +23,22 @@ function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function toISO(d: Date) {
+  return d.toISOString().split("T")[0];
+}
+
+function getMesAtualRange() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return { start: toISO(start), end: toISO(end) };
+}
+
 export default function LancamentosPage() {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const mesAtual = getMesAtualRange();
+  const [startDate, setStartDate] = useState(mesAtual.start);
+  const [endDate, setEndDate] = useState(mesAtual.end);
+  const [activePreset, setActivePreset] = useState("mes-atual");
   const [conta, setConta] = useState("all");
   const [page, setPage] = useState(1);
   const [lancamentos, setLancamentos] = useState<any[]>([]);
@@ -82,15 +98,17 @@ export default function LancamentosPage() {
     return true;
   });
 
-  let totalReceitas = 0;
-  let totalDespesas = 0;
+  // Volume total movimentado (soma de todos os valores dos lançamentos filtrados)
+  const volumeTotal = filtered.reduce((acc, l) => acc + l.valorNum, 0);
 
-  filtered.forEach(l => {
-    if (l.credito.startsWith("3")) totalReceitas += l.valorNum;
-    if (l.debito.startsWith("4")) totalDespesas += l.valorNum;
-  });
+  // Quantidade total de lançamentos no período filtrado
+  const qtdLancamentos = filtered.length;
 
-  const saldo = totalReceitas - totalDespesas;
+  // Maior lançamento do período
+  const maiorLancamento = filtered.reduce(
+    (max, l) => (l.valorNum > max.valorNum ? l : max),
+    { valorNum: 0, descricao: "-", data: "-" }
+  );
 
   const totalFiltered = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
@@ -101,11 +119,43 @@ export default function LancamentosPage() {
   );
 
   function clearFilters() {
-    setStartDate("");
-    setEndDate("");
+    const { start, end } = getMesAtualRange();
+    setStartDate(start);
+    setEndDate(end);
+    setActivePreset("mes-atual");
     setConta("all");
     setPage(1);
   }
+
+  function handlePreset(preset: string, start: string, end: string) {
+    setActivePreset(preset);
+    setStartDate(start);
+    setEndDate(end);
+    setPage(1);
+  }
+
+  const handleExport = async () => {
+    try {
+      toast.loading("Gerando Livro Diário em PDF...", { id: "pdf-toast" });
+      const pText = (startDate && endDate)
+        ? `${startDate} a ${endDate}`
+        : startDate ? `A partir de ${startDate}` : endDate ? `Até ${endDate}` : "Todo o período";
+      // Exporta todos os registros filtrados (não só a página atual)
+      await exportLivroDiarioToPDF(
+        filtered.map((r) => ({
+          data: r.data,
+          descricao: r.descricao,
+          debito: r.debito,
+          credito: r.credito,
+          valor: r.valor,
+        })),
+        pText
+      );
+      toast.success("PDF gerado com sucesso!", { id: "pdf-toast" });
+    } catch (err) {
+      toast.error("Erro ao gerar PDF.", { id: "pdf-toast" });
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
@@ -121,132 +171,84 @@ export default function LancamentosPage() {
                 Lançamentos Contábeis
               </h1>
             </div>
+            <Button
+              variant="tonal"
+              className="self-start sm:self-auto shadow-sm"
+              onClick={handleExport}
+            >
+              <Download size={15} />
+              Exportar Livro Diário
+            </Button>
           </header>
 
-          {/* KPIs */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Receitas */}
+          <div id="lancamentos-report-content" className="space-y-4 w-full">
+            {/* KPIs compactos em linha */}
+            <div className="grid grid-cols-3 gap-3">
+            {/* Card 1: Volume Total */}
             <div
-              className="rounded-3xl p-5 flex flex-col justify-between gap-4"
+              className="rounded-2xl p-4 flex flex-col gap-3"
               style={{ background: "#1e1e1e" }}
             >
-              <div className="flex justify-between items-center">
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "#6b7280" }}
-                >
-                  Total Receitas
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
+                  Volume Total
                 </span>
-                <div
-                  className="w-8 h-8 rounded-2xl flex items-center justify-center"
-                  style={{ background: "rgba(78,222,163,0.12)" }}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="#4edea3"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
-                    />
+                <div className="w-6 h-6 rounded-xl flex items-center justify-center" style={{ background: "rgba(78,222,163,0.12)" }}>
+                  <svg className="w-3 h-3" fill="none" stroke="#4edea3" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <p className="text-2xl font-bold text-white tracking-tight">
-                  R$ {formatCurrency(totalReceitas)}
-                </p>
-                <p
-                  className="text-xs mt-1 font-medium"
-                  style={{ color: "#4edea3" }}
-                >
-                  Contas do grupo 3
-                </p>
+                <p className="text-lg font-bold text-white tracking-tight">R$ {formatCurrency(volumeTotal)}</p>
+                <p className="text-[10px] mt-0.5 font-medium" style={{ color: "#4edea3" }}>Movimentado no período</p>
               </div>
             </div>
 
-            {/* Despesas */}
+            {/* Card 2: Quantidade */}
             <div
-              className="rounded-3xl p-5 flex flex-col justify-between gap-4"
+              className="rounded-2xl p-4 flex flex-col gap-3"
               style={{ background: "#1e1e1e" }}
             >
-              <div className="flex justify-between items-center">
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "#6b7280" }}
-                >
-                  Total Despesas
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>
+                  Lançamentos
                 </span>
-                <div
-                  className="w-8 h-8 rounded-2xl flex items-center justify-center"
-                  style={{ background: "rgba(255,100,100,0.1)" }}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="#ff6464"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.25 6L9 12.75l4.306-4.307a11.95 11.95 0 015.814 5.519l2.74 1.22m0 0l-5.94 2.28m5.94 2.28l-2.28 5.941"
-                    />
+                <div className="w-6 h-6 rounded-xl flex items-center justify-center" style={{ background: "rgba(147,112,219,0.15)" }}>
+                  <svg className="w-3 h-3" fill="none" stroke="#9370db" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <p className="text-2xl font-bold text-white tracking-tight">
-                  R$ {formatCurrency(totalDespesas)}
-                </p>
-                <p
-                  className="text-xs mt-1 font-medium"
-                  style={{ color: "#ff6464" }}
-                >
-                  Contas do grupo 4
+                <p className="text-lg font-bold text-white tracking-tight">{qtdLancamentos}</p>
+                <p className="text-[10px] mt-0.5 font-medium" style={{ color: "#9370db" }}>
+                  {qtdLancamentos > 0 ? `Média R$ ${formatCurrency(volumeTotal / qtdLancamentos)}` : "Sem registros"}
                 </p>
               </div>
             </div>
 
-            {/* Saldo */}
+            {/* Card 3: Maior Lançamento */}
             <div
-              className="rounded-3xl p-5 flex flex-col justify-between gap-4"
-              style={{ background: saldo >= 0 ? "rgba(0,230,118,0.08)" : "rgba(239,68,68,0.08)" }}
+              className="rounded-2xl p-4 flex flex-col gap-3"
+              style={{ background: maiorLancamento.valorNum > 0 ? "rgba(251,191,36,0.06)" : "#1e1e1e" }}
             >
-              <div className="flex justify-between items-center">
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
-                >
-                  Balanço (Receitas - Despesas)
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: maiorLancamento.valorNum > 0 ? "#fbbf24" : "#6b7280" }}>
+                  Maior Lançamento
                 </span>
-                <div
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center"
-                  style={{ 
-                    color: saldo >= 0 ? "#00E676" : "#ef4444", 
-                    background: saldo >= 0 ? "rgba(0,230,118,0.2)" : "rgba(239,68,68,0.2)" 
-                  }}
-                >
-                  <BanknoteArrowUp />
+                <div className="w-6 h-6 rounded-xl flex items-center justify-center" style={{ background: "rgba(251,191,36,0.15)" }}>
+                  <svg className="w-3 h-3" fill="none" stroke="#fbbf24" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                  </svg>
                 </div>
               </div>
               <div>
-                <p
-                  className="text-2xl font-bold tracking-tight"
-                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
-                >
-                  R$ {formatCurrency(saldo)}
+                <p className="text-lg font-bold tracking-tight" style={{ color: maiorLancamento.valorNum > 0 ? "#fbbf24" : "white" }}>
+                  {maiorLancamento.valorNum > 0 ? `R$ ${formatCurrency(maiorLancamento.valorNum)}` : "—"}
                 </p>
-                <p
-                  className="text-xs mt-1 font-medium"
-                  style={{ color: saldo >= 0 ? "#00E676" : "#ef4444" }}
-                >
-                  {saldo >= 0 ? "Superávit do período" : "Déficit do período"}
+                <p className="text-[10px] mt-0.5 font-medium truncate" style={{ color: "#fbbf24" }} title={maiorLancamento.descricao}>
+                  {maiorLancamento.descricao !== "-" ? maiorLancamento.descricao : "Sem lançamentos"}
                 </p>
               </div>
             </div>
@@ -255,16 +257,18 @@ export default function LancamentosPage() {
           {/* Filtros + Tabela */}
           <div className="space-y-5 w-full">
             <LancamentosFilters
-                startDate={startDate}
-                endDate={endDate}
-                conta={conta}
-                contas={CONTAS}
-                onStartDate={setStartDate}
-                onEndDate={setEndDate}
-                onConta={setConta}
-                onClear={clearFilters}
-                onApply={() => setPage(1)}
-              />
+              startDate={startDate}
+              endDate={endDate}
+              conta={conta}
+              contas={CONTAS}
+              onStartDate={(v) => { setStartDate(v); setActivePreset(""); }}
+              onEndDate={(v) => { setEndDate(v); setActivePreset(""); }}
+              onConta={setConta}
+              onClear={clearFilters}
+              onApply={() => setPage(1)}
+              activePreset={activePreset}
+              onPreset={handlePreset}
+            />
 
               <div
                 className="rounded-3xl overflow-hidden"
@@ -301,6 +305,7 @@ export default function LancamentosPage() {
               </div>
             </div>
           </div>
+        </div>
       </main>
     </div>
   );
