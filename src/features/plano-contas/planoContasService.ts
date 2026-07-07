@@ -33,7 +33,12 @@ export const planoContasService = {
     return await apiClient.patch<ContaContabil>(`/plano-contas/${id}`, payload);
   },
 
-  async removerConta(id: string): Promise<void> {
-    await apiClient.delete(`/plano-contas/${id}`);
+  async removerConta(id: string, acao?: 'excluir_vinculos' | 'substituir', substitutoId?: string): Promise<void> {
+    const params = new URLSearchParams();
+    if (acao) params.append('acao', acao);
+    if (substitutoId) params.append('substituto_id', substitutoId);
+    
+    const query = params.toString() ? `?${params.toString()}` : '';
+    await apiClient.delete(`/plano-contas/${id}${query}`);
   },
 };
