@@ -3,42 +3,11 @@
 import { useState, useEffect } from "react";
 import { BalancoHeader } from "./components/BalancoHeader";
 import { AtivoSection } from "./components/AtivoSection";
+import { exportBalancoToPDF } from "@/utils/pdfExport";
+import { toast } from "sonner";
 import { PassivoSection } from "./components/PassivoSection";
 import { EquationFooter } from "./components/EquationFooter";
 import { balancoService } from "./balancoService";
-
-// ─── Mock data (Fallback) ──────────────────────────────────────────────────────
-
-const ATIVO_CIRCULANTE = [
-  { label: "Caixa e Equivalentes", valor: "R$ 1.245.000,00" },
-  { label: "Contas a Receber",     valor: "R$ 850.500,00"   },
-  { label: "Estoques",             valor: "R$ 420.000,00"   },
-];
-
-const ATIVO_NAO_CIRCULANTE = [
-  { label: "Imobilizado",   valor: "R$ 3.100.000,00" },
-  { label: "Intangível",    valor: "R$ 550.000,00"   },
-  { label: "Investimentos", valor: "R$ 800.000,00"   },
-];
-
-const PASSIVO_CIRCULANTE = [
-  { label: "Fornecedores",           valor: "R$ 620.000,00" },
-  { label: "Obrigações Fiscais",     valor: "R$ 185.000,00" },
-  { label: "Empréstimos Curto Prazo", valor: "R$ 350.000,00" },
-];
-
-const PASSIVO_NAO_CIRCULANTE = [
-  { label: "Financiamentos Longo Prazo", valor: "R$ 1.800.000,00" },
-  { label: "Provisões",                  valor: "R$ 210.500,00"   },
-];
-
-const PATRIMONIO_LIQUIDO = [
-  { label: "Capital Social",    valor: "R$ 3.000.000,00" },
-  { label: "Reservas de Lucro", valor: "R$ 800.000,00"   },
-];
-
-const TOTAL_ATIVO   = "R$ 6.965.500,00";
-const TOTAL_PASSIVO = "R$ 6.965.500,00";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -55,6 +24,20 @@ export default function BalancoPatrimonialPage() {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
   };
 
+  // Guardamos os dados numéricos antes da formatação para uso na exportação
+  const [rawData, setRawData] = useState<any>(null);
+
+  const handleExport = async () => {
+    if (!rawData) return;
+    try {
+      toast.loading("Gerando PDF...", { id: "pdf-toast" });
+      await exportBalancoToPDF(rawData, today);
+      toast.success("PDF gerado com sucesso!", { id: "pdf-toast" });
+    } catch (err) {
+      toast.error("Erro ao gerar PDF.", { id: "pdf-toast" });
+    }
+  };
+
   useEffect(() => {
     async function loadBalanco() {
       try {
@@ -62,6 +45,8 @@ export default function BalancoPatrimonialPage() {
         setError(null);
         const res = await balancoService.obterBalanco();
         
+        // Salva os dados numéricos para exportação antes de formatar
+        setRawData(res);
         // Formatar valores para string conforme esperado pelos componentes visuais
         const formatted = {
           ativoCirculante: res.ativoCirculante.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
@@ -71,6 +56,7 @@ export default function BalancoPatrimonialPage() {
           patrimonioLiquido: res.patrimonioLiquido.map(i => ({ label: i.label, valor: formatCurrency(i.valor) })),
           totalAtivo: formatCurrency(res.totalAtivo),
           totalPassivo: formatCurrency(res.totalPassivo),
+          equacaoValida: res.equacaoValida,
           // Subtotais calculados
           totalCirculanteAtivo: formatCurrency(res.ativoCirculante.reduce((acc, i) => acc + i.valor, 0)),
           totalNaoCirculanteAtivo: formatCurrency(res.ativoNaoCirculante.reduce((acc, i) => acc + i.valor, 0)),
@@ -94,7 +80,7 @@ export default function BalancoPatrimonialPage() {
       <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
         <div className="max-w-6xl mx-auto space-y-5">
 
-          <BalancoHeader today={today} />
+          <BalancoHeader today={today} onExport={handleExport} />
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -111,7 +97,7 @@ export default function BalancoPatrimonialPage() {
           )}
 
           {!loading && !error && data && (
-            <>
+            <div id="balanco-report-content">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <AtivoSection
                   circulante={data.ativoCirculante}
@@ -131,8 +117,8 @@ export default function BalancoPatrimonialPage() {
                 />
               </div>
 
-              <EquationFooter totalAtivo={data.totalAtivo} totalPassivo={data.totalPassivo} />
-            </>
+              <EquationFooter totalAtivo={data.totalAtivo} totalPassivo={data.totalPassivo} equacaoValida={data.equacaoValida} />
+            </div>
           )}
 
         </div>

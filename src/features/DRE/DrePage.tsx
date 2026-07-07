@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { dreService, gerarPeriodosDre, FinancialEntry } from "./dreService";
 import { Button } from "@/ui/forms";
+import { exportDREToPDF } from "@/utils/pdfExport";
+import { toast } from "sonner";
 
 interface FinancialRowProps {
   label: string;
@@ -45,6 +47,17 @@ export function DrePage() {
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+  };
+
+  const handleExport = async () => {
+    if (!reportData) return;
+    try {
+      toast.loading("Gerando PDF...", { id: "pdf-toast" });
+      await exportDREToPDF(reportData, periodo.label);
+      toast.success("PDF gerado com sucesso!", { id: "pdf-toast" });
+    } catch (err) {
+      toast.error("Erro ao gerar PDF.", { id: "pdf-toast" });
+    }
   };
 
   useEffect(() => {
@@ -96,7 +109,7 @@ export function DrePage() {
               <i className="fi fi-rr-expand-more absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] z-0 pointer-events-none"></i>
             </div>
 
-            <Button variant="tonal" className="!px-4 !py-2.5 !rounded-xl shadow-sm">
+            <Button variant="tonal" className="!px-4 !py-2.5 !rounded-xl shadow-sm" onClick={handleExport}>
               <i className="fi fi-rr-download text-[18px] cursor-pointer"></i>
               Exportar
             </Button>
@@ -118,7 +131,7 @@ export function DrePage() {
         )}
 
         {!loading && !error && reportData && (
-          <div className="flex flex-col gap-md">
+          <div className="flex flex-col gap-md" id="dre-report-content">
             
             <div className="bg-surface-container/40 glass-panel border border-white/5 rim-light rounded-2xl p-md flex flex-col gap-base shadow-xl">
               <div className="flex justify-between items-center border-b border-white/5 pb-sm mb-xs">
