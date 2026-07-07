@@ -57,7 +57,7 @@ async function getEmpresaInfo(): Promise<EmpresaInfo> {
     if (empresaId) {
       const empresa = await apiClient.get<any>(`/empresas/${empresaId}`);
       if (empresa) {
-        razaoSocial = empresa.razaoSocial || razaoSocial;
+        razaoSocial = empresa.razao_social || empresa.nome_fantasia || razaoSocial;
         cnpj = empresa.cnpj || cnpj;
       }
     }
