@@ -1,11 +1,12 @@
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, AlertTriangle } from "lucide-react";
 
 interface EquationFooterProps {
   totalAtivo: string;
   totalPassivo: string;
+  equacaoValida: boolean;
 }
 
-export function EquationFooter({ totalAtivo, totalPassivo }: EquationFooterProps) {
+export function EquationFooter({ totalAtivo, totalPassivo, equacaoValida }: EquationFooterProps) {
   return (
     <div
       className="rounded-3xl p-4 md:p-5 flex flex-wrap items-center justify-center gap-4 md:gap-8"
@@ -27,10 +28,17 @@ export function EquationFooter({ totalAtivo, totalPassivo }: EquationFooterProps
         <p className="text-base font-bold font-mono" style={{ color: "#e5e2e1" }}>{totalPassivo}</p>
       </div>
 
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "#4edea318" }}>
-        <CheckCircle size={14} style={{ color: "#4edea3" }} />
-        <span className="text-xs font-semibold" style={{ color: "#4edea3" }}>Balancete ok</span>
-      </div>
+      {equacaoValida ? (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "#4edea318" }}>
+          <CheckCircle size={14} style={{ color: "#4edea3" }} />
+          <span className="text-xs font-semibold" style={{ color: "#4edea3" }}>Balancete ok</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "#ff525218" }}>
+          <AlertTriangle size={14} style={{ color: "#ff5252" }} />
+          <span className="text-xs font-semibold" style={{ color: "#ff5252" }}>Balancete divergente</span>
+        </div>
+      )}
     </div>
   );
 }

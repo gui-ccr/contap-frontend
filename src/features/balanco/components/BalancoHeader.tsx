@@ -3,9 +3,10 @@ import { Button } from "@/ui/forms";
 
 interface BalancoHeaderProps {
   today: string;
+  onExport?: () => void;
 }
 
-export function BalancoHeader({ today }: BalancoHeaderProps) {
+export function BalancoHeader({ today, onExport }: BalancoHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div>
@@ -19,6 +20,7 @@ export function BalancoHeader({ today }: BalancoHeaderProps) {
       <Button
         variant="tonal"
         className="self-start md:self-auto shadow-sm"
+        onClick={onExport}
       >
         <Download size={15} />
         Exportar PDF

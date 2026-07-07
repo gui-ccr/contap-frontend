@@ -13,6 +13,7 @@ export interface BalancoData {
   patrimonioLiquido: BalancoItem[];
   totalAtivo: number;
   totalPassivo: number;
+  equacaoValida: boolean;
 }
 
 export const balancoService = {
@@ -38,7 +39,9 @@ export const balancoService = {
       passivoNaoCirculante: passivos.filter((p: any) => !codigo(p).startsWith("2.1")).map(mapItem),
       patrimonioLiquido: pl.map(mapItem),
       totalAtivo: res.totalAtivo || 0,
+      // Lado direito da equação patrimonial: Total Passivo + Total PL (nunca subtrair)
       totalPassivo: (res.totalPassivo || 0) + (res.totalPL || 0),
+      equacaoValida: Boolean(res.equacaoValida),
     };
   },
 };
