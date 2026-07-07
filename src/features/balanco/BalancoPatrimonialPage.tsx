@@ -19,7 +19,7 @@ export default function BalancoPatrimonialPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [diagnosticos, setDiagnosticos] = useState<any[]>([]);
+  const [relatorioDiagnostico, setRelatorioDiagnostico] = useState<any>(null);
   const [diagnosticoLoading, setDiagnosticoLoading] = useState(false);
 
   const today = new Date().toLocaleDateString("pt-BR", {
@@ -49,7 +49,7 @@ export default function BalancoPatrimonialPage() {
     setDiagnosticoLoading(true);
     try {
       const res = await balancoService.obterDiagnostico();
-      setDiagnosticos(res);
+      setRelatorioDiagnostico(res);
     } catch (err) {
       toast.error("Erro ao carregar diagnóstico.");
     } finally {
@@ -156,7 +156,7 @@ export default function BalancoPatrimonialPage() {
       <DiagnosticoModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        diagnosticos={diagnosticos}
+        relatorio={relatorioDiagnostico}
         loading={diagnosticoLoading}
       />
     </div>
