@@ -44,4 +44,9 @@ export const balancoService = {
       equacaoValida: Boolean(res.equacaoValida),
     };
   },
+  
+  async obterDiagnostico(): Promise<any[]> {
+    const res = await apiClient.get<any[]>('/lancamentos/diagnostico');
+    return res;
+  }
 };

@@ -13,20 +13,44 @@ import { PUBLIC_ROUTES } from "@/shared/publicRoutes";
 
 const NAV_ITEMS: { icon: string; label: string; href: Route }[] = [
   { icon: "fi-rr-apps", label: "Dashboard", href: "/dashboard" as Route },
-  { icon: "fi-rr-wallet", label: "Contas a Receber", href: "/contas-receber" as Route },
-  { icon: "fi-rr-credit-card", label: "Contas a Pagar", href: "/contas-pagar" as Route },
-  { icon: "fi-rr-receipt", label: "Notas Fiscais", href: "/notas-fiscais" as Route },
-  { icon: "fi-rr-book-alt", label: "Listagem de Lançamentos", href: "/lancamentos" as Route },
-  { icon: "fi-rr-network-cloud", label: "Plano de Contas", href: "/plano-contas" as Route },
+  {
+    icon: "fi-rr-wallet",
+    label: "Contas a Receber",
+    href: "/contas-receber" as Route,
+  },
+  {
+    icon: "fi-rr-credit-card",
+    label: "Contas a Pagar",
+    href: "/contas-pagar" as Route,
+  },
+  {
+    icon: "fi-rr-receipt",
+    label: "Notas Fiscais",
+    href: "/notas-fiscais" as Route,
+  },
+  {
+    icon: "fi-rr-book-alt",
+    label: "Listagem de Lançamentos",
+    href: "/lancamentos" as Route,
+  },
+  {
+    icon: "fi-rr-network-cloud",
+    label: "Plano de Contas",
+    href: "/plano-contas" as Route,
+  },
   {
     icon: "fi-rr-bank",
     label: "Balanço Patrimonial",
-    href: "/balanco-patrimonial" as Route
+    href: "/balanco-patrimonial" as Route,
   },
   { icon: "fi-rr-document-signed", label: "DRE", href: "/dre" as Route },
   { icon: "fi-rr-users-alt", label: "RH", href: "/funcionarios" as Route },
   { icon: "fi-rr-user-shield", label: "Usuários", href: "/usuarios" as Route },
-  { icon: "fi-rr-settings", label: "Configurações", href: "/configuracoes" as Route },
+  {
+    icon: "fi-rr-settings",
+    label: "Configurações",
+    href: "/configuracoes" as Route,
+  },
 ];
 
 function NavLinks({
@@ -37,9 +61,16 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   const { empresa, loading } = useAuth();
-  const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
-  const names = companyName.split(" "); const firstName = names[0] || "Conta";
-  const secondName = names.length > 1 ? names.slice(1).join(" ") : (companyName === "ContaUp" ? "Up" : "");
+  const companyName =
+    empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
+  const names = companyName.split(" ");
+  const firstName = names[0] || "Conta";
+  const secondName =
+    names.length > 1
+      ? names.slice(1).join(" ")
+      : companyName === "ContaUp"
+        ? "Up"
+        : "";
 
   return (
     <>
@@ -64,9 +95,12 @@ function NavLinks({
                 className="rounded-2xl shadow-lg"
               />
               <div>
-                <span className="text-white font-bold text-lg tracking-tight leading-none" title={companyName}>
-                  {firstName}
-                  {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 10 ? secondName.substring(0,10) + "..." : secondName}</span>}
+                <span
+                  className="text-white font-bold text-lg tracking-tight leading-none"
+                  title={companyName}
+                >
+                  Conta
+                  <span style={{ color: "#4edea3" }}>Up</span>
                 </span>
                 <p
                   className="text-[12px] mt-0.5 font-medium"
@@ -89,9 +123,11 @@ function NavLinks({
                 href={href}
                 onClick={onNavigate}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 hover:bg-[#4edea318]/50 hover:text-[#4edea3]/50
-                  ${isActive ? "bg-[#4edea318] text-[#4edea3]" :  "bg-transparent text-[#6b7280]"}`}
+                  ${isActive ? "bg-[#4edea318] text-[#4edea3]" : "bg-transparent text-[#6b7280]"}`}
               >
-                <i className={`fi ${icon} text-[20px] flex items-center justify-center`} />
+                <i
+                  className={`fi ${icon} text-[20px] flex items-center justify-center`}
+                />
                 <span className="flex-1 leading-tight">{label}</span>
                 {isActive && (
                   <span
@@ -111,7 +147,8 @@ function NavLinks({
         onClick={async () => {
           onNavigate?.();
           try {
-            const { getSupabaseClient } = await import("@/shared/supabaseClient");
+            const { getSupabaseClient } =
+              await import("@/shared/supabaseClient");
             await getSupabaseClient().auth.signOut();
           } catch (e) {
             console.error("Erro ao fazer signout no supabase", e);
@@ -139,9 +176,16 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
   if (PUBLIC_ROUTES.includes(pathname)) return <>{children}</>;
 
-  const companyName = empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
-  const names = companyName.split(" "); const firstName = names[0] || "Conta";
-  const secondName = names.length > 1 ? names.slice(1).join(" ") : (companyName === "ContaUp" ? "Up" : "");
+  const companyName =
+    empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
+  const names = companyName.split(" ");
+  const firstName = names[0] || "Conta";
+  const secondName =
+    names.length > 1
+      ? names.slice(1).join(" ")
+      : companyName === "ContaUp"
+        ? "Up"
+        : "";
 
   return (
     <div
@@ -183,7 +227,14 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               />
               <span className="font-bold text-white text-base">
                 {firstName}
-                {secondName && <span style={{ color: "#4edea3" }}> {secondName.length > 8 ? secondName.substring(0,8) + "..." : secondName}</span>}
+                {secondName && (
+                  <span style={{ color: "#4edea3" }}>
+                    {" "}
+                    {secondName.length > 8
+                      ? secondName.substring(0, 8) + "..."
+                      : secondName}
+                  </span>
+                )}
               </span>
             </>
           )}

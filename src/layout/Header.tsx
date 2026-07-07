@@ -1,9 +1,23 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Bell, CheckCheck, X, TrendingUp, FileText, AlertTriangle, CreditCard, Wallet, Info } from "lucide-react";
+import {
+  Search,
+  Bell,
+  CheckCheck,
+  X,
+  TrendingUp,
+  FileText,
+  AlertTriangle,
+  CreditCard,
+  Wallet,
+  Info,
+} from "lucide-react";
 import { useAuth } from "@/shared/AuthContext";
-import { notificacoesService, type Notificacao } from "@/features/notificacoes/notificacoesService";
+import {
+  notificacoesService,
+  type Notificacao,
+} from "@/features/notificacoes/notificacoesService";
 import { toast } from "sonner";
 
 export default function Header() {
@@ -15,6 +29,17 @@ export default function Header() {
   const [unreadCount, setUnreadCount] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const companyName =
+    empresa?.razao_social || empresa?.nome_fantasia || "ContaUp";
+
+  const names = companyName.split(" ");
+  const firstName = names[0] || "Conta";
+  const secondName =
+    names.length > 1
+      ? names.slice(1).join(" ")
+      : companyName === "ContaUp"
+        ? "Up"
+        : "";
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
@@ -35,7 +60,9 @@ export default function Header() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadNotifs();
-    const id = setInterval(() => { void loadNotifs(); }, 30_000); // refresh every 30s
+    const id = setInterval(() => {
+      void loadNotifs();
+    }, 30_000); // refresh every 30s
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresa?.id]);
@@ -56,7 +83,9 @@ export default function Header() {
 
   const handleRead = async (notif: Notificacao) => {
     if (notif.lida) return;
-    setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, lida: true } : n)));
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notif.id ? { ...n, lida: true } : n)),
+    );
     setUnreadCount((c) => Math.max(0, c - 1));
     try {
       await notificacoesService.marcarComoLida(notif.id);
@@ -72,14 +101,26 @@ export default function Header() {
   };
 
   const iniciaisUsuario = usuario?.nome
-    ? usuario.nome.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase()
+    ? usuario.nome
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
     : "US";
-  const primeiroNome = usuario?.nome
-    ? usuario.nome.split(" ")[0]
-    : null;
+  const primeiroNome = usuario?.nome ? usuario.nome.split(" ")[0] : null;
 
-  const time = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-  const date = now.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  const time = now.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const date = now.toLocaleDateString("pt-BR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   return (
     <header
@@ -93,38 +134,41 @@ export default function Header() {
     >
       {/* Search */}
       <div className="relative group">
-        <Search
-          size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#4edea3] transition-colors"
-        />
-        <input
-          placeholder="Buscar lançamentos, contas..."
-          className="rounded-full pl-9 pr-5 py-2 text-sm outline-none w-72 transition-all"
-          style={{
-            background: "#1e1e1e",
-            border: "1px solid rgba(255,255,255,0.07)",
-            color: "#e5e2e1",
-          }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(78,222,163,0.35)")}
-          onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}
-        />
+        <span
+          className="text-white font-bold text-lg tracking-tight leading-none"
+          title={companyName}
+        >
+          {firstName}
+            <span style={{ color: "#4edea3" }}>
+              {" "}
+              {secondName} 
+            </span>
+        </span>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-3">
-
         {/* Clock + date */}
         <div className="text-right pr-1">
-          <p className="text-sm font-bold leading-tight tabular-nums" style={{ color: "#e5e2e1" }}>
+          <p
+            className="text-sm font-bold leading-tight tabular-nums"
+            style={{ color: "#e5e2e1" }}
+          >
             {time}
           </p>
-          <p className="text-[10px] capitalize tracking-wide" style={{ color: "#6b7280" }}>
+          <p
+            className="text-[10px] capitalize tracking-wide"
+            style={{ color: "#6b7280" }}
+          >
             {date}
           </p>
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 shrink-0" style={{ background: "rgba(255,255,255,0.08)" }} />
+        <div
+          className="w-px h-6 shrink-0"
+          style={{ background: "rgba(255,255,255,0.08)" }}
+        />
 
         {/* Notifications */}
         <div className="relative">
@@ -170,7 +214,10 @@ export default function Header() {
                 style={{ borderColor: "rgba(255,255,255,0.06)" }}
               >
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold" style={{ color: "#e5e2e1" }}>
+                  <p
+                    className="text-sm font-semibold"
+                    style={{ color: "#e5e2e1" }}
+                  >
                     Notificações
                   </p>
                   {unreadCount > 0 && (
@@ -205,7 +252,9 @@ export default function Header() {
 
               <div className="overflow-y-auto" style={{ maxHeight: "340px" }}>
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-gray-500">Nenhuma notificação</div>
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    Nenhuma notificação
+                  </div>
                 ) : (
                   notifications.map((n) => {
                     const Icon = Info;
@@ -215,7 +264,9 @@ export default function Header() {
                         className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03] cursor-pointer border-b"
                         style={{
                           borderColor: "rgba(255,255,255,0.04)",
-                          background: !n.lida ? "rgba(78,222,163,0.03)" : "transparent",
+                          background: !n.lida
+                            ? "rgba(78,222,163,0.03)"
+                            : "transparent",
                         }}
                         onClick={() => handleRead(n)}
                       >
@@ -240,16 +291,25 @@ export default function Header() {
                               />
                             )}
                           </div>
-                          <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#6b7280" }}>
+                          <p
+                            className="text-[11px] mt-0.5 leading-relaxed"
+                            style={{ color: "#6b7280" }}
+                          >
                             {n.mensagem}
                           </p>
-                          <p className="text-[10px] mt-1" style={{ color: "#4b5563" }}>
-                            {new Date(n.data_criacao).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            })}
+                          <p
+                            className="text-[10px] mt-1"
+                            style={{ color: "#4b5563" }}
+                          >
+                            {new Date(n.data_criacao).toLocaleDateString(
+                              "pt-BR",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </p>
                         </div>
                       </div>
@@ -269,15 +329,21 @@ export default function Header() {
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-cover bg-center bg-no-repeat"
             style={
-              usuario?.foto_url 
+              usuario?.foto_url
                 ? { backgroundImage: `url(${usuario.foto_url})` }
-                : { background: "linear-gradient(135deg,#4edea3,#10b981)", color: "#003824" }
+                : {
+                    background: "linear-gradient(135deg,#4edea3,#10b981)",
+                    color: "#003824",
+                  }
             }
           >
             {!usuario?.foto_url && iniciaisUsuario}
           </div>
           <div className="text-left">
-            <p className="text-xs font-semibold leading-tight" style={{ color: "#e5e2e1" }}>
+            <p
+              className="text-xs font-semibold leading-tight"
+              style={{ color: "#e5e2e1" }}
+            >
               {primeiroNome || "Carregando..."}
             </p>
             <p className="text-[10px]" style={{ color: "#6b7280" }}>
@@ -285,7 +351,6 @@ export default function Header() {
             </p>
           </div>
         </button>
-
       </div>
     </header>
   );

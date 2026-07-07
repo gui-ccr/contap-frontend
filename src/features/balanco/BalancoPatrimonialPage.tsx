@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,6 +9,8 @@ import { toast } from "sonner";
 import { PassivoSection } from "./components/PassivoSection";
 import { EquationFooter } from "./components/EquationFooter";
 import { balancoService } from "./balancoService";
+import { DiagnosticoModal } from "./components/DiagnosticoModal";
+import { Search } from "lucide-react";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -15,6 +18,9 @@ export default function BalancoPatrimonialPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [diagnosticos, setDiagnosticos] = useState<any[]>([]);
+  const [diagnosticoLoading, setDiagnosticoLoading] = useState(false);
 
   const today = new Date().toLocaleDateString("pt-BR", {
     day: "numeric", month: "long", year: "numeric",
@@ -35,6 +41,19 @@ export default function BalancoPatrimonialPage() {
       toast.success("PDF gerado com sucesso!", { id: "pdf-toast" });
     } catch (err) {
       toast.error("Erro ao gerar PDF.", { id: "pdf-toast" });
+    }
+  };
+
+  const handleOpenDiagnostico = async () => {
+    setIsModalOpen(true);
+    setDiagnosticoLoading(true);
+    try {
+      const res = await balancoService.obterDiagnostico();
+      setDiagnosticos(res);
+    } catch (err) {
+      toast.error("Erro ao carregar diagnóstico.");
+    } finally {
+      setDiagnosticoLoading(false);
     }
   };
 
@@ -81,6 +100,16 @@ export default function BalancoPatrimonialPage() {
         <div className="max-w-6xl mx-auto space-y-5">
 
           <BalancoHeader today={today} onExport={handleExport} />
+          
+          <div className="flex justify-end">
+            <button 
+              onClick={handleOpenDiagnostico}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded-full transition-colors text-sm font-medium border border-indigo-500/20 cursor-pointer"
+            >
+              <Search size={16} />
+              Rodar Diagnóstico
+            </button>
+          </div>
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -123,6 +152,13 @@ export default function BalancoPatrimonialPage() {
 
         </div>
       </main>
+
+      <DiagnosticoModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        diagnosticos={diagnosticos}
+        loading={diagnosticoLoading}
+      />
     </div>
   );
 }

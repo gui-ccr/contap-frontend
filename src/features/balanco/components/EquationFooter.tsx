@@ -9,7 +9,7 @@ interface EquationFooterProps {
 export function EquationFooter({ totalAtivo, totalPassivo, equacaoValida }: EquationFooterProps) {
   return (
     <div
-      className="rounded-3xl p-4 md:p-5 flex flex-wrap items-center justify-center gap-4 md:gap-8"
+      className="rounded-3xl mt-4 p-4 md:p-5 flex flex-wrap items-center justify-center gap-4 md:gap-8"
       style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.04)" }}
     >
       <div className="text-center">
@@ -34,9 +34,14 @@ export function EquationFooter({ totalAtivo, totalPassivo, equacaoValida }: Equa
           <span className="text-xs font-semibold" style={{ color: "#4edea3" }}>Balancete ok</span>
         </div>
       ) : (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "#ff525218" }}>
-          <AlertTriangle size={14} style={{ color: "#ff5252" }} />
-          <span className="text-xs font-semibold" style={{ color: "#ff5252" }}>Balancete divergente</span>
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "#ff525218" }}>
+            <AlertTriangle size={14} style={{ color: "#ff5252" }} />
+            <span className="text-xs font-semibold" style={{ color: "#ff5252" }}>Balancete divergente</span>
+          </div>
+          <p className="text-[11px] text-gray-400 mt-3 text-center max-w-[280px]">
+            O Total do Ativo deve ser igual ao Passivo + PL. Divergências costumam ocorrer por partidas apagadas ou lançamentos manuais incompletos.
+          </p>
         </div>
       )}
     </div>
