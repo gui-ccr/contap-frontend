@@ -22,7 +22,7 @@ function ListContainer({ items }: { items: Item[] }) {
   }
   return (
     <div className="flex flex-col gap-1 p-2 rounded-2xl mb-2" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
-      {items.map((i) => <LineItem key={i.label} {...i} />)}
+      {items.map((i, idx) => <LineItem key={`${i.label}-${idx}`} {...i} />)}
     </div>
   );
 }
