@@ -6,6 +6,7 @@ export const PUBLIC_ROUTES = [
   "/landing",
   "/solicitar-exclusao-dados",
   "/api-docs",
+  "/cadastro-empresa",
 ];
 
 export const SESSION_COOKIE = "contaup-session";
