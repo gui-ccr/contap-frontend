@@ -917,21 +917,33 @@ function TechBalanceCard() {
     const el = containerRef.current;
     if (!el) return;
     
-    // Create an ambient animation for the background orbs
-    const orbs = el.querySelectorAll<HTMLElement>(".tb-orb");
     const ctx = gsap.context(() => {
-      orbs.forEach((orb, i) => {
+      // Create an ambient animation for the background orbs
+      const orbs = el.querySelectorAll<HTMLElement>(".tb-orb");
+      
+      const animateOrb = (orb: HTMLElement) => {
         gsap.to(orb, {
-          x: gsap.utils.random(-40, 40),
-          y: gsap.utils.random(-40, 40),
-          scale: gsap.utils.random(0.8, 1.2),
-          duration: 6 + i * 2,
-          repeat: -1,
-          yoyo: true,
+          x: gsap.utils.random(-150, 150),
+          y: gsap.utils.random(-100, 100),
+          scale: gsap.utils.random(0.7, 1.4),
+          rotation: gsap.utils.random(-45, 45),
+          duration: gsap.utils.random(6, 12),
           ease: "sine.inOut",
-          delay: i * 1.5,
+          onComplete: () => animateOrb(orb)
         });
+      };
+
+      orbs.forEach(animateOrb);
+
+      // Subtle breathing effect on the container
+      gsap.to(el, {
+        boxShadow: "0 25px 50px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 40px rgba(78,222,163,0.05)",
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
       });
+      
     }, el);
     
     return () => ctx.revert();
@@ -948,17 +960,26 @@ function TechBalanceCard() {
       }}
     >
       {/* Animated Orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl" style={{ mixBlendMode: "screen" }}>
         <div
-          className="tb-orb absolute top-[-50%] left-[-20%] w-[300px] h-[300px] rounded-full"
+          className="tb-orb absolute top-[-30%] left-[-10%] w-[350px] h-[350px] rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(78,222,163,0.15), transparent 70%)",
+            background: "radial-gradient(circle, rgba(78,222,163,0.18), transparent 70%)",
+            filter: "blur(20px)"
           }}
         />
         <div
-          className="tb-orb absolute bottom-[-50%] right-[-10%] w-[250px] h-[250px] rounded-full"
+          className="tb-orb absolute bottom-[-30%] right-[-10%] w-[300px] h-[300px] rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(192,193,255,0.12), transparent 70%)",
+            background: "radial-gradient(circle, rgba(192,193,255,0.15), transparent 70%)",
+            filter: "blur(20px)"
+          }}
+        />
+        <div
+          className="tb-orb absolute top-[20%] left-[40%] w-[200px] h-[200px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(78,222,163,0.1), transparent 70%)",
+            filter: "blur(20px)"
           }}
         />
       </div>
