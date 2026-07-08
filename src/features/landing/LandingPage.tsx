@@ -107,29 +107,25 @@ const FEATURES = [
 ];
 
 const BASIC_FEATURES = [
-  "Até 3 usuários",
-  "Lançamentos ilimitados",
-  "DRE e Balanço Patrimonial",
+  "1 usuário",
+  "Lançamentos simplificados",
+  "Fluxo de caixa diário",
   "Dashboard básico",
   "Suporte por e-mail",
 ];
 const PRO_FEATURES = [
-  "Até 10 usuários",
+  "Até 3 usuários",
   "Lançamentos ilimitados",
-  "DRE, Balanço e Relatórios",
+  "DRE e Balanço",
   "Dashboard avançado",
-  "Gestão de Funcionários",
-  "Exportação PDF / Excel",
   "Suporte prioritário",
 ];
 const ENTERPRISE_FEAT = [
-  "Usuários ilimitados",
-  "Multi-empresa",
-  "Tudo do plano Pro",
-  "API de integração",
-  "Relatórios customizados",
-  "Gestor de conta dedicado",
-  "SLA garantido",
+  "Até 10 usuários",
+  "Múltiplas filiais",
+  "Gestão de Funcionários",
+  "Exportação PDF / Excel",
+  "Suporte via WhatsApp",
 ];
 
 // ── Ambient canvas (GSAP orbs + grid) ────────────────────────────────────────
@@ -1396,23 +1392,51 @@ export function LandingPage() {
           </div>
 
           {/* Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <PricingCard
-              tier="Básico"
+              tier="Autônomo"
               entry={prices.basico}
               features={BASIC_FEATURES}
             />
             <PricingCard
-              tier="Profissional"
+              tier="Microempresa"
               entry={prices.pro}
               features={PRO_FEATURES}
               highlight
             />
             <PricingCard
-              tier="Empresarial"
+              tier="Familiar"
               entry={prices.empresarial}
               features={ENTERPRISE_FEAT}
             />
+          </div>
+
+          <div className="reveal-up border rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6" style={{ background: "rgba(39,39,42,0.35)", borderColor: "rgba(255,255,255,0.08)" }}>
+            <div>
+              <h3 className="text-[18px] font-bold text-white mb-2">Precisa de um sistema sob medida?</h3>
+              <p className="text-[#86948a] text-[14px] max-w-lg leading-relaxed">
+                Se sua empresa exige uma contabilidade complexa, integrações específicas ou desenvolvimento personalizado, a TechBalance tem a solução ideal para o seu negócio.
+              </p>
+            </div>
+            <Link
+              href={"https://tech-balance-focus.vercel.app/" as Route}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-6 py-3.5 rounded-xl font-bold text-[14px] transition-all"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.10)",
+                color: "#e5e2e1",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+              }}
+            >
+              Falar com a TechBalance
+            </Link>
           </div>
 
           <p
