@@ -760,7 +760,7 @@ function PricingCard({
 const FAQ_ITEMS = [
   {
     q: "O que é o ContaUp?",
-    a: "O ContaUp é uma plataforma de gestão financeira e contabilidade desenvolvida para empresas brasileiras. Centralizamos lançamentos, DRE, Balanço Patrimonial, gestão de funcionários e muito mais em uma única interface limpa e intuitiva.",
+    a: "O ContaUp é um sistema contábil básico focado em microempresários, autônomos e empresas familiares. Ele foi feito para quem não precisa de funcionalidades complexas. Caso precise de um sistema mais robusto, entre em contato com a TechBalance.",
   },
   {
     q: "Preciso ter conhecimento contábil para usar?",
@@ -1045,12 +1045,12 @@ export function LandingPage() {
             className="lp-hero-sub text-[1.1rem] leading-relaxed max-w-2xl mx-auto mb-10"
             style={{ color: "#bbcabf" }}
           >
-            O ContaUp automatiza sua gestão financeira — de lançamentos a DRE,
-            balanço patrimonial a funcionários — em uma plataforma limpa e
-            poderosa.{" "}
+            O ContaUp é um sistema contábil básico focado em{" "}
             <span className="text-on-surface font-medium">
-              Sem planilhas. Sem dor de cabeça.
+              microempresários, autônomos e empresas familiares
             </span>
+            . Se você precisa de algo simples para organizar suas finanças, encontrou.
+            Caso precise de um sistema mais robusto, entre em contato com a <a href="https://tech-balance-focus.vercel.app/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#4edea3] transition-colors">TechBalance</a>.
           </p>
 
           {/* CTAs */}
@@ -1426,9 +1426,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <FaqSection />
-
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
       <section className="relative py-32 px-6">
         <div className="max-w-4xl mx-auto">
@@ -1508,6 +1505,9 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <FaqSection />
+
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer
         className="px-6 py-14"
@@ -1533,8 +1533,7 @@ export function LandingPage() {
                 className="text-[13px] leading-relaxed"
                 style={{ color: "#86948a" }}
               >
-                Plataforma de contabilidade e gestão financeira para empresas
-                brasileiras.
+                Sistema contábil básico para microempresários, autônomos e empresas familiares.
               </p>
             </div>
 
