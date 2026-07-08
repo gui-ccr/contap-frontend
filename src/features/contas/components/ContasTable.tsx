@@ -8,6 +8,7 @@ import { Button } from "@/ui/forms";
 
 interface ContasTableProps {
   contas: ContaFinanceira[];
+  total?: number;
   loading: boolean;
   planoContas: ContaContabil[];
   tabelaTitulo: string;
@@ -21,7 +22,7 @@ interface ContasTableProps {
 const th = "px-5 py-3 text-left text-label-sm font-semibold text-on-surface-variant/60 uppercase tracking-wider";
 
 export function ContasTable({
-  contas, loading, planoContas, tabelaTitulo, fluxo,
+  contas, total, loading, planoContas, tabelaTitulo, fluxo,
   statusLiquidado, statusAtrasado, onEdit, onBaixar,
 }: ContasTableProps) {
   return (
@@ -35,7 +36,7 @@ export function ContasTable({
             {tabelaTitulo}
           </span>
         </div>
-        <span className="text-label-sm text-on-surface-variant/50">{contas.length} registro(s)</span>
+        <span className="text-label-sm text-on-surface-variant/50">{total ?? contas.length} registro(s)</span>
       </div>
 
       <div className="overflow-x-auto">

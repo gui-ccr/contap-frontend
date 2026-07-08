@@ -9,6 +9,7 @@ import { Button, FormAlert } from "@/ui/forms";
 import { ContasKpis } from "./components/ContasKpis";
 import { ContasFilters, type FiltroStatus } from "./components/ContasFilters";
 import { ContasTable } from "./components/ContasTable";
+import { ContasPagination } from "./components/ContasPagination";
 import { ContaFormModal } from "./components/ContaFormModal";
 import { getDiffDays, primeiroDiaDoMes, ultimoDiaDoMes } from "./dateUtils";
 import type { ContaFinanceira, ContaFinanceiraPayload, ContasConfig } from "./types";
@@ -30,6 +31,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
   const [tipoFiltro, setTipoFiltro] = useState("");
   const [valorMinimo, setValorMinimo] = useState("");
   const [valorMaximo, setValorMaximo] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const carregar = useCallback(async () => {
     try {
@@ -84,6 +87,13 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
     return true;
   });
 
+  useEffect(() => {
+    setPage(1);
+  }, [filter, tipoFiltro, dataInicio, dataFim, valorMinimo, valorMaximo]);
+
+  const totalPages = Math.max(1, Math.ceil(filtradas.length / pageSize));
+  const paginadas = filtradas.slice((page - 1) * pageSize, page * pageSize);
+
   const totalPendente = filtradas.filter((c) => !c.liquidado).reduce((s, c) => s + c.valor, 0);
   const totalLiquidado = filtradas.filter((c) => c.liquidado).reduce((s, c) => s + c.valor, 0);
   const totalAtrasado = filtradas
@@ -132,7 +142,8 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
           />
 
           <ContasTable
-            contas={filtradas}
+            contas={paginadas}
+            total={filtradas.length}
             loading={loading}
             planoContas={planoContas}
             tabelaTitulo={config.tabelaTitulo}
@@ -141,6 +152,14 @@ export function ContasFinanceirasPage({ config }: { config: ContasConfig }) {
             statusAtrasado={config.statusAtrasado}
             onEdit={(c) => { setEditing(c); setShowForm(true); }}
             onBaixar={handleBaixar}
+          />
+
+          <ContasPagination
+            page={page}
+            totalPages={totalPages}
+            total={filtradas.length}
+            pageSize={pageSize}
+            onPage={setPage}
           />
         </div>
       </main>
