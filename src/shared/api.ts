@@ -65,7 +65,10 @@ axiosInstance.interceptors.response.use(
     return data;
   },
   (error: AxiosError) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
+    const configUrl = error.config?.url || "";
+    const isExempt = AUTH_EXEMPT_ENDPOINTS.some((endpoint) => configUrl.startsWith(endpoint));
+
+    if (!isExempt && error.response?.status === 401 && typeof window !== "undefined") {
       const supabase = getSupabaseClient();
       void supabase.auth.signOut().finally(() => {
         if (!window.location.pathname.includes("/login")) {
