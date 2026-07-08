@@ -909,6 +909,93 @@ function FaqSection() {
   );
 }
 
+// ── TechBalance Custom Card ──────────────────────────────────────────────────
+function TechBalanceCard() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    
+    // Create an ambient animation for the background orbs
+    const orbs = el.querySelectorAll<HTMLElement>(".tb-orb");
+    const ctx = gsap.context(() => {
+      orbs.forEach((orb, i) => {
+        gsap.to(orb, {
+          x: gsap.utils.random(-40, 40),
+          y: gsap.utils.random(-40, 40),
+          scale: gsap.utils.random(0.8, 1.2),
+          duration: 6 + i * 2,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: i * 1.5,
+        });
+      });
+    }, el);
+    
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="reveal-up relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 mt-8 glass-panel group"
+      style={{
+        background: "linear-gradient(135deg, rgba(28,28,31,0.6) 0%, rgba(39,39,42,0.4) 100%)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 20px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)",
+      }}
+    >
+      {/* Animated Orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
+        <div
+          className="tb-orb absolute top-[-50%] left-[-20%] w-[300px] h-[300px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(78,222,163,0.15), transparent 70%)",
+          }}
+        />
+        <div
+          className="tb-orb absolute bottom-[-50%] right-[-10%] w-[250px] h-[250px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(192,193,255,0.12), transparent 70%)",
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 flex-1 w-full text-center md:text-left">
+        <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full border" style={{ borderColor: "rgba(78,222,163,0.3)", background: "rgba(78,222,163,0.1)" }}>
+          <i className="fi fi-rr-star text-[12px]" style={{ color: "#4edea3" }}></i>
+          <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: "#4edea3" }}>Enterprise & Custom</span>
+        </div>
+        <h3 className="text-[22px] md:text-[26px] font-black text-white mb-3 leading-tight tracking-tight">
+          Precisa de um sistema sob medida?
+        </h3>
+        <p className="text-[#86948a] text-[15px] max-w-2xl leading-relaxed mx-auto md:mx-0">
+          Se sua empresa exige uma contabilidade complexa, integrações específicas ou desenvolvimento personalizado, a TechBalance tem a infraestrutura e a equipe ideal para transformar o seu negócio.
+        </p>
+      </div>
+      
+      <div className="relative z-10 shrink-0 w-full md:w-auto flex justify-center md:justify-end">
+        <Link
+          href={"https://tech-balance-focus.vercel.app/" as Route}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold text-[15px] transition-all hover:scale-[1.03]"
+          style={{
+            background: "linear-gradient(135deg, #4edea3 0%, #3ebd8a 100%)",
+            color: "#003824",
+            boxShadow: "0 10px 25px rgba(78,222,163,0.25)",
+          }}
+        >
+          Falar com a TechBalance
+          <i className="fi fi-rr-arrow-right text-[16px] ml-1"></i>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 // ── Main export ───────────────────────────────────────────────────────────────
 export function LandingPage() {
   const [period, setPeriod] = useState<Period>("mensal");
@@ -1411,33 +1498,7 @@ export function LandingPage() {
             />
           </div>
 
-          <div className="reveal-up border rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6" style={{ background: "rgba(39,39,42,0.35)", borderColor: "rgba(255,255,255,0.08)" }}>
-            <div>
-              <h3 className="text-[18px] font-bold text-white mb-2">Precisa de um sistema sob medida?</h3>
-              <p className="text-[#86948a] text-[14px] max-w-lg leading-relaxed">
-                Se sua empresa exige uma contabilidade complexa, integrações específicas ou desenvolvimento personalizado, a TechBalance tem a solução ideal para o seu negócio.
-              </p>
-            </div>
-            <Link
-              href={"https://tech-balance-focus.vercel.app/" as Route}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 px-6 py-3.5 rounded-xl font-bold text-[14px] transition-all"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                color: "#e5e2e1",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-              }}
-            >
-              Falar com a TechBalance
-            </Link>
-          </div>
+          <TechBalanceCard />
 
           <p
             className="text-center text-[13px] mt-6"
