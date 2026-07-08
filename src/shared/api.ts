@@ -37,7 +37,15 @@ axiosInstance.interceptors.request.use(async (config) => {
     // persistido. Nunca chamar setSession com tokens guardados manualmente —
     // refresh tokens são de uso único e reusar um antigo derruba a sessão.
     const supabase = getSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    let session = null;
+    try {
+      ({ data: { session } } = await supabase.auth.getSession());
+    } catch {
+      // Refresh token inválido/expirado (ex: revogado via "desconectar todas
+      // as sessões", ou sobra de uma sessão antiga): trata como "sem sessão"
+      // em vez de deixar a exceção estourar sem tratamento.
+      await supabase.auth.signOut();
+    }
 
     if (!session?.access_token) {
       // Fail-closed: sem sessão válida, não deixa a requisição seguir sem
