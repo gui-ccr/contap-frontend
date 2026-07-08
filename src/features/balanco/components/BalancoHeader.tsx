@@ -14,7 +14,7 @@ export function BalancoHeader({ today, onExport }: BalancoHeaderProps) {
           Balanço Patrimonial
         </h1>
         <p className="text-body-sm text-on-surface-variant/70 mt-1">
-          Posição financeira em {today}
+          Posição financeira em {today} (inclui lucro/prejuízo acumulado desde o início das operações)
         </p>
       </div>
       <Button
