@@ -29,7 +29,7 @@ const KPI_DATA_TEMPLATE: KpiItem[] = [
   { id: 1, label: "Saldo Consolidado", value: "R$ 0,00", change: "", positive: true,  icon: Wallet,      detail: "Saldo em conta" },
   { id: 2, label: "Receita Prevista",  value: "R$ 0,00", change: "",  positive: true,  icon: TrendingUp,  detail: "No período"        },
   { id: 3, label: "Despesa Prevista",  value: "R$ 0,00", change: "",  positive: false, icon: TrendingDown, detail: "No período"       },
-  { id: 4, label: "Período",  value: "R$ 0,00", change: "", positive: true,  icon: BarChart3,   detail: "Competência"   },
+  { id: 4, label: "Saldo do Período",  value: "R$ 0,00", change: "", positive: true,  icon: BarChart3,   detail: "Competência"   },
 ];
 
 const INDICATORS_TEMPLATE: IndicatorItem[] = [
