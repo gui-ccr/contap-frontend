@@ -2,6 +2,8 @@
 
 Bem-vindo ao repositório Frontend do **ContaUp**, o sistema de gestão contábil inteligente desenhado para pequenos negócios (Pizzarias). Nosso foco é entregar uma experiência visual impecável com as tecnologias mais modernas do ecossistema React.
 
+🔗 Veja o case completo no [portfólio de Guilherme Rodrigues](https://www.gui-ccr.com.br/project/contaup).
+
 ## 📚 Documentação e Wiki
 A documentação técnica detalhada não está mais espalhada por este arquivo! Construímos uma Wiki robusta para documentar a Arquitetura, os Padrões de Código e a Integração com o Backend.
 
